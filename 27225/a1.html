@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Female Health Tracker</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+      #calendar {
+        max-width: 900px;
+        margin: 40px auto;
+      }
+      .input-section {
+        margin: 20px;
+      }
+      .highlight-period {
+        background-color: #ffcccc !important;
+      }
+      .highlight-ovulation {
+        background-color: #cce5ff !important;
+      }
+      .highlight-today {
+        background-color: #ffffcc !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="input-section">
+      <label for="startDate">Last Period Start Date:</label>
+      <input type="date" id="startDate" />
+      <label for="periodDuration">Period Duration (days):</label>
+      <input type="number" id="periodDuration" min="1" value="5" />
+      <button onclick="updateCalendar()">Update Calendar</button>
+    </div>
+    <div id="calendar"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+          nowIndicator: true,
+        });
+        calendar.render();
+
+        function updateCalendar() {
+          var startDate = new Date(document.getElementById('startDate').value);
+          var duration = parseInt(
+            document.getElementById('periodDuration').value,
+            10
+          );
+          var today = new Date();
+          calendar.removeAllEvents();
+
+          for (
+            let year = startDate.getFullYear();
+            year <= today.getFullYear() + 1;
+            year++
+          ) {
+            let periodStart = new Date(startDate);
+            while (periodStart.getFullYear() <= year) {
+              let periodEnd = new Date(periodStart);
+              periodEnd.setDate(periodStart.getDate() + duration);
+
+              // Add period
+              calendar.addEvent({
+                title: 'Period',
+                start: periodStart,
+                end: periodEnd,
+                className: 'highlight-period',
+                allDay: true,
+              });
+
+              // Ovulation - assuming it's 14 days before next period
+              let ovulationDate = new Date(periodStart);
+              ovulationDate.setDate(ovulationDate.getDate() - 14);
+              calendar.addEvent({
+                title: 'Ovulation',
+                start: ovulationDate,
+                className: 'highlight-ovulation',
+                allDay: true,
+              });
+
+              periodStart.setDate(periodStart.getDate() + 28); // Simple cycle length assumption
+            }
+          }
+
+          // Highlight today
+          calendar.addEvent({
+            start: today,
+            className: 'highlight-today',
+            rendering: 'background',
+          });
+        }
+
+        // Initial load
+        if (
+          localStorage.getItem('lastStartDate') &&
+          localStorage.getItem('lastDuration')
+        ) {
+          document.getElementById('startDate').value =
+            localStorage.getItem('lastStartDate');
+          document.getElementById('periodDuration').value =
+            localStorage.getItem('lastDuration');
+          updateCalendar();
+        }
+
+        // Save data to localStorage
+        document.querySelector('button').addEventListener('click', function () {
+          localStorage.setItem(
+            'lastStartDate',
+            document.getElementById('startDate').value
+          );
+          localStorage.setItem(
+            'lastDuration',
+            document.getElementById('periodDuration').value
+          );
+          updateCalendar();
+        });
+      });
+    </script>
+  </body>
+</html>
