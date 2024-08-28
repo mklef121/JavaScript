@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Female Health Tracker</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<style>
+  body { 
+    font-family: Arial, sans-serif; 
+    padding: 10px;
+    max-width: 1000px;
+    margin: auto;
+  }
+  .fc-event.period { background-color: red; border-color: red; }
+  .fc-event.ovulation { background-color: blue; border-color: blue; }
+  .fc-day-today { background-color: yellow !important; }
+  #inputs { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 10px; 
+    margin-bottom: 20px;
+  }
+  #inputs > * { 
+    flex: 1 1 calc(33% - 10px); 
+    min-width: 150px; 
+  }
+  input[type="date"], input[type="number"] { 
+    width: 100%; 
+    box-sizing: border-box; 
+  }
+</style>
+</head>
+<body>
+
+<div id="calendar"></div>
+
+<form id="inputs">
+  <div>
+    <label>Last Period Start Date:</label>
+    <input type="date" id="startDate">
+  </div>
+  <div>
+    <label>Average Period Duration (days):</label>
+    <input type="number" id="duration" min="1" max="10" value="5">
+  </div>
+  <div>
+    <label>Average Cycle Length (days):</label>
+    <input type="number" id="cycleLength" min="21" max="35" value="28">
+  </div>
+  <button type="submit">Update Calendar</button>
+</form>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const calendarEl = document.getElementById('calendar');
+  const inputsForm = document.getElementById('inputs');
+  let calendar;
+  function predictEvents(startDate, duration, cycleLength) {
+    const events = [];
+    for (let i = 0; i < 12; i++) {
+      const periodStart = new Date(startDate);
+      periodStart.setDate(periodStart.getDate() + i * cycleLength);
+      const periodEnd = new Date(periodStart);
+      periodEnd.setDate(periodEnd.getDate() + duration);
+
+      // Ovulation approximately 14 days before the next period
+      const ovulationStart = new Date(periodStart);
+      ovulationStart.setDate(ovulationStart.getDate() - (cycleLength - 14));
+      const ovulationEnd = new Date(ovulationStart);
+      ovulationEnd.setDate(ovulationEnd.getDate() + 2);
+
+      events.push({
+        title: 'Period',
+        start: periodStart,
+        end: periodEnd,
+        className: 'period'
+      }, {
+        title: 'Ovulation',
+        start: ovulationStart,
+        end: ovulationEnd,
+        className: 'ovulation'
+      });
+    }
+    return events;
+  }
+
+  function showToast(text, isSuccess) {
+    Toastify({
+      text: text,
+      duration: 3000,
+      gravity: "top",
+      position: 'right',
+      style: {
+        background: isSuccess ? "green" : "red",
+      }
+    }).showToast();
+  }
+
+  function validateInputs() {
+    const startDate = document.getElementById('startDate').value;
+    const duration = document.getElementById('duration').value;
+    const cycleLength = document.getElementById('cycleLength').value;
+
+    if (!startDate) {
+      showToast('Please enter a valid start date.', false);
+      return false;
+    }
+
+    if (duration < 1 || duration > 10) {
+      showToast('Period duration should be between 1 and 10 days.', false);
+      return false;
+    }
+
+    if (cycleLength < 21 || cycleLength > 35) {
+      showToast('Cycle length should be between 21 and 35 days.', false);
+      return false;
+    }
+
+    showToast('Inputs are valid. Calendar updated.', true);
+    return true;
+  }
+
+  inputsForm.addEventListener('submit', function(event) {
+    event.preventDefault();
+    if (!validateInputs()) return;
+
+    const startDate = new Date(document.getElementById('startDate').value);
+    const duration = parseInt(document.getElementById('duration').value, 10);
+    const cycleLength = parseInt(document.getElementById('cycleLength').value, 10);
+
+    const events = predictEvents(startDate, duration, cycleLength);
+    if (calendar) {
+      calendar.removeAllEvents();
+      calendar.addEventSource(events);
+    }
+  });
+
+  calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    events: [],
+    eventDidMount: function(info) {
+      info.el.title = info.event.title;
+    }
+  });
+
+  calendar.render();
+});
+
+</script>
+
+</body>
+</html>
