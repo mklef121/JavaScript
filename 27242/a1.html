@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Platform Jumper Game</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Press+Start+2P">
+<style>
+  body {
+    font-family: 'Press Start 2P', cursive;
+    text-align: center;
+    background-color: #f0f0f0;
+  }
+  #game-container {
+    position: relative;
+    width: 600px;
+    height: 300px;
+    border: 1px solid black;
+    margin: 40px auto;
+    overflow: hidden;
+  }
+  .game-element {
+    position: absolute;
+  }
+  #player {
+    bottom: 0;
+    left: 50%;
+    width: 30px;
+    height: 30px;
+    background-color: blue;
+  }
+  .platform {
+    bottom: 0;
+    background-color: green;
+    width: 100px;
+    height: 20px;
+  }
+  .obstacle {
+    bottom: 0;
+    background-color: red;
+    width: 30px;
+    height: 30px;
+  }
+  .item {
+    bottom: 30px;
+    background-color: yellow;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+  }
+  #score-display {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 16px;
+  }
+  #start-screen, #game-over-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  #game-over-screen {
+    display: none;
+  }
+</style>
+</head>
+<body>
+<div id="game-container">
+  <div id="player" class="game-element"></div>
+  <div id="score-display">Score: 0</div>
+  <div id="start-screen">
+    <h1>Welcome to Platform Jumper!</h1>
+    <p>Use arrow keys to move and jump.</p>
+    <p>Avoid the red obstacles and collect yellow items for points.</p>
+    <button onclick="startGame()">Start Game</button>
+  </div>
+  <div id="game-over-screen">
+    <h1>Game Over!</h1>
+    <p id="final-score"></p>
+    <button onclick="location.reload()">Restart Game</button>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+  const gameContainer = document.getElementById('game-container');
+  const player = document.getElementById('player');
+  const scoreDisplay = document.getElementById('score-display');
+  const startScreen = document.getElementById('start-screen');
+  const gameOverScreen = document.getElementById('game-over-screen');
+  const finalScoreDisplay = document.getElementById('final-score');
+
+  let score = 0;
+  let platforms = [];
+  let obstacles = [];
+  let items = [];
+  let playerVelocityY = 0;
+  let gravity = 0.5;
+  let isJumping = false;
+  let gameRunning = false;
+  let gameLevel = 1;
+  let speedMultiplier = 1;
+
+  function startGame() {
+    startScreen.style.display = 'none';
+    gameRunning = true;
+    requestAnimationFrame(updateGame);
+  }
+
+  function updateGame() {
+    if (gameRunning) {
+      updatePlayer();
+      updatePlatforms();
+      updateObstacles();
+      updateItems();
+      checkCollisions();
+      requestAnimationFrame(updateGame);
+    }
+  }
+
+  function updatePlayer() {
+    if (isJumping) {
+      playerVelocityY += gravity;
+      player.style.bottom = `${parseInt(player.style.bottom) + playerVelocityY}px`;
+      if (parseInt(player.style.bottom) <= 0) {
+        playerVelocityY = 0;
+        isJumping = false;
+      }
+    }
+  }
+
+  function updatePlatforms() {
+    if (platforms.length === 0 || platforms[platforms.length - 1].right < gameContainer.offsetWidth) {
+      createPlatform();
+    }
+    platforms = platforms.filter(platform => platform.right > 0);
+    platforms.forEach(platform => {
+      platform.right -= 2 * speedMultiplier;
+      platform.element.style.right = `${platform.right}px`;
+    });
+  }
+
+  function updateObstacles() {
+    if (Math.random() < 0.05 * gameLevel) {
+      createObstacle();
+    }
+    obstacles = obstacles.filter(obstacle => obstacle.right > 0);
+    obstacles.forEach(obstacle => {
+      obstacle.right -= 3 * speedMultiplier;
+      obstacle.element.style.right = `${obstacle.right}px`;
+    });
+  }
+
+  function updateItems() {
+    if (Math.random() < 0.03 * gameLevel) {
+      createItem();
+    }
+    items = items.filter(item => item.right > 0);
+    items.forEach(item => {
+      item.right -= 2 * speedMultiplier;
+      item.element.style.right = `${item.right}px`;
+    });
+  }
+
+  function createPlatform() {
+    const platform = {
+      right: gameContainer.offsetWidth,
+      width: Math.random() * 150 + 50
+    };
+    const platformElement = document.createElement('div');
+    platformElement.className = 'platform game-element';
+    platformElement.style.width = `${platform.width}px`;
+    gameContainer.appendChild(platformElement);
+    platform.element = platformElement;
+    platforms.push(platform);
+  }
+
+  function createObstacle() {
+    const obstacle = {
+      right: gameContainer.offsetWidth
+    };
+    const obstacleElement = document.createElement('div');
+    obstacleElement.className = 'obstacle game-element';
+    gameContainer.appendChild(obstacleElement);
+    obstacle.element = obstacleElement;
+    obstacles.push(obstacle);
+  }
+
+  function createItem() {
+    const item = {
+      right: gameContainer.offsetWidth
+    };
+    const itemElement = document.createElement('div');
+    itemElement.className = 'item game-element';
+    gameContainer.appendChild(itemElement);
+    item.element = itemElement;
+    items.push(item);
+  }
+
+  function checkCollisions() {
+    const playerRect = player.getBoundingClientRect();
+    const collide = (element) => {
+      const rect = element.getBoundingClientRect();
+      return !(playerRect.right < rect.left || 
+               playerRect.left > rect.right || 
+               playerRect.bottom < rect.top || 
+               playerRect.top > rect.bottom);
+    };
+
+    obstacles.forEach(obstacle => {
+      if (collide(obstacle.element)) {
+        gameOver();
+      }
+    });
+
+    platforms.forEach(platform => {
+      if (collide(platform.element) && playerRect.bottom <= platform.element.offsetTop + 5 && playerVelocityY > 0) {
+        playerVelocityY = 0;
+        player.style.bottom = `${platform.element.offsetTop + 20}px`;
+        isJumping = false;
+      }
+    });
+
+    items = items.filter(item => {
+      if (collide(item.element)) {
+        score++;
+        scoreDisplay.textContent = `Score: ${score}`;
+        item.element.remove();
+        return false;
+      }
+      return true;
+    });
+  }
+
+  function gameOver() {
+    gameRunning = false;
+    finalScoreDisplay.textContent = `Final Score: ${score}`;
+    gameOverScreen.style.display = 'flex';
+  }
+
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'ArrowUp' && !isJumping) {
+      playerVelocityY = -10;
+      isJumping = true;
+    }
+  });
+
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'ArrowLeft') {
+      player.style.left = `${parseInt(player.style.left) - 5}px`;
+    } else if (event.key === 'ArrowRight') {
+      player.style.left = `${parseInt(player.style.left) + 5}px`;
+    }
+  });
+
+  // Initialize game elements
+  createPlatform();
+</script>
+</body>
+</html>

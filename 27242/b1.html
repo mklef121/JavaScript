@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Platform Jumper</title>
+    <style>
+        body { margin: 0; overflow: hidden; font-family: Arial, sans-serif; }
+        #gameCanvas { background: #87CEEB; display: block; margin: 0 auto; }
+        .screen {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            display: flex; justify-content: center; align-items: center;
+            background: rgba(0, 0, 0, 0.7); color: white; flex-direction: column;
+        }
+        #startScreen, #gameOverScreen { display: none; }
+        #scoreDisplay { position: absolute; top: 10px; left: 10px; color: white; }
+    </style>
+</head>
+<body>
+<div id="startScreen" class="screen">
+    <h1>Platform Jumper</h1>
+    <p>Use arrow keys to move and space to jump. Avoid obstacles and collect items!</p>
+    <button onclick="startGame()">Start Game</button>
+</div>
+<div id="gameOverScreen" class="screen">
+    <h2>Game Over</h2>
+    <p>Your Score: <span id="finalScore"></span></p>
+    <button onclick="location.reload()">Try Again</button>
+</div>
+<canvas id="gameCanvas"></canvas>
+<div id="scoreDisplay">Score: 0</div>
+
+<script>
+    // Game setup
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 800;
+    canvas.height = 400;
+    
+    // Game variables
+    let player, platforms, obstacles, collectibles, score, gameLoop, level, speed, gameState = 'start';
+
+    // Player object
+    const player = {
+        x: 50, y: 0, width: 30, height: 30, dy: 0, jumpPower: -7, isJumping: false
+    };
+
+    // Functions to create game elements, game loop, collision detection, etc., would go here
+
+    function startGame() {
+        gameState = 'playing';
+        document.getElementById('startScreen').style.display = 'none';
+        resetGame();
+        gameLoop = setInterval(updateGame, 20);
+    }
+
+    function resetGame() {
+        // Reset player, platforms, obstacles, etc.
+        score = 0;
+        level = 1;
+        speed = 1;
+        // Initialize game elements
+    }
+
+    function updateGame() {
+        // Update game state, check for collisions, draw everything, handle level increases
+        if (gameState === 'playing') {
+            updatePlayer();
+            updatePlatforms();
+            checkCollisions();
+            drawGame();
+        }
+    }
+
+    function drawGame() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Draw player, platforms, obstacles, collectibles, and score
+    }
+
+    function checkCollisions() {
+        // Implement collision logic here
+        if (collisionWithObstacle()) {
+            gameState = 'gameover';
+            clearInterval(gameLoop);
+            document.getElementById('gameOverScreen').style.display = 'flex';
+            document.getElementById('finalScore').textContent = score;
+        }
+    }
+
+    // Event listeners for controls
+    document.addEventListener('keydown', function(e) {
+        if (e.code === 'ArrowLeft') player.x -= 5;
+        if (e.code === 'ArrowRight') player.x += 5;
+        if (e.code === 'Space' && !player.isJumping) {
+            player.dy = player.jumpPower;
+            player.isJumping = true;
+        }
+    });
+
+    // Additional logic for gravity, platform generation, etc., would be needed
+</script>
+</body>
+</html>
