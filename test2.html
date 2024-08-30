@@ -3,14 +3,34 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>Platform Jumper Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Responsive Platform Jumper Game</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Press+Start+2P">
     <style>
         body {
             font-family: 'Press Start 2P', cursive;
             text-align: center;
             background-color: #f0f0f0;
+            margin: 0;
+            overflow: hidden;
+            /* Prevents scrolling on mobile */
+        }
+
+        #game-container {
+            position: relative;
+            width: 100vw;
+            /* Full viewport width */
+            height: 100vh;
+            /* Full viewport height */
+            max-width: 600px;
+            /* Optional for desktop */
+            max-height: 300px;
+            /* Optional for desktop */
+            margin: 0 auto;
+            /* Center on desktop */
+            overflow: hidden;
+            background-color: #87CEEB;
+            /* Light blue for sky */
         }
 
         .game-element {
@@ -20,35 +40,56 @@
         #player {
             bottom: 0;
             right: 0;
-            width: 30px;
-            height: 30px;
+            width: 5%;
+            /* Responsive size */
+            height: 10%;
+            /* Responsive size */
             background-color: blue;
         }
 
         .platform {
             background-color: green;
-            width: 100px;
-            height: 20px;
+            width: 15%;
+            /* Responsive width */
+            height: 2vh;
+            /* Responsive height */
         }
 
         .obstacle {
             background-color: red;
-            width: 30px;
-            height: 30px;
+            width: 5%;
+            /* Responsive width */
+            height: 10%;
+            /* Responsive height */
         }
 
         .item {
             background-color: yellow;
-            width: 20px;
-            height: 20px;
+            width: 3%;
+            /* Responsive width */
+            height: 6%;
+            /* Responsive height */
             border-radius: 50%;
         }
 
-        #score-display {
+        #score-display,
+        #high-score-display {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 16px;
+            font-size: 2vh;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 0.5vh;
+        }
+
+        #score-display {
+            top: 1vh;
+            right: 1vh;
+        }
+
+        #high-score-display {
+            top: 1vh;
+            left: 1vh;
+            display: none;
         }
 
         #start-screen,
@@ -70,103 +111,36 @@
             display: none;
         }
 
-        #game-container {
-            width: 90%;
-            /* Make it responsive by using percentage */
-            max-width: 600px;
-            /* Maximum width */
-            height: 300px;
-            /* Keep this fixed or make it responsive based on width */
-            margin: 40px auto;
-            position: relative;
-            overflow: hidden;
-            background: linear-gradient(to bottom, #87CEEB, #E0F6FF);
-            /* Gradient sky */
+        /* Enhancements for visual appeal */
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            font-family: 'Press Start 2P', cursive;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
         }
 
-        @media (max-width: 480px) {
-            #game-container {
-                width: 100%;
-                height: 250px;
-                /* Adjust height for smaller screens */
-            }
-
-            .game-element {
-                transform: scale(0.8);
-                /* Scale down elements on smaller screens */
-            }
+        button:hover {
+            background-color: #45a049;
         }
 
-        body {
-            background: url('path/to/background-image.jpg') no-repeat center center fixed;
-            background-size: cover;
-        }
-
-        .platform {
-            background: url('path/to/wood-texture.jpg');
-            /* Add texture to platforms */
-        }
-
-        #player {
-            background: url('path/to/player-sprite.png') no-repeat;
-            background-size: contain;
-            /* Ensure the sprite fits within the div */
-        }
-
-        @keyframes jump {
-            0% {
-                bottom: 0;
-            }
-
-            50% {
-                bottom: 100px;
-            }
-
-            100% {
-                bottom: 0;
-            }
-        }
-
-        #player {
-            transition: left 0.1s, right 0.1s;
-            /* Smooth movement */
-        }
-
-        #player.jump {
-            animation: jump 0.5s ease-out;
-        }
-
-        /* For obstacles or items */
-        .obstacle,
-        .item {
-            transition: right 0.5s linear;
-        }
-
-        .obstacle:hover,
-        .item:hover {
-            transform: scale(1.1);
-            /* Slightly enlarge on hover for interactive feel */
+        h1,
+        p {
+            text-shadow: 2px 2px 4px #000000;
         }
 
         #start-screen,
         #game-over-screen {
-            background: rgba(0, 0, 0, 0.75);
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            text-align: center;
         }
 
-        button {
-            padding: 10px 20px;
-            font-family: 'Press Start 2P', cursive;
-            background-color: #FFD700;
-            /* Gold color for buttons */
-            border: none;
-            cursor: pointer;
-            transition: transform 0.1s;
-        }
-
-        button:hover {
-            transform: scale(1.05);
+        #start-screen p,
+        #game-over-screen p {
+            font-size: 0.8em;
         }
     </style>
 </head>
@@ -430,11 +404,13 @@
         document.addEventListener('keydown', function (event) {
 
             if (event.key === 'ArrowUp') {
-                if (playerVelocityY > -60) {
-                    playerVelocityY = -60
+                let jumpHeight = -Math.min(gameContainer.offsetHeight * 0.15, 60); // Jump height is 15% of the screen height or 60px max
+                if (playerVelocityY > jumpHeight) {
+                    playerVelocityY = jumpHeight
                 }
                 isJumping = true;
             }
+
 
             if (event.key === 'ArrowLeft') {
                 player.style.left = `${parseInt(player.style.left) - 5}px`;
@@ -445,39 +421,6 @@
 
         // Initialize game elements
         createPlatform();
-
-        function adjustGameElements() {
-            const scale = gameContainer.offsetWidth / 600; // Assuming 600px is your base width
-            document.querySelectorAll('.game-element').forEach(el => {
-                const style = window.getComputedStyle(el);
-                const width = parseFloat(style.width) * scale;
-                const height = parseFloat(style.height) * scale;
-                el.style.transform = `scale(${scale})`;
-                el.style.transformOrigin = 'bottom right'; // If the element's position should remain anchored
-            });
-        }
-
-        window.addEventListener('resize', adjustGameElements);
-        adjustGameElements(); // Call on load
-
-        function addTouchControls() {
-            if ('ontouchstart' in window) {
-                document.getElementById('game-container').addEventListener('touchstart', function (e) {
-                    if (e.touches[0].clientX < window.innerWidth / 2) {
-                        // Left side of screen touched, move left
-                        player.style.left = `${parseInt(player.style.left) - 10}px`;
-                    } else {
-                        // Right side, move right or jump
-                        if (!isJumping) {
-                            isJumping = true;
-                            // Jump logic here
-                        }
-                    }
-                });
-            }
-        }
-
-        addTouchControls();
     </script>
 </body>
 
