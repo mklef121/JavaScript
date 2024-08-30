@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Planner</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; background: #f4f4f9; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; text-align: center; }
+        .form-group, .charts { margin: 20px 0; }
+        input[type="number"], input[type="text"] { width: calc(100% - 20px); padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 4px; }
+        button { background-color: #5cb85c; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #4cae4c; }
+        .charts { display: flex; justify-content: space-around; }
+        .chart { width: 30%; background: #fff; border: 1px solid #ddd; padding: 10px; border-radius: 4px; }
+        #totalBudget, #totalSpent { font-weight: bold; color: #2E86C1; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Budget Planner</h1>
+    <div class="form-group">
+        <label for="income">Monthly Income:</label>
+        <input type="number" id="income" placeholder="Enter your income" min="0">
+    </div>
+    
+    <div id="budgetItems"></div>
+    <button onclick="addBudgetItem()">Add Budget Item</button>
+    
+    <div class="form-group">
+        <button onclick="calculateBudget()">Calculate Budget</button>
+    </div>
+
+    <div>
+        <p>Total Budget: <span id="totalBudget">0</span></p>
+        <p>Total Spent: <span id="totalSpent">0</span></p>
+        <p>Remaining: <span id="remaining">0</span></p>
+    </div>
+
+    <div class="charts">
+        <div class="chart" id="pieChart"></div>
+        <div class="chart" id="barChart"></div>
+        <div class="chart" id="lineGraph"></div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let items = [];
+
+    function addBudgetItem() {
+        let div = document.createElement('div');
+        div.innerHTML = `
+            <input type="text" placeholder="Item Name" id="itemName">
+            <input type="number" placeholder="Budgeted Amount" id="budgetAmount">
+            <input type="number" placeholder="Spent Amount" id="spentAmount">
+        `;
+        document.getElementById('budgetItems').appendChild(div);
+    }
+
+    function calculateBudget() {
+        let income = parseFloat(document.getElementById('income').value);
+        let totalBudget = 0, totalSpent = 0;
+        items = [];
+        document.querySelectorAll('#budgetItems > div').forEach(div => {
+            let name = div.querySelector('#itemName').value;
+            let budget = parseFloat(div.querySelector('#budgetAmount').value) || 0;
+            let spent = parseFloat(div.querySelector('#spentAmount').value) || 0;
+            items.push({name, budget, spent});
+            totalBudget += budget;
+            totalSpent += spent;
+        });
+
+        document.getElementById('totalBudget').textContent = totalBudget.toFixed(2);
+        document.getElementById('totalSpent').textContent = totalSpent.toFixed(2);
+        document.getElementById('remaining').textContent = (income - totalSpent).toFixed(2);
+
+        drawCharts();
+    }
+
+    function drawCharts() {
+        let labels = items.map(i => i.name);
+        let budgetData = items.map(i => i.budget);
+        let spentData = items.map(i => i.spent);
+
+        // Pie Chart for Budget vs Spent
+        new Chart(document.getElementById('pieChart'), {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: [budgetData.reduce((a, b) => a + b, 0), spentData.reduce((a, b) => a + b, 0)],
+                    backgroundColor: ['#36A2EB', '#FF6384'],
+                    label: 'Budget vs Spent'
+                }]
+            },
+            options: { title: { display: true, text: 'Budget vs Actual Spending' }}
+        });
+
+        // Bar Chart for each item
+        new Chart(document.getElementById('barChart'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    { label: 'Budgeted', data: budgetData, backgroundColor: '#4BC0C0' },
+                    { label: 'Spent', data: spentData, backgroundColor: '#FF9F40' }
+                ]
+            },
+            options: { scales: { yAxes: [{ ticks: { beginAtZero: true } }] }}
+        });
+
+        // Line Graph for cumulative spending over time (simplified with items as time points)
+        new Chart(document.getElementById('lineGraph'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Cumulative Spending',
+                    data: spentData.map((sum => value => sum += value)(0)),
+                    borderColor: '#9966FF',
+                    fill: false
+                }]
+            }
+        });
+    }
+
+    // Initialize with one budget item
+    addBudgetItem();
+</script>
+
+</body>
+</html>

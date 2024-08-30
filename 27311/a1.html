@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budgeting App</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f7;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        input[type="number"], input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #5cb85c;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            opacity: 0.8;
+        }
+        .charts {
+            display: flex;
+            justify-content: space-around;
+        }
+        .chart-container {
+            width: 30%;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Monthly Budget Planner</h2>
+        <form id="budgetForm">
+            <label for="income">Monthly Income:</label>
+            <input type="number" id="income" placeholder="Enter your monthly income" required>
+            <div id="budgetItems">
+                <div>
+                    <label>Budget Item:</label>
+                    <input type="text" class="itemName" placeholder="Enter budget item">
+                    <label>Amount:</label>
+                    <input type="number" class="itemAmount" placeholder="Enter budget amount">
+                    <label>Spent:</label>
+                    <input type="number" class="itemSpent" placeholder="Enter amount spent">
+                </div>
+            </div>
+            <button type="button" onclick="addBudgetItem()">Add Item</button>
+            <button type="submit">Calculate & Visualize</button>
+        </form>
+        <div class="charts">
+            <div class="chart-container">
+                <canvas id="pieChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="barChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="lineChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let budgetItems = [];
+
+        function addBudgetItem() {
+            const budgetItemsDiv = document.getElementById('budgetItems');
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <label>Budget Item:</label>
+                <input type="text" class="itemName" placeholder="Enter budget item">
+                <label>Amount:</label>
+                <input type="number" class="itemAmount" placeholder="Enter budget amount">
+                <label>Spent:</label>
+                <input type="number" class="itemSpent" placeholder="Enter amount spent">
+            `;
+            budgetItemsDiv.appendChild(div);
+        }
+
+        document.getElementById('budgetForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const income = document.getElementById('income').value;
+            const elements = document.querySelectorAll('#budgetItems > div');
+            budgetItems = Array.from(elements).map((el) => {
+                return {
+                    name: el.querySelector('.itemName').value,
+                    budget: parseFloat(el.querySelector('.itemAmount').value),
+                    spent: parseFloat(el.querySelector('.itemSpent').value)
+                };
+            });
+
+            const ctxPie = document.getElementById('pieChart').getContext('2d');
+            const ctxBar = document.getElementById('barChart').getContext('2d');
+            const ctxLine = document.getElementById('lineChart').getContext('2d');
+
+            const pieChart = new Chart(ctxPie, {
+                type: 'pie',
+                data: {
+                    labels: budgetItems.map(item => item.name),
+                    datasets: [{
+                        label: 'Budget',
+                        data: budgetItems.map(item => item.budget),
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                        ],
+                        borderWidth: 1
+                    }]
+                }
+            });
+
+            const barChart = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: budgetItems.map(item => item.name),
+                    datasets: [{
+                        label: 'Budgeted vs Spent',
+                        data: budgetItems.map(item => [item.budget, item.spent]),
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 99, 132, 0.2)',
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 99, 132, 1)',
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Line chart would typically show trends over time, but for simplicity, we'll show budget allocation over items
+            const lineChart = new Chart(ctxLine, {
+                type: 'line',
+                data: {
+                    labels: budgetItems.map(item => item.name),
+                    datasets: [{
+                        label: 'Budget Allocation',
+                        data: budgetItems.map(item => item.budget),
+                        fill: false,
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                }
+            });
+        });
+    </script>
+</body>
+</html>

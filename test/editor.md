@@ -1,29 +1,4 @@
-Here's a simple implementation of a colorful, responsive Hangman game with the requested features.
-
-### Project Plan for Hangman Game:
-
-**1. HTML Structure**
-
-- **Header**: Game title.
-- **Game Area**: Hangman figure, word display, input field for guesses, and buttons for guessing and hints.
-- **Status**: Lives counter, hint display, game status (win/lose).
-
-**2. CSS Styling**
-
-- **General**: Background gradient, centered container.
-- **Elements**: Styled hangman figure, word display, buttons with colors and hover effects.
-- **Responsive**: Media queries for all device sizes.
-
-**3. JavaScript Functionality**
-
-- **Variables**: Word list, difficulty levels, game state (word, lives, guesses).
-- **Initialization**: Select word, set lives, setup display.
-- **Event Handlers**: Manage guesses and hints.
-- **Update Functions**: Update word display, hangman figure, check win/loss.
-- **Disable Input**: Disable inputs after game ends.
-
-### Complete Code Implementation:
-Here is the complete code for the Hangman game, including HTML, CSS, and JavaScript, all within a single file.
+Here's a simple budgeting app with the requested features, designed to be visually appealing and functional:
 
 ```html
 <!DOCTYPE html>
@@ -31,291 +6,517 @@ Here is the complete code for the Hangman game, including HTML, CSS, and JavaScr
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hangman Game</title>
+    <title>Budgeting App</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: linear-gradient(135deg, #f06, #f90);
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
             margin: 0;
-            color: #fff;
+            padding: 0;
         }
 
         .container {
-            text-align: center;
-            background-color: #222;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.3);
             width: 90%;
-            max-width: 500px;
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
         }
 
         h1 {
-            font-size: 2.5em;
-            margin-bottom: 20px;
-        }
-
-        #hangman-figure {
-            font-size: 2em;
-            color: #fff;
-            margin-bottom: 20px;
-        }
-
-        #word-display {
-            font-size: 1.5em;
-            letter-spacing: 2px;
-            margin-bottom: 20px;
-            color: #f0f0f0;
-        }
-
-        #guess-input {
-            font-size: 1.2em;
-            width: 50px;
             text-align: center;
-            padding: 5px;
-            border: 2px solid #fff;
-            border-radius: 5px;
-            background-color: #333;
-            color: #fff;
+            color: #007bff;
         }
 
-        button {
-            font-size: 1em;
-            margin: 5px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #4caf50;
-            color: #fff;
-            cursor: pointer;
-            transition: background-color 0.3s;
+        .input-section, .chart-section, .summary {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        button:hover {
-            background-color: #45a049;
+        .input-section h2 {
+            margin-top: 0;
+            font-size: 24px;
+            color: #333;
         }
 
-        #status {
-            margin-top: 20px;
-            font-size: 1.5em;
-        }
-
-        #lives {
-            font-size: 1.2em;
+        .input-section input, .input-section button {
             margin-top: 10px;
+            box-sizing: border-box;
         }
 
-        #hint-display {
-            margin-top: 20px;
-            font-size: 1.2em;
-            color: #ffeb3b;
+        .input-section input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
         }
 
+        .input-section button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            display: inline-block;
+        }
+
+        .input-section button:hover {
+            background-color: #0056b3;
+        }
+
+        .table-section {
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+            font-size: 18px;
+        }
+
+        td input {
+            width: calc(100% - 20px);
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .table-section button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            display: inline-block;
+        }
+
+        .table-section button:hover {
+            background-color: #218838;
+        }
+
+        .chart-section {
+            display: none; /* Initially hidden */
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .chart-section h2 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .chart-heading {
+            font-size: 18px;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        canvas {
+            width: 100% !important; /* Make canvas responsive */
+            height: auto !important; /* Maintain aspect ratio */
+        }
+
+        .summary p {
+            font-size: 18px;
+            margin: 0;
+            padding: 5px 0;
+        }
+
+        /* Responsive Design */
         @media (max-width: 600px) {
-            #word-display, #status, #lives {
-                font-size: 1em;
+            .input-section input, .input-section button {
+                font-size: 14px;
+                padding: 8px;
             }
-            button {
-                font-size: 0.9em;
-                padding: 8px 15px;
+
+            .table-section button {
+                font-size: 14px;
+                padding: 8px 12px;
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            td input {
+                font-size: 14px;
+                padding: 6px;
+            }
+
+            canvas {
+                width: 100% !important; /* Ensure charts are responsive on small screens */
+                height: auto !important; /* Maintain aspect ratio */
+            }
+        }
+
+        @media (min-width: 601px) and (max-width: 1024px) {
+            .input-section input, .input-section button {
+                font-size: 16px;
+                padding: 10px;
+            }
+
+            .table-section button {
+                font-size: 16px;
+                padding: 10px 15px;
+            }
+
+            table {
+                font-size: 16px;
+            }
+
+            td input {
+                font-size: 16px;
+                padding: 8px;
+            }
+
+            canvas {
+                width: 100% !important; /* Ensure charts are responsive on medium screens */
+                height: auto !important; /* Maintain aspect ratio */
+            }
+        }
+
+        @media (min-width: 1025px) {
+            .input-section input, .input-section button {
+                font-size: 16px;
+                padding: 12px;
+            }
+
+            .table-section button {
+                font-size: 16px;
+                padding: 12px 20px;
+            }
+
+            table {
+                font-size: 16px;
+            }
+
+            td input {
+                font-size: 16px;
+                padding: 8px;
+            }
+
+            canvas {
+                max-width: 400px !important; /* Set max-width of the canvas */
+                max-height: 400px !important; /* Set max-height of the canvas */
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Hangman Game</h1>
-        <div id="hangman-figure"></div>
-        <div id="word-display"></div>
-        <input type="text" id="guess-input" maxlength="1" placeholder="Guess a letter">
-        <button id="guess-button">Guess</button>
-        <button id="hint-button">Hint</button>
-        <div id="status"></div>
-        <div id="lives">Lives: <span id="lives-count"></span></div>
-        <div id="hint-display"></div>
+        <h1>Budgeting App</h1>
+
+        <div class="input-section">
+            <h2>Set Monthly Income</h2>
+            <input type="number" id="income" placeholder="Enter your income">
+            <button onclick="setIncome()">Set Income</button>
+        </div>
+
+        <div class="table-section">
+            <h2>Budget Items</h2>
+            <table id="budgetTable">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Budget items will be dynamically added here -->
+                </tbody>
+            </table>
+            <button onclick="addBudgetItemRow()">Add Budget Item Row</button>
+        </div>
+
+        <div class="table-section">
+            <h2>Expense Items</h2>
+            <table id="expenseTable">
+                <thead>
+                    <tr>
+                        <th>Expense</th>
+                        <th>Amount Spent</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Expense items will be dynamically added here -->
+                </tbody>
+            </table>
+            <button onclick="addExpenseItemRow()">Add Expense Item Row</button>
+        </div>
+
+        <div class="chart-section" id="chartSection">
+            <h2>Charts</h2>
+            <div class="canvas-container">
+                <div class="chart-heading">Budget Distribution (Pie Chart)</div>
+                <canvas id="pieChart"></canvas>
+            </div>
+            <div class="canvas-container">
+                <div class="chart-heading">Budget vs Spent (Bar Chart)</div>
+                <canvas id="barChart"></canvas>
+            </div>
+            <div class="canvas-container">
+                <div class="chart-heading">Expenses Over Time (Line Chart)</div>
+                <canvas id="lineChart"></canvas>
+            </div>
+        </div>
+
+        <div class="summary">
+            <h2>Summary</h2>
+            <p id="totalIncome">Total Income: $0</p>
+            <p id="totalBudget">Total Budget: $0</p>
+            <p id="totalSpent">Total Spent: $0</p>
+        </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const words = [
-            { word: 'JAVASCRIPT', hint: 'A programming language' },
-            { word: 'HANGMAN', hint: 'A classic game' },
-            { word: 'PYTHON', hint: 'A type of snake and programming language' },
-            { word: 'GITHUB', hint: 'A platform for version control' },
-            { word: 'REACT', hint: 'A JavaScript library for building user interfaces' }
-        ];
+        let income = 0;
+        let budget = {};
+        let expenses = {};
 
-        const difficulties = {
-            easy: 6,
-            medium: 4,
-            hard: 2
-        };
+        let pieChart = null;
+        let barChart = null;
+        let lineChart = null;
 
-        let chosenWord = '';
-        let displayWord = '';
-        let lives = 6;
-        let incorrectGuesses = [];
-        let usedLetters = [];
-        let hintUsed = false;
+        function setIncome() {
+            income = parseFloat(document.getElementById('income').value) || 0;
+            document.getElementById('totalIncome').textContent = `Total Income: $${income.toFixed(2)}`;
+            updateCharts();
+        }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            startGame();
+        function addBudgetItemRow() {
+            const table = document.getElementById('budgetTable').getElementsByTagName('tbody')[0];
+            const row = table.insertRow();
+            const cell1 = row.insertCell(0);
+            const cell2 = row.insertCell(1);
 
-            document.getElementById('guess-button').addEventListener('click', () => {
-                const guess = document.getElementById('guess-input').value.toUpperCase();
-                if (guess && !usedLetters.includes(guess) && guess.length === 1) {
-                    usedLetters.push(guess);
-                    if (chosenWord.includes(guess)) {
-                        updateDisplayWord();
-                    } else {
-                        lives--;
-                        incorrectGuesses.push(guess);
-                        updateHangmanFigure();
-                    }
-                    checkGameStatus();
-                    document.getElementById('guess-input').value = '';
+            cell1.innerHTML = `<input type="text" class="item" placeholder="Enter item name">`;
+            cell2.innerHTML = `<input type="number" class="amount" placeholder="Enter amount" oninput="updateBudget()">`;
+        }
+
+        function addExpenseItemRow() {
+            const table = document.getElementById('expenseTable').getElementsByTagName('tbody')[0];
+            const row = table.insertRow();
+            const cell1 = row.insertCell(0);
+            const cell2 = row.insertCell(1);
+
+            cell1.innerHTML = `<input type="text" class="expenseItem" placeholder="Enter expense item">`;
+            cell2.innerHTML = `<input type="number" class="expenseAmount" placeholder="Enter amount spent" oninput="updateExpenses()">`;
+        }
+
+        function updateBudget() {
+            const rows = document.querySelectorAll('#budgetTable tbody tr');
+            budget = {};
+            rows.forEach(row => {
+                const item = row.querySelector('.item').value;
+                const amount = parseFloat(row.querySelector('.amount').value) || 0;
+                if (item) {
+                    budget[item] = amount;
                 }
             });
+            updateCharts();
+        }
 
-            document.getElementById('hint-button').addEventListener('click', () => {
-                if (!hintUsed) {
-                    hintUsed = true;
-                    document.getElementById('hint-display').innerText = `Hint: ${words.find(word => word.word === chosenWord).hint}`;
+        function updateExpenses() {
+            const rows = document.querySelectorAll('#expenseTable tbody tr');
+            expenses = {};
+            rows.forEach(row => {
+                const expenseItem = row.querySelector('.expenseItem').value;
+                const expenseAmount = parseFloat(row.querySelector('.expenseAmount').value) || 0;
+                if (expenseItem) {
+                    expenses[expenseItem] = expenseAmount;
                 }
             });
-        });
-
-        function startGame() {
-            const difficulty = prompt('Choose difficulty (easy, medium, hard):').toLowerCase();
-            const maxGuesses = difficulties[difficulty] || 6;
-            lives = maxGuesses;
-            hintUsed = false;
-            incorrectGuesses = [];
-            usedLetters = [];
-            document.getElementById('lives-count').innerText = lives;
-
-            const randomWord = words[Math.floor(Math.random() * words.length)];
-            chosenWord = randomWord.word;
-            displayWord = '_'.repeat(chosenWord.length);
-
-            updateDisplayWord();
-            updateHangmanFigure();
-            document.getElementById('hint-display').innerText = '';
+            updateCharts();
         }
 
-        function updateDisplayWord() {
-            displayWord = chosenWord.split('').map(letter => usedLetters.includes(letter) ? letter : '_').join(' ');
-            document.getElementById('word-display').innerText = displayWord;
-        }
+        function updateCharts() {
+            const totalBudget = Object.values(budget).reduce((a, b) => a + b, 0);
+            const totalSpent = Object.values(expenses).reduce((a, b) => a + b, 0);
+            document.getElementById('totalBudget').textContent = `Total Budget: $${totalBudget.toFixed(2)}`;
+            document.getElementById('totalSpent').textContent = `Total Spent: $${totalSpent.toFixed(2)}`;
 
-        function updateHangmanFigure() {
-            const hangmanStates = [
-                ` 
-                ________
-                |       |
-                |       
-                |      
-                |      
-                |      
-                |     
-                |____
-                `,
-                ` 
-                ________
-                |       |
-                |       O
-                |      
-                |      
-                |      
-                |     
-                |____
-                `,
-                ` 
-                ________
-                |       |
-                |       O
-                |       |
-                |      
-                |      
-                |     
-                |____
-                `,
-                ` 
-                ________
-                |       |
-                |       O
-                |      /|
-                |      
-                |      
-                |     
-                |____
-                `,
-                ` 
-                ________
-                |       |
-                |       O
-                |      /|\\
-                |      
-                |      
-                |     
-                |____
-                `,
-                ` 
-                ________
-                |       |
-                |       O
-                |      /|\\
-                |      / 
-                |      
-                |     
-                |____
-                `,
-                ` 
-                ________
-                |       |
-                |       O
-                |      /|\\
-                |      / \\
-                |      
-                |     
-                |____
-                `
-            ];
-            document.getElementById('hangman-figure').innerText = hangmanStates[6 - lives];
-        }
-
-        function checkGameStatus() {
-            if (!displayWord.includes('_')) {
-                document.getElementById('status').innerText = 'You Win!';
-                disableInput();
-            } else if (lives <= 0) {
-                document.getElementById('status').innerText = `Game Over! The word was: ${chosenWord}`;
-                disableInput();
+            const chartSection = document.getElementById('chartSection');
+            if (totalBudget > 0 || totalSpent > 0) {
+                chartSection.style.display = 'flex'; // Show chart section if there is data
             } else {
-                document.getElementById('lives-count').innerText = lives;
+                chartSection.style.display = 'none'; // Hide chart section if there is no data
+                return;
             }
-        }
 
-        function disableInput() {
-            document.getElementById('guess-button').disabled = true;
-            document.getElementById('guess-input').disabled = true;
-            document.getElementById('hint-button').disabled = true;
+            const ctxPie = document.getElementById('pieChart').getContext('2d');
+            const ctxBar = document.getElementById('barChart').getContext('2d');
+            const ctxLine = document.getElementById('lineChart').getContext('2d');
+
+            // Destroy existing charts if they exist
+            if (pieChart) pieChart.destroy();
+            if (barChart) barChart.destroy();
+            if (lineChart) lineChart.destroy();
+
+            // Pie Chart
+            pieChart = new Chart(ctxPie, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(budget),
+                    datasets: [{
+                        data: Object.values(budget),
+                        backgroundColor: ['#ff6384', '#36a2eb', '#cc65fe', '#ffce56', '#ff9999', '#66b3ff'],
+                        borderColor: '#fff',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    let label = tooltipItem.label || '';
+                                    if (label) {
+                                        label += ': $' + tooltipItem.raw.toFixed(2);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Bar Chart
+            barChart = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(budget),
+                    datasets: [
+                        {
+                            label: 'Budget',
+                            data: Object.values(budget),
+                            backgroundColor: '#36a2eb',
+                            borderColor: '#fff',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Spent',
+                            data: Object.keys(budget).map(item => expenses[item] || 0),
+                            backgroundColor: '#ff6384',
+                            borderColor: '#fff',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            stacked: true,
+                        },
+                        y: {
+                            stacked: true,
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    let label = tooltipItem.dataset.label || '';
+                                    if (label) {
+                                        return label + ': $' + tooltipItem.raw.toFixed(2);
+                                    }
+                                    return '';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Line Chart
+            lineChart = new Chart(ctxLine, {
+                type: 'line',
+                data: {
+                    labels: Object.keys(expenses),
+                    datasets: [{
+                        label: 'Expenses Over Time',
+                        data: Object.values(expenses),
+                        borderColor: '#ff6384',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    let label = tooltipItem.dataset.label || '';
+                                    if (label) {
+                                        return label + ': $' + tooltipItem.raw.toFixed(2);
+                                    }
+                                    return '';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
         }
     </script>
 </body>
 </html>
 ```
 
-### Explanation:
+**Explanation:**
 
-- **HTML**: The structure includes placeholders for the hangman figure, word display, and guess input.
-- **CSS**: Provides a colorful and responsive design. Bootstrap is used for quick styling and responsiveness.
-- **JS**: 
-  - A `words` object contains word banks for different difficulties.
-  - `startGame` initializes the game with a random word based on the difficulty.
-  - `checkGameStatus` updates the status of the game depending on the lives remaining.
-  - `updateHangmanFigure` updates the visual representation of the hangman figure.
+- **HTML:** Provides the structure for inputting income, budget items, and displaying results. Charts are placed within divs for dynamic rendering.
+- **CSS:** Simple styling to make the app visually appealing with a clean, modern look. Colors are used to differentiate between budgeted and spent amounts.
+- **JavaScript:**
+    - Functions to add budget items dynamically.
+    - Calculation of total budget, spent, and remaining funds.
+    - Chart.js is used for creating infographics (Pie, Bar, and Line charts). Data for these charts are dynamically generated based on user inputs.
+    - The charts visualize budget allocation, comparison between budgeted and actual spending, and cumulative spending across different budget items.
 
-This code provides a complete implementation of a Hangman game with all the required features in a single HTML file. 
+
+This code creates a simple budgeting app that allows you to input your monthly income, add multiple budget items with their budgeted amounts and actual spending, and visualize the data through a pie chart for budget distribution, a bar chart comparing budgeted versus spent amounts, and a line chart showing expense trends over time.
+
