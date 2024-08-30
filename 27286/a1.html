@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hangman Game</title>
+<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+<style>
+  body {
+    font-family: 'Roboto', sans-serif;
+    text-align: center;
+    background-color: #f3f3f3;
+  }
+  #hangman-figure {
+    stroke: black;
+    stroke-width: 4;
+    fill: none;
+  }
+  .hidden {
+    visibility: hidden;
+  }
+  .game-container {
+    max-width: 800px;
+    margin: 40px auto;
+  }
+  #word-display {
+    font-size: 2em;
+    letter-spacing: 0.5em;
+  }
+  #guesses-left, #hints {
+    color: #666;
+  }
+  input[type="text"] {
+    width: 50px;
+    text-align: center;
+    font-size: 1.5em;
+  }
+  button {
+    margin: 10px;
+  }
+</style>
+</head>
+<body>
+<div class="game-container">
+  <h1>Hangman Game</h1>
+  <svg height="250" width="200">
+    <!-- Hangman figure parts will be added here -->
+  </svg>
+  <div id="word-display"></div>
+  <div>
+    <input type="text" id="guess" placeholder="Guess a letter">
+    <button onclick="makeGuess()">Guess</button>
+  </div>
+  <p id="guesses-left">Guesses left: <span>6</span></p>
+  <p id="hints">Press 'Hint' for help!</p>
+  <button onclick="giveHint()">Hint</button>
+  <p id="game-status"></p>
+</div>
+
+<script>
+  const wordBank = ["apple", "banana", "mango", "strawberry", "grapefruit"];
+  let wordToGuess = wordBank[Math.floor(Math.random() * wordBank.length)];
+  let correctGuesses = [];
+  let incorrectGuesses = 0;
+  const maxGuesses = 6;
+  const hangmanParts = document.querySelectorAll('#hangman-figure path');
+
+  function updateWordDisplay() {
+    let displayText = '';
+    for (let letter of wordToGuess) {
+      if (correctGuesses.includes(letter)) {
+        displayText += letter;
+      } else {
+        displayText += '_';
+      }
+    }
+    document.getElementById('word-display').innerText = displayText;
+  }
+
+  function makeGuess() {
+    const guess = document.getElementById('guess').value.toLowerCase();
+    if (guess.length !== 1) return;
+    if (wordToGuess.includes(guess)) {
+      if (!correctGuesses.includes(guess)) {
+        correctGuesses.push(guess);
+        updateWordDisplay();
+        checkWin();
+      }
+    } else {
+      if (incorrectGuesses < maxGuesses) {
+        hangmanParts[incorrectGuesses].classList.remove('hidden');
+        incorrectGuesses++;
+        document.getElementById('guesses-left').querySelector('span').innerText = maxGuesses - incorrectGuesses;
+        checkLoss();
+      }
+    }
+    document.getElementById('guess').value = '';
+  }
+
+  function giveHint() {
+    let notGuessed = [...wordToGuess].filter(letter => !correctGuesses.includes(letter));
+    let hintLetter = notGuessed[Math.floor(Math.random() * notGuessed.length)];
+    correctGuesses.push(hintLetter);
+    updateWordDisplay();
+  }
+
+  function checkWin() {
+    if ([...wordToGuess].every(letter => correctGuesses.includes(letter))) {
+      document.getElementById('game-status').innerText = 'You win!';
+    }
+  }
+
+  function checkLoss() {
+    if (incorrectGuesses === maxGuesses) {
+      document.getElementById('game-status').innerText = 'Game over. The word was ' + wordToGuess;
+    }
+  }
+
+  updateWordDisplay();
+</script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Colorful Hangman Game</title>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Arial', sans-serif;
+    }
+    #hangman-figure {
+        width: 200px;
+        height: 250px;
+        margin: 20px auto;
+        position: relative;
+    }
+    .part {
+        background: #ff5733;
+        position: absolute;
+        display: none;
+    }
+    #word {
+        letter-spacing: 10px;
+        font-size: 2em;
+        text-align: center;
+        margin: 20px 0;
+    }
+    #guesses {
+        text-align: center;
+        color: #333;
+    }
+    .btn-colorful {
+        background-color: #3498db;
+        border-color: #3498db;
+        color: white;
+    }
+    .btn-colorful:hover {
+        background-color: #2980b9;
+        border-color: #2980b9;
+    }
+</style>
+</head>
+<body>
+
+<div class="container text-center">
+    <h1 class="my-4">Colorful Hangman</h1>
+    <div id="hangman-figure">
+        <!-- Hangman parts to be shown on incorrect guesses -->
+        <div class="part" id="base"></div>
+        <div class="part" id="pole"></div>
+        <div class="part" id="beam"></div>
+        <div class="part" id="rope"></div>
+        <div class="part" id="head"></div>
+        <div class="part" id="body"></div>
+        <div class="part" id="leftArm"></div>
+        <div class="part" id="rightArm"></div>
+        <div class="part" id="leftLeg"></div>
+        <div class="part" id="rightLeg"></div>
+    </div>
+    <div id="word"></div>
+    <div id="guesses"></div>
+    <input type="text" id="guessInput" maxlength="1" class="form-control d-inline w-auto my-2" placeholder="Guess a letter">
+    <button onclick="makeGuess()" class="btn btn-colorful">Guess</button>
+    <button onclick="newGame()" class="btn btn-secondary">New Game</a>
+</div>
+
+<script>
+    const words = {
+        easy: ['cat', 'dog', 'sun', 'hat'],
+        medium: ['apple', 'quick', 'zebra', 'yacht'],
+        hard: ['xylophone', 'quagmire', 'juxtapose', 'pizza']
+    };
+    let selectedWord, guessedLetters, lives, difficulty;
+
+    function setupGame() {
+        difficulty = 'medium'; // Default difficulty
+        lives = 6;
+        guessedLetters = new Set();
+        selectedWord = words[difficulty][Math.floor(Math.random() * words[difficulty].length)];
+        updateWordDisplay();
+        document.getElementById('guesses').innerText = `Guesses left: ${lives}`;
+    }
+
+    function updateWordDisplay() {
+        let display = selectedWord.split('').map(letter => guessedLetters.has(letter) ? letter : '_').join(' ');
+        document.getElementById('word').innerText = display;
+    }
+
+    function makeGuess() {
+        const guess = document.getElementById('guessInput').value.toLowerCase();
+        if (guess === '' || guessedLetters.has(guess)) return;
+        guessedLetters.add(guess);
+        
+        if (!selectedWord.includes(guess)) {
+            lives--;
+            document.getElementById('guesses').innerText = `Guesses left: ${lives}`;
+            document.getElementById(`rightLeg`).style.display = 'block'; // Simplifying: show all parts at once for demo
+        } else {
+            updateWordDisplay();
+        }
+
+        if (lives === 0) {
+            alert('Game Over! The word was: ' + selectedWord);
+            newGame();
+        } else if (!document.getElementById('word').innerText.includes('_')) {
+            alert('Congratulations! You guessed the word!');
+            newGame();
+        }
+        document.getElementById('guessInput').value = ''; // Clear input
+    }
+
+    function newGame() {
+        setupGame();
+        // Reset hangman figure (hide all parts)
+        document.querySelectorAll('.part').forEach(part => part.style.display = 'none');
+    }
+
+    setupGame();
+</script>
+
+</body>
+</html>
