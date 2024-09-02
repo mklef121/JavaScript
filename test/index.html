@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -42,8 +41,7 @@
             background-color: #f9f9f9;
             white-space: pre-wrap;
             word-wrap: break-word;
-            overflow-wrap: break-word;
-            /* Ensure long words break correctly */
+            overflow-wrap: break-word; /* Ensure long words break correctly */
         }
 
         .text-input {
@@ -52,12 +50,9 @@
             font-size: 1em;
             border: 1px solid #ddd;
             border-radius: 5px;
-            box-sizing: border-box;
-            /* Ensure padding is included in width */
-            min-height: 100px;
-            /* Make it a bit taller */
-            resize: vertical;
-            /* Allow vertical resizing */
+            box-sizing: border-box; /* Ensure padding is included in width */
+            min-height: 100px; /* Make it a bit taller */
+            resize: vertical; /* Allow vertical resizing */
         }
 
         .controls {
@@ -70,8 +65,7 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            margin: 5px;
-            /* Adjust margin for better spacing */
+            margin: 5px; /* Adjust margin for better spacing */
             transition: background-color 0.3s, transform 0.2s;
         }
 
@@ -90,21 +84,70 @@
             color: white;
         }
 
+        button#diff-btn {
+            background-color: #2196F3;
+            color: white;
+        }
+
         button:hover:not(:disabled) {
             background-color: #555;
             color: #fff;
             transform: scale(1.05);
         }
 
-        .timer,
-        .errors,
-        .speed {
+        .timer, .errors, .speed {
             font-size: 1em;
             margin: 10px 0;
         }
+
+        #diff-container {
+            display: none;
+            text-align: left;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+            margin-top: 20px;
+        }
+
+        .diff-line {
+            display: flex;
+            justify-content: space-between;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-x: auto; /* Allow horizontal scrolling if needed */
+            margin: 0; /* Remove default margin */
+        }
+
+        .diff-line .add {
+            color: #2e6c2e;
+            font-weight: bold;
+        }
+
+        .diff-line .remove {
+            color: #d40808;
+            font-weight: bold;
+        }
+
+        #original-text,
+        #user-text {
+            width: calc(50% - 10px); /* Adjust width to account for spacing */
+            padding: 5px;
+        }
+
+        @media (max-width: 600px) {
+            .diff-line {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            #original-text,
+            #user-text {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
     </style>
 </head>
-
 <body>
     <div class="container">
         <h1>Typing Speed Test</h1>
@@ -114,35 +157,39 @@
             <div class="controls">
                 <button id="start-btn">Start</button>
                 <button id="reset-btn" disabled>Reset</button>
+                <button id="diff-btn" disabled>Diff</button>
             </div>
             <div id="timer" class="timer">Time: 0.00s</div>
             <div id="errors" class="errors">Errors: 0</div>
             <div id="speed" class="speed">Speed: 0 WPM</div>
-
+            <div id="diff-container">
+                <h2>Diff</h2>
+                <div id="diff" class="diff-line">
+                    <span id="original-text"></span>
+                    <span id="user-text"></span>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
         const texts = [
-            "The sun was shining brightly in the clear blue sky.",
-            "She ate a sandwich for lunch and drank a glass of juice.",
-            "The cat purrs contentedly on my lap.",
-            "The city is bustling with activity and energy.",
-            "He played soccer with his friends until it got dark.",
-            "The smell of freshly baked bread filled the air.",
-            "The sound of the waves crashing against the shore was soothing.",
-            "She loved reading books and learning new things.",
-            "The mountain peak was hidden in the mist.",
-            "He strummed a gentle melody on his guitar."
+            "The quick brown fox jumps over the lazy dog.",
+            "A journey of a thousand miles begins with a single step.",
+            "To be yourself in a world that is constantly trying to make you something else is the greatest accomplishment.",
+            "You miss 100% of the shots you don't take.",
+            "In three words I can sum up everything I've learned about life: it goes on."
         ];
 
         const startButton = document.getElementById('start-btn');
         const resetButton = document.getElementById('reset-btn');
+        const diffButton = document.getElementById('diff-btn');
         const textDisplay = document.getElementById('text-display');
         const textInput = document.getElementById('text-input');
         const timerDisplay = document.getElementById('timer');
         const errorsDisplay = document.getElementById('errors');
         const speedDisplay = document.getElementById('speed');
+        const diffContainer = document.getElementById('diff-container');
         const originalTextElement = document.getElementById('original-text');
         const userTextElement = document.getElementById('user-text');
 
@@ -163,6 +210,8 @@
             timerInterval = setInterval(updateTimer, 100);
             startButton.disabled = true;
             resetButton.disabled = false;
+            diffButton.disabled = false;
+            diffContainer.style.display = 'none'; // Hide diff initially
         }
 
         function resetGame() {
@@ -175,6 +224,8 @@
             textInput.value = ''; // Clear the input field
             startButton.disabled = false;
             resetButton.disabled = true;
+            diffButton.disabled = true;
+            diffContainer.style.display = 'none'; // Hide diff container
         }
 
         function updateTimer() {
@@ -187,7 +238,36 @@
             return ((words / time) * 60).toFixed(2);
         }
 
-        textInput.addEventListener('input', function () {
+        function generateDiff(original, input) {
+            const maxLength = Math.max(original.length, input.length);
+            let originalDiff = '';
+            let userDiff = '';
+
+            for (let i = 0; i < maxLength; i++) {
+                const origChar = original[i] || '';
+                const inputChar = input[i] || '';
+
+                if (origChar === inputChar) {
+                    originalDiff += origChar;
+                    userDiff += inputChar;
+                } else {
+                    if (origChar) originalDiff += `<span class="remove">${origChar}</span>`;
+                    if (inputChar) userDiff += `<span class="add">${inputChar}</span>`;
+                }
+            }
+
+            return { original: originalDiff, user: userDiff };
+        }
+
+        function showDiff() {
+            const userText = textInput.value;
+            const { original, user } = generateDiff(originalText, userText);
+            originalTextElement.innerHTML = original;
+            userTextElement.innerHTML = user;
+            diffContainer.style.display = 'block';
+        }
+
+        textInput.addEventListener('input', function() {
             const userText = textInput.value;
             const originalText = textDisplay.textContent;
 
@@ -203,6 +283,8 @@
                 speedDisplay.textContent = `Speed: ${wpm} WPM`;
                 textInput.disabled = true;
                 resetButton.disabled = false;
+                diffButton.disabled = false;
+                showDiff(); // Show diff when typing is complete
             } else {
                 errors = originalText.slice(0, userText.length).split('').filter((char, idx) => char !== userText[idx]).length;
                 errorsDisplay.textContent = `Errors: ${errors}`;
@@ -211,7 +293,7 @@
 
         startButton.addEventListener('click', startGame);
         resetButton.addEventListener('click', resetGame);
+        diffButton.addEventListener('click', showDiff);
     </script>
 </body>
-
 </html>
