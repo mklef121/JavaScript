@@ -5,25 +5,76 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Female Health Tracker</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 <style>
-  body { 
-    font-family: Arial, sans-serif; 
+  body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+  }
+
+  #calendar {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 0 10px;
+  }
+
+  #inputs {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin: 20px auto;
+    max-width: 400px;
+  }
+
+  #inputs label {
+    display: block;
+    margin: 10px 0 5px;
+    color: #333;
+  }
+
+  #inputs input {
+    width: 100%;
     padding: 10px;
-    max-width: 1000px;
-    margin: auto;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
   }
-  .fc-event.period { background-color: red; border-color: red; }
-  .fc-event.ovulation { background-color: blue; border-color: blue; }
-  .fc-day-today { background-color: yellow !important; }
-  #inputs { 
-    display: flex; 
-    flex-wrap: wrap; 
-    gap: 10px; 
-    margin-bottom: 20px;
+
+  #inputs button {
+    width: 100%;
+    padding: 10px;
+    background-color: #5cb85c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
   }
-  #inputs > * { 
-    flex: 1 1 calc(33% - 10px); 
-    min-width: 150px; 
+
+  #inputs button:hover {
+    background-color: #4cae4c;
+  }
+
+  .fc-event.period {
+    background-color: #ff6b6b;
+    border-color: #ff6b6b;
+  }
+
+  .fc-event.ovulation {
+    background-color: #4a90e2;
+    border-color: #4a90e2;
+  }
+
+  .fc-day-today {
+    background-color: #ffff99 !important;
+  }
+
+  .toast {
+    opacity: 1 !important;
   }
 </style>
 </head>
@@ -31,49 +82,70 @@
 
 <div id="calendar"></div>
 
-<form id="inputs">
-  <div>
-    <label>Last Period Start Date:</label>
-    <input type="date" id="startDate" required>
-  </div>
-  <div>
-    <label>Average Period Duration (days):</label>
-    <input type="number" id="duration" min="1" max="10" value="5" required>
-  </div>
-  <div>
-    <label>Average Cycle Length (days):</label>
-    <input type="number" id="cycleLength" min="21" max="35" value="28" required>
-  </div>
-  <button type="submit">Update Calendar</button>
-</form>
+<div id="inputs">
+  <label for="startDate">Last Period Start Date:</label>
+  <input type="date" id="startDate">
+  <label for="duration">Average Period Duration (days):</label>
+  <input type="number" id="duration" min="1" value="5">
+  <button id="updateCalendar">Update Calendar</button>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  const calendarEl = document.getElementById('calendar');
-  const inputsForm = document.getElementById('inputs');
-  let calendar;
+  let calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+    initialView: 'dayGridMonth',
+    events: []
+  });
+  calendar.render();
 
-  function predictEvents(startDate, duration, cycleLength) {
+  const updateButton = document.getElementById('updateCalendar');
+  const startDateInput = document.getElementById('startDate');
+  const durationInput = document.getElementById('duration');
+
+  function showToast(message, type = 'success') {
+    toastr.options = {
+      "closeButton": true,
+      "debug": false,
+      "newestOnTop": false,
+      "progressBar": true,
+      "positionClass": "toast-top-right",
+      "preventDuplicates": false,
+      "onclick": null,
+      "showDuration": "300",
+      "hideDuration": "1000",
+      "timeOut": "5000",
+      "extendedTimeOut": "1000",
+      "showEasing": "swing",
+      "hideEasing": "linear",
+      "showMethod": "fadeIn",
+      "hideMethod": "fadeOut"
+    };
+    toastr[type](message);
+  }
+
+  function predictEvents(startDate, duration) {
     const events = [];
     for (let i = 0; i < 12; i++) {
-      const periodStart = new Date(startDate);
-      periodStart.setDate(periodStart.getDate() + i * cycleLength);
-      const periodEnd = new Date(periodStart);
-      periodEnd.setDate(periodEnd.getDate() + duration);
+      let periodStart = new Date(startDate);
+      periodStart.setMonth(periodStart.getMonth() + i);
+      let periodEnd = new Date(periodStart);
+      periodEnd.setDate(periodEnd.getDate() + duration - 1);
 
-      // Ovulation approximately 14 days before the next period
-      const ovulationStart = new Date(periodStart);
-      ovulationStart.setDate(ovulationStart.getDate() - (cycleLength - 14));
-      const ovulationEnd = new Date(ovulationStart);
-      ovulationEnd.setDate(ovulationEnd.getDate() + 2);
+      // Simple ovulation prediction (not accurate for all cycles)
+      let ovulationStart = new Date(periodStart);
+      ovulationStart.setDate(ovulationStart.getDate() - 15); // ovulation roughly 14 days before period
+      let ovulationEnd = new Date(ovulationStart);
+      ovulationEnd.setDate(ovulationEnd.getDate() + 1);
 
       events.push({
         title: 'Period',
         start: periodStart,
         end: periodEnd,
         className: 'period'
-      }, {
+      });
+      events.push({
         title: 'Ovulation',
         start: ovulationStart,
         end: ovulationEnd,
@@ -83,53 +155,17 @@ document.addEventListener('DOMContentLoaded', function() {
     return events;
   }
 
-  function validateInputs() {
-    const startDate = document.getElementById('startDate').value;
-    const duration = document.getElementById('duration').value;
-    const cycleLength = document.getElementById('cycleLength').value;
-
-    if (!startDate) {
-      alert('Please enter a valid start date.');
-      return false;
+  updateButton.addEventListener('click', function() {
+    if (!startDateInput.value || !durationInput.value) {
+      showToast('Please fill in all fields.', 'error');
+      return;
     }
 
-    if (duration < 1 || duration > 10) {
-      alert('Period duration should be between 1 and 10 days.');
-      return false;
-    }
-
-    if (cycleLength < 21 || cycleLength > 35) {
-      alert('Cycle length should be between 21 and 35 days.');
-      return false;
-    }
-
-    return true;
-  }
-
-  inputsForm.addEventListener('submit', function(event) {
-    event.preventDefault();
-    if (!validateInputs()) return;
-
-    const startDate = new Date(document.getElementById('startDate').value);
-    const duration = parseInt(document.getElementById('duration').value, 10);
-    const cycleLength = parseInt(document.getElementById('cycleLength').value, 10);
-
-    const events = predictEvents(startDate, duration, cycleLength);
-    if (calendar) {
-      calendar.removeAllEvents();
-      calendar.addEventSource(events);
-    }
+    let events = predictEvents(new Date(startDateInput.value), parseInt(durationInput.value, 10));
+    calendar.removeAllEvents();
+    calendar.addEventSource(events);
+    showToast('Calendar updated successfully!', 'success');
   });
-
-  calendar = new FullCalendar.Calendar(calendarEl, {
-    initialView: 'dayGridMonth',
-    events: [],
-    eventDidMount: function(info) {
-      info.el.title = info.event.title;
-    }
-  });
-
-  calendar.render();
 });
 </script>
 
