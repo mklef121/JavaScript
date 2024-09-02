@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Speed Test</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .game-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+        #textDisplay {
+            margin-bottom: 1rem;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 4px;
+            user-select: none;
+        }
+        #userInput {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 1rem;
+        }
+        .feedback {
+            color: red;
+            display: none;
+        }
+        .result {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <h2>Typing Speed Test</h2>
+    <div id="textDisplay"></div>
+    <textarea id="userInput" placeholder="Start typing here..."></textarea>
+    <p>Time: <span id="timer">60</span>s</p>
+    <button id="startBtn" class="btn btn-primary">Start</button>
+    <button id="resetBtn" class="btn btn-secondary" style="display:none;">Reset</button>
+    <p class="feedback" id="errorFeedback">Errors will show up here.</p>
+    <p class="result" id="result"></p>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+$(document).ready(function() {
+    const textDisplay = $("#textDisplay");
+    const userInput = $("#userInput");
+    const startBtn = $("#startBtn");
+    const resetBtn = $("#resetBtn");
+    const timerElement = $("#timer");
+    const errorFeedback = $("#errorFeedback");
+    const resultDisplay = $("#result");
+    
+    let timer = 60, intervalId, textToType = "", correctChars = 0;
+
+    const sentences = [
+        "The quick brown fox jumps over the lazy dog.",
+        "Programming is not just about what you know; it's about what you can figure out.",
+        "The future belongs to those who believe in the beauty of their dreams."
+    ];
+
+    function startGame() {
+        textToType = sentences[Math.floor(Math.random() * sentences.length)];
+        textDisplay.text(textToType);
+        userInput.val('').prop('disabled', false).focus();
+        startBtn.hide();
+        resetBtn.show();
+        startTimer();
+        correctChars = 0;
+        errorFeedback.hide();
+    }
+
+    function startTimer() {
+        timer = 60;
+        timerElement.text(timer);
+        intervalId = setInterval(() => {
+            timer--;
+            timerElement.text(timer);
+            if (timer <= 0) endGame();
+        }, 1000);
+    }
+
+    function endGame() {
+        clearInterval(intervalId);
+        userInput.prop('disabled', true);
+        const typedText = userInput.val();
+        const wpm = Math.round((correctChars / 5 - (textToType.length - correctChars)) / 1); // 1 minute test
+        resultDisplay.text(`Your typing speed: ${wpm > 0 ? wpm : 0} WPM`);
+    }
+
+    userInput.on('input', function() {
+        const inputChars = this.value.split('');
+        const textChars = textToType.split('');
+        correctChars = 0;
+        errorFeedback.hide();
+        for(let i = 0; i < inputChars.length; i++) {
+            if(inputChars[i] === textChars[i]) {
+                correctChars++;
+            } else {
+                errorFeedback.text('Error at position: ' + (i + 1)).show();
+                break;
+            }
+        }
+    });
+
+    startBtn.on('click', startGame);
+    resetBtn.on('click', function() {
+        clearInterval(intervalId);
+        startBtn.show();
+        resetBtn.hide();
+        userInput.prop('disabled', true);
+        resultDisplay.text('');
+        timerElement.text('60');
+    });
+});
+</script>
+
+</body>
+</html>
