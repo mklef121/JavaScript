@@ -3,314 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Space Invaders Game</title>
+    <title>Informal Economy Report - Nigeria</title>
     <style>
         body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
             margin: 0;
             padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: auto;
             overflow: hidden;
-            background-color: #000;
         }
-        canvas {
-            display: block;
-            background-color: #000;
-        }
-        .game-over, .win-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
+        header {
+            background: #333;
             color: #fff;
-            font-size: 2rem; /* Responsive font size */
-            font-family: 'Press Start 2P', cursive;
-            text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.8);
-            border: 5px solid #f00;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.7);
-            display: none;
+            padding-top: 30px;
+            min-height: 70px;
+            border-bottom: #fff 3px solid;
             text-align: center;
         }
-        .game-over button, .win-screen button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 1.5rem; /* Responsive button size */
-            color: #fff;
-            background-color: #f00;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
+        header h1 {
+            margin: 0;
         }
-        .game-over button:hover, .win-screen button:hover {
-            background-color: #d00;
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            margin-top: 0;
+        }
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .chart-text {
+            text-align: center;
+            margin: 20px 0;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <canvas id="gameCanvas"></canvas>
-    <div id="gameOver" class="game-over">
-        <div>Game Over</div>
-        <button id="restartButton">Restart</button>
+
+<header>
+    <div class="container">
+        <h1>Informal Economy Report - Nigeria</h1>
     </div>
-    <div id="winScreen" class="win-screen">
-        <div>You Win!</div>
-        <button id="restartButtonWin">Restart</button>
+</header>
+
+<div class="container">
+    <div class="section">
+        <h2>Overview of MSMEs in Nigeria</h2>
+        <p>Nigeria is home to approximately 40 million micro, small, and medium enterprises (MSMEs), with nearly 90% operating within the informal economy. This sector, often referred to as the shadow economy, consists of businesses that are generally untaxed and unregistered.</p>
     </div>
 
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const gameOverScreen = document.getElementById('gameOver');
-        const winScreen = document.getElementById('winScreen');
-        const restartButton = document.getElementById('restartButton');
-        const restartButtonWin = document.getElementById('restartButtonWin');
+    <div class="section">
+        <h2>Age Distribution in the Informal Economy</h2>
+        <div class="chart-container">
+            <canvas id="ageDistributionChart"></canvas>
+        </div>
+        <div class="chart-text">
+            Age distribution of the informal economy workforce, highlighting the predominance of younger individuals.
+        </div>
+    </div>
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
+    <div class="section">
+        <h2>Gender Representation</h2>
+        <div class="chart-container">
+            <canvas id="genderChart"></canvas>
+        </div>
+        <div class="chart-text">
+            Gender distribution within the informal economy, showcasing women's significant but minority presence.
+        </div>
+    </div>
 
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
+    <div class="section">
+        <h2>Regional Distribution</h2>
+        <div class="chart-container">
+            <canvas id="regionalDistributionChart"></canvas>
+        </div>
+        <div class="chart-text">
+            Distribution of the informal economy across various regions of Nigeria.
+        </div>
+    </div>
 
-        // Game settings
-        const spaceshipWidth = 60;
-        const spaceshipHeight = 40;
-        const laserWidth = 5;
-        const laserHeight = 20;
-        const alienWidth = 40;
-        const alienHeight = 30;
-        const alienRows = 5;
-        const alienCols = 8;
+    <div class="section">
+        <h2>Key Industries in the Informal Economy</h2>
+        <div class="chart-container">
+            <canvas id="industryDistributionChart"></canvas>
+        </div>
+        <div class="chart-text">
+            Breakdown of different industries within the informal economy and their contributions.
+        </div>
+    </div>
+</div>
 
-        let spaceshipX, spaceshipY;
-        let spaceshipSpeed = 7; // Increased speed
-        let spaceshipVerticalSpeed = 7; // Increased vertical speed
-
-        let lasers;
-        const laserSpeed = 7;
-
-        let aliens;
-        let alienSpeed = 3; // Increased speed
-        let alienDirection = 1; // 1 for right, -1 for left
-
-        let score;
-        let gameOver;
-        let win;
-        let level;
-
-        function initializeGame() {
-            spaceshipX = canvas.width / 2 - spaceshipWidth / 2;
-            spaceshipY = canvas.height - spaceshipHeight - 10; // Adjust for vertical movement
-            lasers = [];
-            aliens = [];
-            alienDirection = 1;
-            score = 0;
-            gameOver = false;
-            win = false;
-            level = 1;
-
-            spawnAliens();
-
-            gameOverScreen.style.display = 'none';
-            winScreen.style.display = 'none';
-            gameLoop();
-        }
-
-        function spawnAliens() {
-            // Create aliens
-            for (let row = 0; row < alienRows; row++) {
-                aliens[row] = [];
-                for (let col = 0; col < alienCols; col++) {
-                    aliens[row][col] = {
-                        x: col * (alienWidth + 10) + 30,
-                        y: row * (alienHeight + 10) + 30,
-                        width: alienWidth,
-                        height: alienHeight,
-                        alive: true
-                    };
-                }
-            }
-        }
-
-        function resetGame() {
-            initializeGame();
-        }
-
-        restartButton.addEventListener('click', resetGame);
-        restartButtonWin.addEventListener('click', resetGame);
-
-        document.addEventListener('keydown', (e) => {
-            if (e.code === 'ArrowLeft' && spaceshipX > 0) {
-                spaceshipX -= spaceshipSpeed;
-            } else if (e.code === 'ArrowRight' && spaceshipX < canvas.width - spaceshipWidth) {
-                spaceshipX += spaceshipSpeed;
-            } else if (e.code === 'ArrowUp' && spaceshipY > 0) {
-                spaceshipY -= spaceshipVerticalSpeed;
-            } else if (e.code === 'ArrowDown' && spaceshipY < canvas.height - spaceshipHeight) {
-                spaceshipY += spaceshipVerticalSpeed;
-            } else if (e.code === 'Space') {
-                if (!gameOver && !win) {
-                    lasers.push({ x: spaceshipX + spaceshipWidth / 2 - laserWidth / 2, y: spaceshipY - laserHeight, width: laserWidth, height: laserHeight });
-                }
-            }
-        });
-
-        function drawSpaceship() {
-            ctx.save();
-            ctx.translate(spaceshipX + spaceshipWidth / 2, spaceshipY + spaceshipHeight / 2);
-            ctx.rotate(Math.PI); // Rotate the spaceship to face up
-
-            ctx.fillStyle = '#0f0'; // Dark green for spaceship body
-            ctx.beginPath();
-            ctx.moveTo(-spaceshipWidth / 2, spaceshipHeight / 2); // Bottom left
-            ctx.lineTo(spaceshipWidth / 2, spaceshipHeight / 2);  // Bottom right
-            ctx.lineTo(0, -spaceshipHeight / 2); // Top center
-            ctx.closePath();
-            ctx.fill();
-
-            // Draw details on the spaceship
-            ctx.fillStyle = '#0a0'; // Slightly different green for details
-            ctx.beginPath();
-            ctx.moveTo(-spaceshipWidth / 4, spaceshipHeight / 4);
-            ctx.lineTo(spaceshipWidth / 4, spaceshipHeight / 4);
-            ctx.lineTo(0, -spaceshipHeight / 4);
-            ctx.closePath();
-            ctx.fill();
-
-            ctx.restore();
-        }
-
-        function drawLaser(laser) {
-            ctx.fillStyle = '#f00'; // Bright red for lasers
-            ctx.fillRect(laser.x, laser.y, laser.width, laser.height);
-        }
-
-        function drawAliens() {
-            ctx.fillStyle = '#f00'; // Bright red for aliens
-            aliens.forEach(row => {
-                row.forEach(alien => {
-                    if (alien.alive) {
-                        ctx.fillRect(alien.x, alien.y, alien.width, alien.height);
+<script>
+    // Age Distribution Chart
+    var ctxAge = document.getElementById('ageDistributionChart').getContext('2d');
+    new Chart(ctxAge, {
+        type: 'bar',
+        data: {
+            labels: ['25-34', '35-44', '18-24', '45-54', '55-64', '65+'],
+            datasets: [{
+                label: 'Percentage (%)',
+                data: [43.1, 28.9, 14.4, 10, 2.8, 0.6],
+                backgroundColor: '#007bff',
+                borderColor: '#0056b3',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) { return value + '%' }
                     }
-                });
-            });
-        }
-
-        function updateLasers() {
-            lasers.forEach((laser, index) => {
-                laser.y -= laserSpeed;
-                if (laser.y < 0) {
-                    lasers.splice(index, 1);
                 }
-            });
-        }
-
-        function updateAliens() {
-            let atEdge = false;
-            aliens.forEach(row => {
-                row.forEach(alien => {
-                    if (alien.alive) {
-                        alien.x += alienSpeed * alienDirection;
-                        if (alien.x < 0 || alien.x + alien.width > canvas.width) {
-                            atEdge = true;
-                        }
-                    }
-                });
-            });
-
-            if (atEdge) {
-                alienDirection *= -1;
-                aliens.forEach(row => {
-                    row.forEach(alien => {
-                        if (alien.alive) {
-                            alien.y += alienHeight;
-                        }
-                    });
-                });
+            },
+            plugins: {
+                legend: { display: false }
             }
         }
+    });
 
-        function checkCollisions() {
-            lasers.forEach((laser, laserIndex) => {
-                aliens.forEach(row => {
-                    row.forEach((alien, alienIndex) => {
-                        if (alien.alive &&
-                            laser.x < alien.x + alien.width &&
-                            laser.x + laser.width > alien.x &&
-                            laser.y < alien.y + alien.height &&
-                            laser.y + laser.height > alien.y) {
-                            
-                            alien.alive = false;
-                            lasers.splice(laserIndex, 1);
-                            score += 10;
-                        }
-                    });
-                });
-            });
-
-            let aliensLeft = false;
-            aliens.forEach(row => {
-                row.forEach(alien => {
-                    if (alien.alive) {
-                        aliensLeft = true;
-                        if (alien.y + alien.height > spaceshipY) {
-                            gameOver = true;
-                        }
-                    }
-                });
-            });
-
-            if (!aliensLeft) {
-                level++;
-                if (level > 2) { // Change the number if you want more levels
-                    win = true;
-                } else {
-                    alienSpeed++;
-                    spawnAliens();
+    // Gender Distribution Chart
+    var ctxGender = document.getElementById('genderChart').getContext('2d');
+    new Chart(ctxGender, {
+        type: 'doughnut',
+        data: {
+            labels: ['Women', 'Men'],
+            datasets: [{
+                label: 'Gender Distribution',
+                data: [37.1, 62.9],
+                backgroundColor: ['#ff6384', '#36a2eb'],
+                borderColor: ['#ff6384', '#36a2eb'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
                 }
             }
+        }
+    });
 
-            if (gameOver) {
-                gameOverScreen.style.display = 'flex'; // Show the game over screen
+    // Regional Distribution Chart
+    var ctxRegion = document.getElementById('regionalDistributionChart').getContext('2d');
+    new Chart(ctxRegion, {
+        type: 'polarArea',
+        data: {
+            labels: ['South-West', 'North-Central', 'North-East', 'North-West', 'South-East', 'South-South'],
+            datasets: [{
+                label: 'Regional Contribution (%)',
+                data: [30, 17, 6, 12, 12, 20],
+                backgroundColor: ['#ffce56', '#ff9f40', '#ff6384', '#36a2eb', '#4bc0c0', '#9966ff'],
+                borderColor: '#fff',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' }
             }
+        }
+    });
 
-            if (win) {
-                winScreen.style.display = 'flex'; // Show the win screen
+    // Industry Distribution Chart
+    var ctxIndustry = document.getElementById('industryDistributionChart').getContext('2d');
+    new Chart(ctxIndustry, {
+        type: 'radar',
+        data: {
+            labels: ['Retail & General Trade', 'Food & Drinks', 'Oil & Gas', 'Health Care', 'Fashion and Beauty', 'Beauty and Personal Care', 'Agriculture', 'Construction', 'Education', 'Arts & Creative', 'Casual Use', 'Professional Services', 'Others'],
+            datasets: [{
+                label: 'Industry Share (%)',
+                data: [24, 13.4, 2.7, 2.8, 8.1, 6.9, 6.2, 4.3, 4.1, 2.9, 3, 4, 11],
+                backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                borderColor: '#007bff',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: { position: 'bottom' }
             }
         }
+    });
+</script>
 
-        function drawScore() {
-            ctx.fillStyle = '#fff'; // White color for score
-            ctx.font = '24px Arial';
-            ctx.fillText(`Score: ${score}`, 10, 30);
-        }
-
-        function gameLoop() {
-            if (gameOver || win) return;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            drawSpaceship();
-            drawAliens();
-            lasers.forEach(drawLaser);
-            drawScore();
-
-            updateLasers();
-            updateAliens();
-            checkCollisions();
-
-            requestAnimationFrame(gameLoop);
-        }
-
-        initializeGame();
-    </script>
 </body>
 </html>

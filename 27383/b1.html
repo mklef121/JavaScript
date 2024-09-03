@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nigeria's Informal Economy Report</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; background: #f4f4f4; color: #333; }
+        .container { max-width: 1000px; margin: 20px auto; padding: 20px; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1, h2 { color: #2c3e50; }
+        .chart-container { margin: 20px 0; }
+        .info-box { background: #ecf0f1; padding: 15px; border-left: 5px solid #3498db; margin: 10px 0; }
+        #ageDistribution, #genderDistribution, #regionalDistribution, #industryDistribution { width: 100%; height: 400px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Nigeria's Informal Economy Insights</h1>
+    
+    <!-- Age Distribution -->
+    <div class="info-box">
+        <h2>Age Distribution in the Informal Sector</h2>
+        <p>Over half of the workforce in Nigeria's informal economy is under 34 years old.</p>
+    </div>
+    <div id="ageDistribution" class="chart-container"></div>
+
+    <!-- Gender Distribution -->
+    <div class="info-box">
+        <h2>Gender Participation</h2>
+        <p>Women constitute 37.1% of the informal sector, highlighting significant but unequal participation.</p>
+    </div>
+    <div id="genderDistribution" class="chart-container"></div>
+
+    <!-- Regional Distribution -->
+    <div class="info-box">
+        <h2>Regional Contribution</h2>
+        <p>The South-West leads with 30% of the informal economy activities.</p>
+    </div>
+    <div id="regionalDistribution" class="chart-container"></div>
+
+    <!-- Industry Distribution -->
+    <div class="info-box">
+        <h2>Industry Focus</h2>
+        <p>Retail and General Trade dominate, representing 24% of the sector.</p>
+    </div>
+    <div id="industryDistribution" class="chart-container"></div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script>
+    // Age Distribution - Using a horizontal bar chart for better readability
+    new Chart(document.getElementById('ageDistribution'), {
+        type: 'bar',
+        data: {
+            labels: ['18-24', '25-34', '35-44', '45-54', '55-64', '65+'],
+            datasets: [{
+                label: 'Percentage',
+                data: [14.4, 43.1, 28.9, 10, 2.8, 0.6],
+                backgroundColor: 'rgba(54, 162, 235, 0.6)'
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            scales: { x: { beginAtZero: true } }
+        }
+    });
+
+    // Gender Distribution - Pie Chart
+    new Chart(document.getElementById('genderDistribution'), {
+        type: 'pie',
+        data: {
+            labels: ['Men', 'Women'],
+            datasets: [{
+                data: [62.9, 37.1],
+                backgroundColor: ['#36A2EB', '#FF6384']
+            }]
+        }
+    });
+
+    // Regional Distribution - Using D3 for a custom map or bar representation
+    const regionalData = [
+        {region: 'South-West', value: 30},
+        {region: 'North-Central', value: 17},
+        // ... other regions
+    ];
+    // Here you would use D3 to create either a stylized map or a bar chart
+
+    // Industry Distribution - Radar Chart for multi-dimensional data
+    new Chart(document.getElementById('industryDistribution'), {
+        type: 'radar',
+        data: {
+            labels: ['Retail', 'Food & Drinks', 'Oil & Gas', 'Healthcare', 'Fashion', 'Agriculture', 'Construction', 'Education', 'Arts'],
+            datasets: [{
+                label: 'Industry Share',
+                data: [24, 13.4, 2.7, 2.8, 8.1, 6.2, 4.3, 4.1, 2.9],
+                fill: true,
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgb(255, 99, 132)',
+                pointBackgroundColor: 'rgb(255, 99, 132)',
+            }]
+        }
+    });
+</script>
+
+</body>
+</html>
