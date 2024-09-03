@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Space Invaders</title>
+<style>
+  canvas {
+    display: block;
+    margin: auto;
+    border: 1px solid black;
+    background-color: #000;
+  }
+</style>
+</head>
+<body>
+<canvas id="gameCanvas" width="480" height="320"></canvas>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+  $(document).ready(function() {
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const shipSize = { width: 50, height: 30 };
+    const alienSize = { width: 30, height: 30 };
+    const laserSpeed = 5;
+    const alienSpeed = 1;
+    let shipPosition = { x: canvas.width / 2, y: canvas.height - shipSize.height * 2 };
+    let aliens = [];
+    let lasers = [];
+    let score = 0;
+    let gameOver = false;
+    let direction = 1;
+
+    function createAliens() {
+      for (let y = 0; y < 3; y++) {
+        for (let x = 0; x < 6; x++) {
+          aliens.push({ x: x * (alienSize.width + 10) + 50, y: y * (alienSize.height + 10) + 50, alive: true });
+        }
+      }
+    }
+
+    function drawShip() {
+      ctx.fillStyle = 'white';
+      ctx.fillRect(shipPosition.x, shipPosition.y, shipSize.width, shipSize.height);
+    }
+
+    function drawAliens() {
+      ctx.fillStyle = 'green';
+      aliens.forEach(alien => {
+        if (alien.alive) {
+          ctx.fillRect(alien.x, alien.y, alienSize.width, alienSize.height);
+        }
+      });
+    }
+
+    function drawLasers() {
+      ctx.fillStyle = 'red';
+      lasers.forEach((laser, index) => {
+        ctx.fillRect(laser.x, laser.y, 2, 10);
+        laser.y -= laserSpeed;
+        if (laser.y < 0) {
+          lasers.splice(index, 1);
+        }
+      });
+    }
+
+    function checkCollisions() {
+      lasers.forEach((laser, laserIndex) => {
+        aliens.forEach((alien, alienIndex) => {
+          if (alien.alive &&
+              laser.x < alien.x + alienSize.width &&
+              laser.x + 2 > alien.x &&
+              laser.y < alien.y + alienSize.height &&
+              laser.y + 10 > alien.y) {
+            aliens[alienIndex].alive = false;
+            lasers.splice(laserIndex, 1);
+            score++;
+          }
+        });
+      });
+    }
+
+    function moveAliens() {
+      const edge = aliens.some(alien => alien.x + alienSpeed > canvas.width - alienSize.width || alien.x + alienSpeed < 0);
+      if (edge) {
+        direction *= -1;
+        aliens.forEach(alien => {
+          alien.y += alienSize.height;
+        });
+      }
+      aliens.forEach(alien => {
+        alien.x += alienSpeed * direction;
+      });
+    }
+
+    function gameLoop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawShip();
+      drawLasers();
+      drawAliens();
+      checkCollisions();
+      moveAliens();
+
+      if (aliens.some(alien => alien.y > shipPosition.y)) {
+        gameOver = true;
+      }
+
+      if (gameOver) {
+        ctx.fillStyle = 'white';
+        ctx.font = '48px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('Game Over! Score: ' + score, canvas.width / 2, canvas.height / 2);
+      } else {
+        requestAnimationFrame(gameLoop);
+      }
+    }
+
+    $(document).keydown(function(e) {
+      if (e.key === 'ArrowLeft') {
+        shipPosition.x -= 10;
+      }
+      if (e.key === 'ArrowRight') {
+        shipPosition.x += 10;
+      }
+      if (e.key === ' ' && !gameOver) {
+        lasers.push({ x: shipPosition.x + shipSize.width / 2, y: shipPosition.y });
+      }
+      shipPosition.x = Math.max(0, Math.min(shipPosition.x, canvas.width - shipSize.width));
+    });
+
+    createAliens();
+    gameLoop();
+  });
+</script>
+</body>
+</html>

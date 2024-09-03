@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Space Invaders</title>
+<style>
+    body { margin: 0; background: #000; display: flex; justify-content: center; }
+    #gameCanvas { background: #000; border: 1px solid #fff; }
+</style>
+</head>
+<body>
+<canvas id="gameCanvas"></canvas>
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = 800;
+canvas.height = 600;
+
+const keys = {};
+
+// Game objects
+const player = {
+    x: canvas.width / 2,
+    y: canvas.height - 30,
+    width: 50,
+    height: 20,
+    speed: 5,
+    dx: 0
+};
+
+const lasers = [];
+const aliens = [];
+const alienRows = 5, alienColumns = 10;
+const alienWidth = 40, alienHeight = 20;
+let alienDirection = 1;
+let gameOver = false;
+let score = 0;
+
+// Setup aliens
+for(let c=0; c<alienColumns; c++) {
+    for(let r=0; r<alienRows; r++) {
+        aliens.push({
+            x: c*(alienWidth+10),
+            y: r*(alienHeight+10),
+            width: alienWidth,
+            height: alienHeight,
+            alive: true
+        });
+    }
+}
+
+function drawPlayer() {
+    ctx.fillStyle = 'green';
+    ctx.fillRect(player.x, player.y, player.width, player.height);
+}
+
+function drawLasers() {
+    ctx.fillStyle = 'red';
+    lasers.forEach((laser, i) => {
+        ctx.fillRect(laser.x, laser.y, 2, 10);
+        laser.y -= 5;
+        if (laser.y < 0) lasers.splice(i, 1);
+    });
+}
+
+function drawAliens() {
+    ctx.fillStyle = 'white';
+    aliens.forEach(alien => {
+        if(alien.alive) ctx.fillRect(alien.x, alien.y, alien.width, alien.height);
+    });
+}
+
+function moveAliens() {
+    let edge = aliens.some(alien => alien.x + alienWidth >= canvas.width || alien.x <= 0);
+    if (edge) alienDirection = -alienDirection;
+
+    aliens.forEach(alien => {
+        alien.x += 5 * alienDirection;
+        if (Math.random() < 0.001 && alien.alive) {
+            // Simple alien shooting logic
+            lasers.push({x: alien.x + alienWidth / 2, y: alien.y + alienHeight});
+        }
+    });
+}
+
+function detectCollisions() {
+    lasers.forEach((laser, laserIndex) => {
+        aliens.forEach((alien, alienIndex) => {
+            if (alien.alive && 
+                laser.x < alien.x + alien.width &&
+                laser.x + 2 > alien.x &&
+                laser.y < alien.y + alien.height &&
+                laser.y + 10 > alien.y) {
+                aliens[alienIndex].alive = false;
+                lasers.splice(laserIndex, 1);
+                score += 10;
+            }
+        });
+    });
+}
+
+function gameLoop() {
+    if (gameOver) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Player movement
+    if (keys['ArrowLeft'] && player.x > 0) player.x -= player.speed;
+    if (keys['ArrowRight'] && player.x < canvas.width - player.width) player.x += player.speed;
+
+    drawPlayer();
+    moveAliens();
+    drawAliens();
+    drawLasers();
+    detectCollisions();
+
+    // Check for game over
+    if (aliens.some(alien => alien.y + alienHeight >= player.y && alien.alive)) {
+        gameOver = true;
+        ctx.fillStyle = 'white';
+        ctx.font = '40px Arial';
+        ctx.fillText('Game Over', canvas.width / 2 - 100, canvas.height / 2);
+        ctx.fillText(`Score: ${score}`, canvas.width / 2 - 100, canvas.height / 2 + 50);
+    }
+
+    ctx.fillStyle = 'yellow';
+    ctx.font = '20px Arial';
+    ctx.fillText('Score: ' + score, 10, 20);
+
+    requestAnimationFrame(gameLoop);
+}
+
+// Event listeners for controls
+document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' && !gameOver) lasers.push({x: player.x + player.width/2, y: player.y});
+    keys[e.code] = true;
+});
+
+document.addEventListener('keyup', (e) => {
+    keys[e.code] = false;
+});
+
+// Start game
+gameLoop();
+</script>
+</body>
+</html>
