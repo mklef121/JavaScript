@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nigeria GDP Report Q4 2023</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; background-color: #f4f4f9; margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: auto; }
+        .report-header { text-align: center; color: #333; }
+        .summary, .charts { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .chart-container { width: 100%; height: 300px; margin: 20px 0; }
+        @media (min-width: 768px) {
+            .charts { display: flex; justify-content: space-between; }
+            .chart-container { width: 48%; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="report-header">Nigeria GDP Report Summary - Q4 2023</h1>
+    <div class="summary">
+        <p>Nigeria's GDP grew by 3.46% in Q4 2023, with the Services sector leading at 3.98% growth. Despite a slight decrease from the previous year, the overall annual growth for 2023 was 2.74%. The oil sector saw significant improvement with a 12.11% real growth year-on-year, while the non-oil sector grew by 3.07%.</p>
+    </div>
+    <div class="charts">
+        <div class="chart-container">
+            <canvas id="gdpGrowthChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="sectorContribution"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctxGrowth = document.getElementById('gdpGrowthChart').getContext('2d');
+    const ctxSector = document.getElementById('sectorContribution').getContext('2d');
+
+    new Chart(ctxGrowth, {
+        type: 'line',
+        data: {
+            labels: ['Q1 2022', 'Q2 2022', 'Q3 2022', 'Q4 2022', 'Q1 2023', 'Q2 2023', 'Q3 2023', 'Q4 2023'],
+            datasets: [{
+                label: 'Quarterly GDP Growth (%)',
+                data: [3.10, 3.20, 3.30, 3.52, 2.40, 2.45, 2.54, 3.46],
+                borderColor: 'rgba(75, 192, 192, 1)',
+                fill: false
+            }]
+        },
+        options: { responsive: true, title: { display: true, text: 'GDP Growth Over Quarters' }}
+    });
+
+    new Chart(ctxSector, {
+        type: 'pie',
+        data: {
+            labels: ['Services', 'Industry', 'Agriculture', 'Oil'],
+            datasets: [{
+                data: [56.55, 25.00, 18.45, 4.70],
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0']
+            }]
+        },
+        options: { responsive: true, title: { display: true, text: 'Sector Contribution to GDP Q4 2023 (%)' }}
+    });
+</script>
+</body>
+</html>

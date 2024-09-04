@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nigeria GDP Report Q4 2023</title>
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background: #f4f4f9;
+        margin: 0;
+        padding: 20px;
+        color: #333;
+    }
+    .container {
+        max-width: 1000px;
+        margin: auto;
+        background: white;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        border-radius: 8px;
+    }
+    h1 {
+        color: #2c3e50;
+        text-align: center;
+    }
+    .summary {
+        background: #ecf0f1;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-left: 5px solid #3498db;
+    }
+    .charts {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+    }
+    .chart-container {
+        width: 45%;
+        min-width: 300px;
+        margin: 10px;
+    }
+    @media (max-width: 768px) {
+        .chart-container { width: 100%; }
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Nigeria GDP Report Q4 2023</h1>
+    <div class="summary">
+        <p>Nigeria's GDP grew by 3.46% in Q4 2023, a slight decrease from 3.52% in Q4 2022 but an increase from 2.54% in Q3 2023. The Services sector was the main driver, growing by 3.98% and contributing 56.55% to GDP. The Agriculture sector saw a modest growth of 2.10%, while Industry improved significantly to 3.86% from -0.94%. Oil production increased to 1.55 mbpd, with the sector growing by 12.11% in real terms. However, the non-oil sector, which grew by 3.07%, remains the backbone of the economy, contributing 95.30% to GDP.</p>
+    </div>
+    <div class="charts">
+        <div class="chart-container">
+            <canvas id="gdpGrowthChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="sectorContributionChart"></canvas>
+        </div>
+        <div class="chart-container" style="width:95%;">
+            <canvas id="oilProductionChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        // GDP Growth Chart
+        new Chart(document.getElementById('gdpGrowthChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Q4 2022', 'Q3 2023', 'Q4 2023'],
+                datasets: [{
+                    label: 'GDP Growth Rate (%)',
+                    data: [3.52, 2.54, 3.46],
+                    backgroundColor: ['#3498db', '#e74c3c', '#2ecc71'],
+                    borderColor: 'rgba(0,0,0,0.1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Growth Rate (%)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Sector Contribution Chart
+        new Chart(document.getElementById('sectorContributionChart'), {
+            type: 'pie',
+            data: {
+                labels: ['Services', 'Industry', 'Agriculture', 'Oil'],
+                datasets: [{
+                    data: [56.55, 30.00, 9.75, 4.70], // Example percentages, adjust as per actual data
+                    backgroundColor: ['#3498db', '#e74c3c', '#2ecc71', '#f1c40f'],
+                }]
+            }
+        });
+
+        // Oil Production Chart
+        new Chart(document.getElementById('oilProductionChart'), {
+            type: 'line',
+            data: {
+                labels: ['Q4 2022', 'Q3 2023', 'Q4 2023'],
+                datasets: [{
+                    label: 'Oil Production (mbpd)',
+                    data: [1.34, 1.45, 1.55],
+                    borderColor: '#9b59b6',
+                    fill: false,
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Million Barrels per Day'
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
