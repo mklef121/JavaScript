@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astronomy Enthusiast Hub</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fullcalendar/core/main.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid/main.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #000; color: #fff; }
+        .navbar { background: #000; }
+        .card { background: #1a1a1a; }
+        #skyMap, #calendar, #articles { margin: 20px 0; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark">
+  <a class="navbar-brand" href="#">StarGazer's Hub</a>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div id="skyMap" class="col-md-12">
+            <div id="stellarium-web"></div>
+        </div>
+        <div id="calendar" class="col-md-6">
+            <div id="eventCalendar"></div>
+        </div>
+        <div id="articles" class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Educational Articles</h5>
+                    <ul id="articleList" class="list-group">
+                        <!-- Articles will be dynamically added here -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core/main.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid/main.min.js"></script>
+<script src="https://cdn.stellarium.org/web/stellarium.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Stellarium Web Map
+        const stellarium = new StellariumWeb({
+            target: "stellarium-web",
+            serverUrl: "https://stellarium-web.org/api",
+        });
+
+        // FullCalendar for events
+        var calendarEl = document.getElementById('eventCalendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            plugins: ['dayGrid'],
+            events: [
+                { title: 'Meteor Shower', date: '2023-10-21' },
+                { title: 'Solar Eclipse', date: '2023-10-14' }
+                // More events can be added here or fetched dynamically
+            ]
+        });
+        calendar.render();
+
+        // Mock articles
+        const articles = [
+            {title: 'Understanding Black Holes', link: '#'},
+            {title: 'The Life Cycle of Stars', link: '#'}
+        ];
+        articles.forEach(article => {
+            let li = document.createElement('li');
+            li.className = 'list-group-item';
+            li.innerHTML = `<a href="${article.link}">${article.title}</a>`;
+            document.getElementById('articleList').appendChild(li);
+        });
+    });
+</script>
+
+</body>
+</html>
