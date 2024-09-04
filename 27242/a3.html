@@ -1,16 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>Platform Jumper Game</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Press+Start+2P">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Responsive Platform Jumper</title>
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
     <style>
         body {
             font-family: 'Press Start 2P', cursive;
             text-align: center;
             background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #game-container {
+            position: relative;
+            width: 90vw;
+            height: 50vh;
+            max-width: 600px;
+            max-height: 300px;
+            border: 3px solid #000;
+            background-color: #87CEEB;
+            overflow: hidden;
         }
 
         .game-element {
@@ -22,174 +39,115 @@
             right: 0;
             width: 30px;
             height: 30px;
-            background-color: blue;
+            background-color: #4169E1;
         }
 
         .platform {
-            background-color: green;
+            background-color: #228B22;
             width: 100px;
             height: 20px;
         }
 
         .obstacle {
-            background-color: red;
-            width: 30px;
-            height: 30px;
+            background-color: #DC143C;
+            width: 20px;
+            height: 20px;
         }
 
         .item {
-            background-color: yellow;
-            width: 20px;
-            height: 20px;
+            background-color: #FFD700;
+            width: 15px;
+            height: 15px;
             border-radius: 50%;
         }
 
-        #score-display {
+        #score-display, #high-score-display {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 16px;
+            font-size: 12px;
+            color: #FFF;
+            text-shadow: 2px 2px 0 #000;
         }
 
-        #start-screen,
-        #game-over-screen {
+        #score-display {
+            top: 10px;
+            right: 10px;
+        }
+
+        #high-score-display {
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 5px;
+            display: none;
+        }
+
+        .screen {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            color: white;
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
         }
 
-        #game-over-screen {
+        #start-screen, #game-over-screen {
             display: none;
         }
 
-        #game-container {
-            width: 90%;
-            /* Make it responsive by using percentage */
-            max-width: 600px;
-            /* Maximum width */
-            height: 300px;
-            /* Keep this fixed or make it responsive based on width */
-            margin: 40px auto;
-            position: relative;
-            overflow: hidden;
-            background: linear-gradient(to bottom, #87CEEB, #E0F6FF);
-            /* Gradient sky */
-        }
-
-        @media (max-width: 480px) {
-            #game-container {
-                width: 100%;
-                height: 250px;
-                /* Adjust height for smaller screens */
-            }
-
-            .game-element {
-                transform: scale(0.8);
-                /* Scale down elements on smaller screens */
-            }
-        }
-
-        body {
-            background: url('path/to/background-image.jpg') no-repeat center center fixed;
-            background-size: cover;
-        }
-
-        .platform {
-            background: url('path/to/wood-texture.jpg');
-            /* Add texture to platforms */
-        }
-
-        #player {
-            background: url('path/to/player-sprite.png') no-repeat;
-            background-size: contain;
-            /* Ensure the sprite fits within the div */
-        }
-
-        @keyframes jump {
-            0% {
-                bottom: 0;
-            }
-
-            50% {
-                bottom: 100px;
-            }
-
-            100% {
-                bottom: 0;
-            }
-        }
-
-        #player {
-            transition: left 0.1s, right 0.1s;
-            /* Smooth movement */
-        }
-
-        #player.jump {
-            animation: jump 0.5s ease-out;
-        }
-
-        /* For obstacles or items */
-        .obstacle,
-        .item {
-            transition: right 0.5s linear;
-        }
-
-        .obstacle:hover,
-        .item:hover {
-            transform: scale(1.1);
-            /* Slightly enlarge on hover for interactive feel */
-        }
-
-        #start-screen,
-        #game-over-screen {
-            background: rgba(0, 0, 0, 0.75);
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-        }
-
         button {
-            padding: 10px 20px;
-            font-family: 'Press Start 2P', cursive;
-            background-color: #FFD700;
-            /* Gold color for buttons */
+            background-color: #4CAF50; /* Green background */
             border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
             cursor: pointer;
-            transition: transform 0.1s;
+            transition: background-color 0.3s;
+            font-family: 'Press Start 2P', cursive;
         }
 
         button:hover {
-            transform: scale(1.05);
+            background-color: #45a049;
+        }
+
+        @media (max-width: 600px) {
+            #game-container {
+                width: 100vw;
+                height: 80vh;
+            }
         }
     </style>
 </head>
-
 <body>
-    <div id="game-container">
-        <div id="player" class="game-element"></div>
-        <div id="score-display">Score: 0</div>
-        <div id="start-screen">
-            <h1>Welcome to Platform Jumper!</h1>
-            <p>Use arrow keys to move and jump.</p>
-            <p>Avoid the red obstacles and collect yellow items for points.</p>
-            <button onclick="startGame()">Start Game</button>
-        </div>
-        <div id="game-over-screen">
-            <h1>Game Over!</h1>
-            <p id="final-score"></p>
-            <button onclick="location.reload()">Restart Game</button>
-        </div>
-    </div>
 
-    <script>
-        const gameContainer = document.getElementById('game-container');
+<div id="game-container">
+    <div id="player" class="game-element"></div>
+    <div id="score-display">Score: 0</div>
+    <div id="high-score-display"></div>
+    <div id="start-screen" class="screen">
+        <h1>Platform Jumper</h1>
+        <p>Jump with ↑, move with ← →</p>
+        <p>Collect yellow items, avoid red obstacles!</p>
+        <button onclick="startGame()">Start Game</button>
+    </div>
+    <div id="game-over-screen" class="screen">
+        <h1>Game Over</h1>
+        <p id="final-score"></p>
+        <button onclick="location.reload()">Restart Game</button>
+    </div>
+</div>
+
+<script>
+    // Game logic JavaScript here
+    const gameContainer = document.getElementById('game-container');
         const player = document.getElementById('player');
         const scoreDisplay = document.getElementById('score-display');
         const startScreen = document.getElementById('start-screen');
@@ -428,6 +386,7 @@
 
 
         document.addEventListener('keydown', function (event) {
+            // if (event.key === 'ArrowUp' && !isJumping) {
 
             if (event.key === 'ArrowUp') {
                 if (playerVelocityY > -60) {
@@ -445,40 +404,9 @@
 
         // Initialize game elements
         createPlatform();
+    // Start the game with the start screen visible
+    startScreen.style.display = 'flex';
+</script>
 
-        function adjustGameElements() {
-            const scale = gameContainer.offsetWidth / 600; // Assuming 600px is your base width
-            document.querySelectorAll('.game-element').forEach(el => {
-                const style = window.getComputedStyle(el);
-                const width = parseFloat(style.width) * scale;
-                const height = parseFloat(style.height) * scale;
-                el.style.transform = `scale(${scale})`;
-                el.style.transformOrigin = 'bottom right'; // If the element's position should remain anchored
-            });
-        }
-
-        window.addEventListener('resize', adjustGameElements);
-        adjustGameElements(); // Call on load
-
-        function addTouchControls() {
-            if ('ontouchstart' in window) {
-                document.getElementById('game-container').addEventListener('touchstart', function (e) {
-                    if (e.touches[0].clientX < window.innerWidth / 2) {
-                        // Left side of screen touched, move left
-                        player.style.left = `${parseInt(player.style.left) - 10}px`;
-                    } else {
-                        // Right side, move right or jump
-                        if (!isJumping) {
-                            isJumping = true;
-                            // Jump logic here
-                        }
-                    }
-                });
-            }
-        }
-
-        addTouchControls();
-    </script>
 </body>
-
 </html>

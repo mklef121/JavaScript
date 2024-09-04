@@ -3,31 +3,22 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Responsive Platform Jumper Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Jumper Game</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Press+Start+2P">
     <style>
         body {
             font-family: 'Press Start 2P', cursive;
             text-align: center;
             background-color: #f0f0f0;
-            margin: 0;
-            overflow: hidden;
-            /* Prevents scrolling on mobile */
         }
 
         #game-container {
             position: relative;
-            width: 100vw;
-            /* Full viewport width */
-            height: 100vh;
-            /* Full viewport height */
-            max-width: 600px;
-            /* Optional for desktop */
-            max-height: 300px;
-            /* Optional for desktop */
-            margin: 0 auto;
-            /* Center on desktop */
+            width: 600px;
+            height: 300px;
+            border: 1px solid black;
+            margin: 40px auto;
             overflow: hidden;
             background-color: #87CEEB;
             /* Light blue for sky */
@@ -40,56 +31,35 @@
         #player {
             bottom: 0;
             right: 0;
-            width: 5%;
-            /* Responsive size */
-            height: 10%;
-            /* Responsive size */
+            width: 30px;
+            height: 30px;
             background-color: blue;
         }
 
         .platform {
             background-color: green;
-            width: 15%;
-            /* Responsive width */
-            height: 2vh;
-            /* Responsive height */
+            width: 100px;
+            height: 20px;
         }
 
         .obstacle {
             background-color: red;
-            width: 5%;
-            /* Responsive width */
-            height: 10%;
-            /* Responsive height */
+            width: 30px;
+            height: 30px;
         }
 
         .item {
             background-color: yellow;
-            width: 3%;
-            /* Responsive width */
-            height: 6%;
-            /* Responsive height */
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
         }
 
-        #score-display,
-        #high-score-display {
-            position: absolute;
-            font-size: 2vh;
-            color: white;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 0.5vh;
-        }
-
         #score-display {
-            top: 1vh;
-            right: 1vh;
-        }
-
-        #high-score-display {
-            top: 1vh;
-            left: 1vh;
-            display: none;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 16px;
         }
 
         #start-screen,
@@ -109,38 +79,6 @@
 
         #game-over-screen {
             display: none;
-        }
-
-        /* Enhancements for visual appeal */
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            font-family: 'Press Start 2P', cursive;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        h1,
-        p {
-            text-shadow: 2px 2px 4px #000000;
-        }
-
-        #start-screen,
-        #game-over-screen {
-            text-align: center;
-        }
-
-        #start-screen p,
-        #game-over-screen p {
-            font-size: 0.8em;
         }
     </style>
 </head>
@@ -404,13 +342,11 @@
         document.addEventListener('keydown', function (event) {
 
             if (event.key === 'ArrowUp') {
-                let jumpHeight = -Math.min(gameContainer.offsetHeight * 0.15, 60); // Jump height is 15% of the screen height or 60px max
-                if (playerVelocityY > jumpHeight) {
-                    playerVelocityY = jumpHeight
+                if (playerVelocityY > -60) {
+                    playerVelocityY = -60
                 }
                 isJumping = true;
             }
-
 
             if (event.key === 'ArrowLeft') {
                 player.style.left = `${parseInt(player.style.left) - 5}px`;
