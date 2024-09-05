@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historical Curiosity Widget</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Arial', sans-serif; background: #f4f4f9; }
+        .widget-container { max-width: 1200px; margin: auto; padding: 20px; }
+        .card { margin: 10px 0; border: none; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .card-body { background: #ffffff; color: #333; }
+        .btn-refresh { background: #ff4500; color: white; }
+        .btn-refresh:hover { background: #ff6347; }
+        .figure-card { cursor: pointer; }
+        .modal-content { background: #fff; color: #000; }
+        .quiz-option { margin: 10px 0; padding: 10px; border: 1px solid #ddd; cursor: pointer; }
+        .quiz-option:hover { background: #e9ecef; }
+    </style>
+</head>
+<body>
+
+<div class="widget-container">
+    <h2>Historical Curiosity</h2>
+    
+    <!-- On This Day Section -->
+    <div id="onThisDay" class="card">
+        <div class="card-body">
+            <h5 class="card-title">On This Day</h5>
+            <p id="eventText">Loading event...</p>
+            <button class="btn btn-refresh" onclick="refreshEvent()">Refresh</button>
+        </div>
+    </div>
+
+    <!-- Famous Figures Section -->
+    <div id="famousFigures" class="mt-4">
+        <h5>Famous Figures</h5>
+        <div id="figuresContainer" class="row"></div>
+        <nav aria-label="Page navigation">
+            <ul class="pagination" id="figuresPagination"></ul>
+        </nav>
+    </div>
+
+    <!-- Historical Quiz Section -->
+    <div id="historicalQuiz" class="mt-4">
+        <h5>Historical Quiz</h5>
+        <div id="quizQuestion"></div>
+        <div id="quizOptions"></div>
+        <div id="quizScore" style="display: none;">Score: <span id="score">0</span></div>
+    </div>
+</div>
+
+<script>
+    // Simplified data for demonstration
+    const historicalEvents = [
+        {date: "April 15", event: "Titanic sinks in 1912."},
+        {date: "July 20", event: "Apollo 11 Moon landing in 1969."},
+        // Add more events here...
+    ];
+
+    const figures = [
+        {name: "Cleopatra", image: "cleopatra.jpg", summary: "The last pharaoh of Ancient Egypt.", bio: "Cleopatra VII Philopator was known for her intelligence, charisma, and political astuteness."},
+        {name: "Albert Einstein", image: "einstein.jpg", summary: "Theoretical physicist who developed the theory of relativity.", bio: "Einstein's work is also known for its influence on the philosophy of science."},
+        // Add more figures here...
+    ];
+
+    let currentPage = 1;
+    const figuresPerPage = 10;
+    const totalPages = 5;
+
+    function refreshEvent() {
+        const randomEvent = historicalEvents[Math.floor(Math.random() * historicalEvents.length)];
+        document.getElementById('eventText').textContent = randomEvent.event;
+    }
+
+    function displayFigures(page) {
+        const start = (page - 1) * figuresPerPage;
+        const end = start + figuresPerPage;
+        const figuresToShow = figures.slice(start, end);
+        let html = '';
+        figuresToShow.forEach(figure => {
+            html += `
+            <div class="col-md-4 figure-card" data-bs-toggle="modal" data-bs-target="#figureModal" onclick="showFigureDetails('${figure.name}')">
+                <div class="card">
+                    <img src="${figure.image}" class="card-img-top" alt="${figure.name}">
+                    <div class="card-body">
+                        <h5 class="card-title">${figure.name}</h5>
+                        <p class="card-text">${figure.summary}</p>
+                    </div>
+                </div>
+            </div>`;
+        });
+        document.getElementById('figuresContainer').innerHTML = html;
+        
+        // Update pagination
+        let paginationHtml = '';
+        for(let i = 1; i <= totalPages; i++) {
+            paginationHtml += `<li class="page-item ${i === page ? 'active' : ''}"><a class="page-link" href="#" onclick="displayFigures(${i})">${i}</a></li>`;
+        }
+        document.getElementById('figuresPagination').innerHTML = paginationHtml;
+    }
+
+    function showFigureDetails(name) {
+        const figure = figures.find(f => f.name === name);
+        if (figure) {
+            document.getElementById('figureModalLabel').innerText = figure.name;
+            document.getElementById('figureModalBody').innerText = figure.bio;
+        }
+    }
+
+    const quizQuestions = [
+        {q: "Who was the first person to fly solo across the Atlantic Ocean?", a: "Charles Lindbergh", options: ["Amelia Earhart", "Charles Lindbergh", "Orville Wright"]},
+        // Add more questions here...
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    function startQuiz() {
+        currentQuestion = 0;
+        score = 0;
+        document.getElementById('quizScore').style.display = 'block';
+        displayQuestion();
+    }
+
+    function displayQuestion() {
+        if (currentQuestion < quizQuestions.length) {
+            const q = quizQuestions[currentQuestion];
+            document.getElementById('quizQuestion').textContent = q.q;
+            let optionsHtml = '';
+            q.options.forEach(option => {
+                optionsHtml += `<div class="quiz-option" onclick="checkAnswer('${option}')">${option}</div>`;
+            });
+            document.getElementById('quizOptions').innerHTML = optionsHtml;
+        } else {
+            endQuiz();
+        }
+    }
+
+    function checkAnswer(answer) {
+        if (answer === quizQuestions[currentQuestion].a) {
+            score += 2;
+        } else {
+            endQuiz();
+            return;
+        }
+        document.getElementById('score').textContent = score;
+        currentQuestion++;
+        displayQuestion();
+    }
+
+    function endQuiz() {
+        alert(`Quiz ended! Your score is ${score}.`);
+        document.getElementById('quizScore').style.display = 'none';
+        startQuiz();
+    }
+
+    // Initialize
+    refreshEvent();
+    displayFigures(1);
+    startQuiz();
+
+    // Modal setup for figure details
+    const figureModal = new bootstrap.Modal(document.getElementById('figureModal'));
+</script>
+
+<!-- Modal for figure details -->
+<div class="modal fade" id="figureModal" tabindex="-1" aria-labelledby="figureModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="figureModalLabel"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="figureModalBody">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

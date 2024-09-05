@@ -1,0 +1,53 @@
+An app for stargazers and astronomy enthusiasts to learn about the universe and track celestial events.
+Use a single page of Javascript and HTML
+
+Features:
+
+- Night Sky Map: An interactive map of the night sky showing stars, planets, and constellations.
+- Celestial Events Calendar: Information on upcoming astronomical events like eclipses and meteor showers.
+- Star Identification: Tools to identify stars and constellations by pointing your phone at the night sky.
+- Astronomy Quizzes: Quizzes on celestial bodies, space missions, and astronomical phenomena.
+- Educational Articles: Read articles and watch videos on various astronomy topics.
+
+
+Create An app that allows users to explore and learn about world geography through interactive maps and activities.
+Use a single page of Javascript, HTML and CSS
+Make it very colourful and aethetically pleasing. 
+
+Features:
+
+- Interactive Maps: 
+    - Have capability to Zoom in on different countries and regions to learn about their geography and landmarks.
+    - Provide Streetview and Satelite view maps
+- Geo-Quiz: Quiz users on country capitals, flags, and major cities.
+    - Generate random Geography questions
+    - A correct answer gets the user 2 points. In the case of a single failure, the final result should be shown and the quiz restarted.
+- Country Profiles: Detailed profiles for each country, including demographics, and interesting facts.
+    - Let all countries' info be gotten from the `restcountries` apis on load. 
+    - Allow user to select country from a searchable select box.
+    - On select of any country, Do a brief detail of the country with information gotten from the API above
+- Virtual Tours: Virtual tours of famous landmarks and natural wonders.
+    - Get the pictures of these notable landmarks from unsplash
+    - When any of the monuments is clicked, The picture can be popped out with a better and more content-filled writeup about the monument and its history.
+- Make all these features realistic and complex as possible
+
+
+Create a widget that provides users with historical facts, events, and figures to spark curiosity and learning about history.
+Use a single page of Javascript, HTML and CSS, ensure it is very colourful and aethetically pleasing. 
+
+Features:
+    - On This Day: Information about significant historical events that happened on the current date.
+        - The event shown should be randomised/shuffled, if possible an API can be used to get it, else store 20 in an array
+        - A click on refresh button should load a new event, replacing the old one
+    - Famous Figures: Profiles and fun facts about notable historical figures.
+        - The historical figures data should be paginated page should contain 10 figures per page. Limit it to 5 pages
+        - each card should have their image and summary.
+        - When a card is clicked, the image can be poped open with a better information about the historical figure
+        - Ensure the correct images are used
+    - Historical Quiz: Daily or weekly quizzes on different historical periods and events.
+        - Generate random History questions
+        - A correct answer gets the user 2 points. In the case of a single failure, the final result should be shown and the quiz restarted.
+
+* Unless otherwise specified, generate code in a single block of html/css/js.
+* Plan out the code before starting to write it.
+
