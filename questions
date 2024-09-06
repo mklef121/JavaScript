@@ -64,3 +64,74 @@ Features include:
 * Unless otherwise specified, generate code in a single block of html/css/js.
 * Plan out the code before starting to write it.
 
+
+
+29209
+
+In a 2021 report by United Nations Educational, Scientific and Cultural Organization (UNESCO) titled Nigeria Education Sector
+Analysis it was reported that Education and training in Nigeria are offered at pre-primary, primary, junior secondary, 
+senior secondary, technical, and vocational education and training, tertiary and higher education, and basic and literacy education. 
+Education services at these levels are delivered at public and private institutions, and through formal and non-formal streams.
+Pre-primary in Nigeria has a robust learning structure, comprising kindergarten and three levels of nursery, which allows learners 
+to systematically grow in learning as they transit towards primary education. In 2018, there were more than 7 million children 
+attending pre-pri- mary school, half of whom were girls, although state-wide details reveal stark gender inequalities in the North East 
+and North West geopolitical zones. Of greater concern is that these 7 million learners represent only a small fraction of the children 
+eligible for early childhood development.
+
+It was a shock to know that according to the Multiple Indicator Cluster Survey (2017) shows that only 1 in every 3 children aged 
+between 36 and 59 months had access to early childhood care, development, and education (ECCDE) programs, with strong disparities 
+between urban and rural areas, socio-economic backgrounds, and geopolitical zones. There is compelling evidence in support of early 
+childhood education (ECE), which shows that 82% of children attending pre-primary are developmentally on track with regard to cognitive, 
+psychomotor, and socio-emotional competencies. In comparison, only 50% of those who did not attend ECE programs are developmentally 
+on track.
+
+Primary schools host more than 28 million learners, half of whom are girls. The majority are enrolled in public institutions and 
+nearly two-thirds are learning in rural schools. As observed in early childhood development and education, 
+state-wide disaggregation reveals notable gender disparities in primary, which are particularly pronounced in the North West zone. 
+Out of the 28.6 million learners enrolled in primary schools in 2018, 13.9 million were girls, implying a gender 
+parity index (GPI) of 0.94, which was 0.03 units away from the lower limit of the recommended parity range. 
+Learners attending primary education during the 2018/2019 school year are estimated to have been 90% of the eligible population, 
+a significant increase from the gross attendance ratio (GAR) of 75% in 2016, which shows that the capacity of the system
+is growing faster than the school-age population. Despite this expansion, primary education is particularly dogged by 
+under/overage schooling. In the 2018/19 school year, the net attendance rate (NAR) is estimated to have been 65%. 
+Taking into account the GAR of 90%, the NAR levels imply that for every 65 learners between the ages of 
+6 and 11 attending primary school, at least 25 were outside the official school age.
+
+
+Junior secondary enrolled 6.65 million students during the 2018/2019 school year, 3.17 million in rural and 3.48 million 
+in urban schools. This is estimated to have been three-quarters of the children aged 12-14 who were eligible for junior secondary.  
+Adjusting for early and late entry to school, the results find that in fact 80% of the children eligible for junior 
+secondary were attending, but only 60% of them were attending junior secondary. The complement was either enrolled in 
+primary due to late entry coupled with repetition or dropout and re-entry to school, while some (a minority) were 
+attending senior secondary. A notable fact about junior secondary is that 6 in every 10 schools in the country are private, 
+a phenomenon observed in primary too, and a testament to the important role played by the private sector in supporting education 
+in the country.
+
+In senior secondary, two in three eligible children were estimated to be attending school. 
+According to the 2018/2019 Nigeria Living Standards Survey (NLSS), the GAR in senior secondary is estimated to have 
+been 66%. Highest attendance rates were observed among urban boys at 87%, contrasted with 54% gross attendance 
+for rural girls. Controlling for location, the gender differential remains marginal (6 points in urban and 2 points in rural – both 
+in favor of boys), highlighting the vulnerability of rural children in accessing school. The adjusted net enrolment rate 
+shows that 67% of children eligible for this level of education (15-17) were attending school. However, only one in three 
+was attending senior secondary, with the majority still trapped in primary and junior secondary school due to late 
+school entry or grade repetition.
+
+
+Generate some graphics that help me understand  Nigerias education information here.
+Do not just generate graphics, add summary text that will add better understanding to the graphics and 
+The page should be properly designed and visually aesthetic
+Unless otherwise specified, generate code in a single block of html/css/js.
+Plan out the code before starting to write it.
+
+
+
+Create an interactive skills-to-job match game that has the following features
+
+- Interactive game where players match skills to job opportunities
+- Users should be allowed to drag and drop skills into their respective Job slots.
+- The Job slots can expand when more a skill is dragged into it
+- When a wrong skill is dropped in a Job slot, show a redline alert and undo the action
+- show animated job market trend analysis,
+- show visual upskilling suggestions after a game is won
+
+The page should be properly designed and visually aesthetic

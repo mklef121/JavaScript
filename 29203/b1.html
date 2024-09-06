@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Skills to Job Match Game</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<style>
+    body { font-family: 'Arial', sans-serif; background: #f4f4f9; margin: 0; padding: 20px; }
+    .game-container { max-width: 1200px; margin: auto; }
+    .skills, .jobs { display: flex; flex-wrap: wrap; gap: 10px; padding: 20px; }
+    .skill, .job { padding: 15px; border-radius: 5px; cursor: move; user-select: none; }
+    .skill { background: #4CAF50; color: white; }
+    .job { border: 2px dashed #ccc; min-width: 150px; text-align: center; }
+    .job.active { border-color: #4CAF50; }
+    .job.wrong { border-color: red; }
+    #trendAnalysis, #upskillingSuggestions { margin-top: 20px; }
+    .expand { transition: all 0.3s; }
+</style>
+</head>
+<body>
+
+<div class="game-container">
+    <h1>Match Skills to Jobs</h1>
+    <div id="gameArea">
+        <div class="skills" id="skillsList"></div>
+        <div class="jobs" id="jobsList"></div>
+    </div>
+    <div id="trendAnalysis"></div>
+    <div id="upskillingSuggestions"></div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+$(document).ready(function() {
+    const skills = ['JavaScript', 'Data Analysis', 'Marketing', 'Project Management', 'UX Design'];
+    const jobs = {
+        'Web Developer': ['JavaScript', 'UX Design'],
+        'Data Scientist': ['Data Analysis'],
+        'Marketing Specialist': ['Marketing'],
+        'Project Manager': ['Project Management']
+    };
+
+    // Populate skills and jobs
+    skills.forEach(skill => $('#skillsList').append(`<div class="skill" draggable="true">${skill}</div>`));
+    for (let job in jobs) {
+        $('#jobsList').append(`<div class="job" data-skills="${jobs[job].join(',')}">${job}</div>`);
+    }
+
+    interact('.skill').draggable({
+        onmove: dragMoveListener,
+        onend: function (event) {
+            event.target.style.transform = 'translate(0px, 0px)';
+        }
+    });
+
+    interact('.job').dropzone({
+        ondrop: function (event) {
+            let job = event.target;
+            let skill = event.relatedTarget.textContent;
+            let requiredSkills = job.getAttribute('data-skills').split(',');
+
+            if (requiredSkills.includes(skill)) {
+                job.innerHTML += `<span>${skill}</span> `;
+                job.classList.add('active');
+                job.style.width = 'auto'; // Expand job slot
+            } else {
+                job.classList.add('wrong');
+                setTimeout(() => job.classList.remove('wrong'), 1000);
+            }
+        }
+    });
+
+    function dragMoveListener (event) {
+        var target = event.target,
+            x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+            y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+        target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+        target.setAttribute('data-x', x);
+        target.setAttribute('data-y', y);
+    }
+
+    // Mock trend analysis
+    setTimeout(() => {
+        new Chart(document.getElementById('trendAnalysis'), {
+            type: 'line',
+            data: { /* Data for trend analysis */ },
+            options: { /* Chart options */ }
+        });
+    }, 1000);
+
+    // Mock upskilling suggestions
+    // This would typically be dynamic based on user performance
+    $('#upskillingSuggestions').html("<h2>Learn:</h2><p>AI Basics, Advanced Data Analysis</p>");
+});
+</script>
+
+</body>
+</html>

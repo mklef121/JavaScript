@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skills to Job Match Game</title>
+<style>
+    body { font-family: 'Arial', sans-serif; background: #f4f4f9; margin: 0; padding: 20px; }
+    .game-container { display: flex; justify-content: space-around; flex-wrap: wrap; }
+    .skills, .jobs { width: 45%; min-width: 300px; }
+    .skill, .job { padding: 10px; margin: 10px 0; background: white; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .skill { cursor: move; }
+    .job { min-height: 50px; transition: all 0.3s; }
+    .job.expand { min-height: 100px; }
+    .alert { color: red; animation: shake 0.5s; }
+    .trend, .upskill { margin-top: 20px; text-align: center; }
+    @keyframes shake { 
+        0% { transform: translate(1px, 1px) rotate(0deg); }
+        10% { transform: translate(-1px, -2px) rotate(-1deg); }
+        /* ... */ 
+        100% { transform: translate(1px, -2px) rotate(-1deg); }
+    }
+</style>
+</head>
+<body>
+
+<div class="game-container">
+    <div class="skills">
+        <h2>Skills</h2>
+        <div class="skill" draggable="true" data-skill="coding">Coding</div>
+        <div class="skill" draggable="true" data-skill="design">Design</div>
+        <!-- More skills -->
+    </div>
+
+    <div class="jobs">
+        <h2>Job Slots</h2>
+        <div class="job" data-job="developer">Developer</div>
+        <div class="job" data-job="designer">Designer</div>
+        <!-- More jobs -->
+    </div>
+</div>
+
+<div class="trend">
+    <h2>Job Market Trends</h2>
+    <canvas id="jobTrends"></canvas>
+</div>
+
+<div class="upskill" style="display: none;">
+    <h2>Upskilling Suggestions</h2>
+    <p>Consider learning: <span id="suggestions"></span></p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const skills = document.querySelectorAll('.skill');
+        const jobs = document.querySelectorAll('.job');
+        
+        skills.forEach(skill => {
+            skill.addEventListener('dragstart', dragStart);
+        });
+
+        jobs.forEach(job => {
+            job.addEventListener('dragover', dragOver);
+            job.addEventListener('drop', drop);
+        });
+
+        function dragStart(e) {
+            e.dataTransfer.setData('text/plain', e.target.dataset.skill);
+        }
+
+        function dragOver(e) {
+            e.preventDefault();
+        }
+
+        function drop(e) {
+            e.preventDefault();
+            const skill = e.dataTransfer.getData('text');
+            const jobType = e.target.dataset.job;
+            if (isValidMatch(skill, jobType)) {
+                e.target.textContent += ' ' + skill;
+                e.target.classList.add('expand');
+            } else {
+                alertWrongSkill(e.target);
+            }
+        }
+
+        function isValidMatch(skill, job) {
+            // Logic for valid matches, for simplicity assume:
+            return (skill === 'coding' && job === 'developer') || (skill === 'design' && job === 'designer');
+        }
+
+        function alertWrongSkill(target) {
+            target.classList.add('alert');
+            setTimeout(() => target.classList.remove('alert'), 500);
+            // Here you might want to implement undo functionality
+        }
+
+        // Mock win condition
+        function checkWin() {
+            if(/* all jobs have correct skills */ true) {
+                document.querySelector('.upskill').style.display = 'block';
+                document.getElementById('suggestions').textContent = 'Machine Learning, UI/UX';
+                animateTrends();
+            }
+        }
+
+        function animateTrends() {
+            const ctx = document.getElementById('jobTrends').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['2018', '2019', '2020', '2021', '2022'],
+                    datasets: [{
+                        label: 'Tech Jobs',
+                        data: [100, 120, 150, 170, 180],
+                        borderColor: 'blue',
+                        fill: false
+                    }]
+                },
+                options: { animation: { duration: 2000 } }
+            });
+        }
+
+        // Call checkWin periodically or on drop to check game state
+        setInterval(checkWin, 1000);
+    });
+</script>
+
+</body>
+</html>
