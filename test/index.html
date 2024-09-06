@@ -1,518 +1,257 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entrepreneurship Guide Widget</title>
+    <title>Nigeria Education Sector Analysis</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background: #f9f9f9;
+            background-color: #f9f9f9;
             color: #333;
         }
-
         header {
-            background: linear-gradient(135deg, #004d40, #ff6f00);
-            /* Deep teal to vibrant orange */
-            color: white;
-            padding: 1rem;
+            background: #0056b3;
+            color: #fff;
+            padding: 20px 0;
             text-align: center;
-            font-size: 1.5rem;
+            border-bottom: 4px solid #003d80;
         }
-
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
         .container {
             width: 90%;
             max-width: 1200px;
-            margin: 0 auto;
+            margin: auto;
+            overflow: hidden;
         }
-
         section {
-            margin: 2rem 0;
-            padding: 1.5rem;
-            background: white;
+            margin: 20px 0;
+            padding: 20px;
+            background: #fff;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
         }
-
-        h2 {
-            margin-top: 0;
-            color: #004d40;
-        }
-
-        .button {
-            background: linear-gradient(135deg, #004d40, #ff6f00);
-            /* Deep teal to vibrant orange */
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .button:hover {
-            background: linear-gradient(135deg, #00332e, #e65100);
-            /* Darker shades for hover effect */
-        }
-
-        .button-secondary {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .button-secondary:hover {
-            background: #c0392b;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-
-        .quiz-options {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .quiz-option {
-            background: linear-gradient(135deg, #004d40, #ff6f00);
-            /* Deep teal to vibrant orange */
-            color: white;
-            border: none;
-            padding: 1rem;
-            border-radius: 4px;
-            cursor: pointer;
+        section h2 {
             text-align: center;
-            transition: background 0.3s;
+            margin-bottom: 20px;
+            font-size: 2em;
+            color: #0056b3;
         }
-
-        .quiz-option:hover {
-            background: linear-gradient(135deg, #00332e, #e65100);
-            /* Darker shades for hover effect */
-        }
-
-        .quiz-option.correct {
-            background: #2ecc71;
-        }
-
-        .quiz-option.incorrect {
-            background: #e74c3c;
-        }
-
-        .resource-item {
-            background: #ecf0f1;
-            padding: 1rem;
-            border-radius: 4px;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .resource-item a {
-            text-decoration: none;
-            color: #004d40;
-        }
-
-        .resource-item img {
-            width: 80px;
-            height: 80px;
-            border-radius: 4px;
-        }
-
-        .progress-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .progress-item {
-            background: #004d40;
-            color: white;
-            padding: 0.5rem;
-            border-radius: 4px;
-            margin-bottom: 0.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .progress-item button {
-            background: #e74c3c;
-            border: none;
-            color: white;
-            padding: 0.3rem 0.6rem;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .progress-item button:hover {
-            background: #c0392b;
-        }
-
-        .progress-item.achieved {
-            background: #2ecc71;
-        }
-
-        .collapsible {
-            background-color: #bdc3c7;
-            color: black;
-            cursor: pointer;
-            padding: 1rem;
-            border: none;
-            outline: none;
-            text-align: left;
-            border-radius: 4px;
-            transition: background 0.3s;
-            width: 100%;
-            margin-top: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .collapsible:hover {
-            background-color: #95a5a6;
-        }
-
-        .collapsible::after {
-            content: '\25BC';
-            /* Downward arrow */
-            font-size: 1.2rem;
-            transition: transform 0.3s;
-        }
-
-        .collapsible.collapsed::after {
-            content: '\25B6';
-            /* Rightward arrow */
-            transform: rotate(90deg);
-        }
-
-        .content {
-            padding: 0 1rem;
-            display: none;
-        }
-
-        .content.show {
-            display: block;
-        }
-
-        .plan-item {
-            margin-bottom: 1rem;
-            padding: 1rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-
-        .plan-item h3 {
-            margin: 0 0 0.5rem;
-        }
-
-        .progress-bar-container {
-            margin-top: 1rem;
-            display: none;
-            background: #ddd;
-            border-radius: 4px;
-            height: 20px;
+        .chart-container {
             position: relative;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(135deg, #004d40, #ff6f00);
-            /* Deep teal to vibrant orange */
-            border-radius: 4px;
-            width: 0;
-            transition: width 0.3s;
-        }
-
-        .progress-text {
-            position: absolute;
             width: 100%;
+            height: 300px; /* Reduced height */
+            margin-bottom: 20px; /* Added margin for spacing */
+        }
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        footer {
+            background: #0056b3;
+            color: #fff;
             text-align: center;
-            line-height: 20px;
-            color: white;
-            font-weight: bold;
+            padding: 15px 0;
+            position: relative;
+            bottom: 0;
+            width: 100%;
         }
-
-        .template-links {
-            margin-bottom: 30px;
-        }
-
-        #quiz-question {
-            font-family: Arial, sans-serif;
-            font-size: 16px;
-            line-height: 1.5;
-            color: #333;
-            margin-bottom: 10px;
-            text-align: justify;
+        footer p {
+            margin: 0;
         }
     </style>
 </head>
-
 <body>
     <header>
-        Entrepreneurship Guide
+        <div class="container">
+            <h1>Nigeria Education Sector Analysis</h1>
+        </div>
     </header>
+
     <div class="container">
-        <!-- Business Plans Section -->
-        <section id="business-plans">
-            <h2>Business Plans</h2>
-            <div class="template-links">
-                <a href=https://www.pandadoc.com/big-data-startup-business-plan-template/" target="_blank"
-                    class="button">Business Plan Template 1</a>
-                <a href="https://www.forbes.com/advisor/business/simple-business-plan-template/" target="_blank"
-                    class="button">Business Plan Template 2</a>
+        <!-- Pre-Primary Education Section -->
+        <section id="pre-primary">
+            <h2>Pre-Primary Education Enrollment</h2>
+            <div class="chart-container">
+                <canvas id="prePrimaryChart"></canvas>
             </div>
-            <div class="form-group">
-                <input type="text" id="plan-title" placeholder="Plan Title">
-            </div>
-            <div class="form-group">
-                <textarea id="plan-description" rows="4" placeholder="Business Plan Description"></textarea>
-            </div>
-            <button class="button" onclick="saveBusinessPlan()">Save Plan</button>
-            <button class="collapsible" onclick="togglePlans()">View Saved Plans</button>
-            <div id="saved-plans" class="content"></div>
+            <p>In 2018, over 7 million children attended pre-primary education. Gender disparity is notable, with fewer girls attending in the North East and North West zones.</p>
         </section>
 
-        <!-- Business Quiz Section -->
-        <section id="business-quiz">
-            <h2>Business Quiz</h2>
-            <div id="quiz-container">
-                <div id="quiz-question"></div>
-                <div id="quiz-options" class="quiz-options"></div>
-                <div id="quiz-end" class="quiz-end" style="display: none;">
-                    <h3>Your final score: <span id="final-score">0</span></h3>
-                    <button class="button button-secondary" onclick="restartQuiz()">Restart Quiz</button>
-                </div>
+        <!-- Primary Education Section -->
+        <section id="primary">
+            <h2>Primary Education Enrollment</h2>
+            <div class="chart-container">
+                <canvas id="primaryGenderParity"></canvas>
             </div>
+            <div class="chart-container">
+                <canvas id="primaryAgeDiscrepancy"></canvas>
+            </div>
+            <p>Primary education shows significant gender disparities, especially in the North West zone. The age discrepancy highlights the challenge of under/overage schooling.</p>
         </section>
 
-        <!-- Startup Resources Section -->
-        <section id="startup-resources">
-            <h2>Startup Resources</h2>
-            <div id="resource-list">
-                <div class="resource-item">
-                    <img src="https://m.media-amazon.com/images/I/61BFOf9Ap-L._SL1200_.jpg" alt="The Lean Startup">
-                    <div>
-                        <a href="https://www.amazon.com/Lean-Startup-Entrepreneurs-Continuous-Innovation/dp/0307887898"
-                            target="_blank">The Lean Startup by Eric Ries</a>
-                        <p>A groundbreaking book on startup management and lean principles.</p>
-                    </div>
-                </div>
-                <div class="resource-item">
-                    <img src="https://m.media-amazon.com/images/I/51zGCdRQXOL._SL1200_.jpg" alt="Zero to One">
-                    <div>
-                        <a href="https://www.amazon.com/Zero-One-Notes-Startups-Future/dp/0804139296"
-                            target="_blank">Zero to One by Peter Thiel</a>
-                        <p>Insights on innovation and creating a successful startup.</p>
-                    </div>
-                </div>
-                <div class="resource-item">
-                    <img src="https://m.media-amazon.com/images/I/810u9MkT3SL._SL1500_.jpg"
-                        alt="The Hard Thing About Hard Things">
-                    <div>
-                        <a href="https://www.amazon.com/Hard-Thing-About-Things-Building/dp/0062273205"
-                            target="_blank">The Hard Thing About Hard Things by Ben Horowitz</a>
-                        <p>A practical guide to navigating the challenges of running a startup.</p>
-                    </div>
-                </div>
-                <div class="resource-item">
-                    <a href="https://www.youtube.com/watch?v=CBYhVcO4WgI&list=PL5q_lef6zVkaTY_cT1k7qFNF2TidHCe-1"
-                        target="_blank">How to Start a Startup - Y Combinator</a>
-                    <p>A series of lectures from successful entrepreneurs and investors on starting and growing a
-                        startup.</p>
-                </div>
+        <!-- Junior Secondary Education Section -->
+        <section id="junior-secondary">
+            <h2>Junior Secondary Education Enrollment</h2>
+            <div class="chart-container">
+                <canvas id="juniorSecondaryChart"></canvas>
             </div>
+            <p>Approximately 80% of eligible children attended junior secondary schools, with a large portion enrolled in private institutions, reflecting their critical role in the education sector.</p>
         </section>
 
-        <!-- Progress Tracker Section -->
-        <section id="progress-tracker">
-            <h2>Progress Tracker</h2>
-            <div class="form-group">
-                <input type="text" id="milestone-title" placeholder="Milestone Title">
+        <!-- Senior Secondary Education Section -->
+        <section id="senior-secondary">
+            <h2>Senior Secondary Attendance</h2>
+            <div class="chart-container">
+                <canvas id="seniorSecondaryChart"></canvas>
             </div>
-            <div class="form-group">
-                <input type="date" id="milestone-date">
-            </div>
-            <button class="button" onclick="addMilestone()">Add Milestone</button>
-            <ul id="milestone-list" class="progress-list"></ul>
-            <div id="progress-bar-container" class="progress-bar-container">
-                <div id="progress-bar" class="progress-bar"></div>
-                <div id="progress-text" class="progress-text">0%</div>
-            </div>
+            <p>Senior secondary attendance rates vary significantly by location and gender. Urban boys have higher attendance compared to rural girls, with considerable variation in gross and net attendance rates.</p>
         </section>
     </div>
+
+    <footer>
+        <p>Data Source: UNESCO, Multiple Indicator Cluster Survey (2017), Nigeria Living Standards Survey (2018/2019)</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Business Plans Section
-        function saveBusinessPlan() {
-            const title = document.getElementById('plan-title').value.trim();
-            const description = document.getElementById('plan-description').value.trim();
-            if (title && description) {
-                let plans = JSON.parse(localStorage.getItem('businessPlans')) || [];
-                plans.push({ title, description });
-                localStorage.setItem('businessPlans', JSON.stringify(plans));
-                document.getElementById('plan-title').value = '';
-                document.getElementById('plan-description').value = '';
-                displaySavedPlans();
-            } else {
-                alert('Please fill out all fields.');
-            }
-        }
-
-        function displaySavedPlans() {
-            const savedPlans = document.getElementById('saved-plans');
-            savedPlans.innerHTML = '';
-            let plans = JSON.parse(localStorage.getItem('businessPlans')) || [];
-            plans.forEach(plan => {
-                const div = document.createElement('div');
-                div.className = 'plan-item';
-                div.innerHTML = `<h3>${plan.title}</h3><p>${plan.description}</p>`;
-                savedPlans.appendChild(div);
-            });
-        }
-
-        function togglePlans() {
-            const content = document.getElementById('saved-plans');
-            content.classList.toggle('show');
-            const button = document.querySelector('.collapsible');
-            button.classList.toggle('collapsed');
-            if (!content.classList.contains('show')) {
-                content.innerHTML = ''; // Clear the content when collapsed
-            } else {
-                displaySavedPlans(); // Load the content when expanded
-            }
-        }
-
-        // Business Quiz Section
-        const quizQuestions = [
-            { question: "What is a business model?", options: ["A plan for how a company makes money", "A company’s organizational structure", "A marketing strategy"], answer: "A plan for how a company makes money" },
-            { question: "Which financial statement shows a company's revenue and expenses?", options: ["Balance Sheet", "Income Statement", "Cash Flow Statement"], answer: "Income Statement" },
-            { question: "What is a key performance indicator (KPI)?", options: ["A measure of business performance", "A type of business report", "A financial document"], answer: "A measure of business performance" },
-            { question: "What does MVP stand for in startup terminology?", options: ["Most Valuable Player", "Minimum Viable Product", "Maximum Value Proposition"], answer: "Minimum Viable Product" },
-            { question: "What is a pitch deck?", options: ["A presentation for investors", "A business plan summary", "A marketing tool"], answer: "A presentation for investors" }
-            // Add more questions here
-        ];
-
-        let currentQuestionIndex = 0;
-        let score = 0;
-        let quizEnded = false;
-
-        function startQuiz() {
-            quizEnded = false;
-            score = 0;
-            currentQuestionIndex = 0;
-            document.getElementById('quiz-end').style.display = 'none';
-            showQuestion();
-        }
-
-        function showQuestion() {
-            if (quizEnded) return;
-
-            const question = quizQuestions[currentQuestionIndex];
-            document.getElementById('quiz-question').innerText = question.question;
-            const optionsContainer = document.getElementById('quiz-options');
-            optionsContainer.innerHTML = '';
-
-            question.options.forEach(option => {
-                const button = document.createElement('button');
-                button.className = 'quiz-option';
-                button.innerText = option;
-                button.onclick = () => checkAnswer(option, question.answer);
-                optionsContainer.appendChild(button);
-            });
-        }
-
-        function checkAnswer(selectedOption, correctAnswer) {
-            const options = document.querySelectorAll('.quiz-option');
-            options.forEach(option => {
-                option.disabled = true;
-                if (option.innerText === correctAnswer) {
-                    option.classList.add('correct');
-                } else if (option.innerText === selectedOption) {
-                    option.classList.add('incorrect');
+        // Data for Pre-Primary Education
+        const prePrimaryData = {
+            labels: ['Total Enrollment', 'Girls Enrollment'],
+            datasets: [{
+                label: 'Pre-Primary Enrollment (2018)',
+                data: [7000000, 3500000], // Example values
+                backgroundColor: ['#4e73df', '#1cc88a'],
+                borderColor: ['#2e59d9', '#17a673'],
+                borderWidth: 1
+            }]
+        };
+        new Chart(document.getElementById('prePrimaryChart').getContext('2d'), {
+            type: 'bar',
+            data: prePrimaryData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: (context) => `${context.label}: ${context.raw.toLocaleString()}` } }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Number of Children' }
+                    },
+                    x: {
+                        title: { display: true, text: 'Category' }
+                    }
                 }
-            });
+            }
+        });
 
-            if (selectedOption === correctAnswer) {
-                score += 2;
-                currentQuestionIndex++;
-                if (currentQuestionIndex < quizQuestions.length) {
-                    setTimeout(showQuestion, 1000);
-                } else {
-                    endQuiz();
+        // Data for Primary Education Gender Parity
+        const primaryGenderData = {
+            labels: ['Boys', 'Girls'],
+            datasets: [{
+                label: 'Primary Enrollment by Gender (2018)',
+                data: [14300000, 14300000], // Example values
+                backgroundColor: ['#36a2eb', '#ff6384'],
+                borderColor: ['#2a5d9c', '#d9534f'],
+                borderWidth: 1
+            }]
+        };
+        new Chart(document.getElementById('primaryGenderParity').getContext('2d'), {
+            type: 'pie',
+            data: primaryGenderData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: { callbacks: { label: (context) => `${context.label}: ${context.raw.toLocaleString()}` } }
                 }
-            } else {
-                endQuiz();
             }
-        }
+        });
 
-        function endQuiz() {
-            quizEnded = true;
-            document.getElementById('final-score').innerText = score;
-            document.getElementById('quiz-end').style.display = 'block';
-        }
-
-        function restartQuiz() {
-            startQuiz();
-        }
-
-        // Progress Tracker Section
-        function addMilestone() {
-            const title = document.getElementById('milestone-title').value.trim();
-            const date = document.getElementById('milestone-date').value;
-            if (title && date) {
-                const milestoneList = document.getElementById('milestone-list');
-                const li = document.createElement('li');
-                li.className = 'progress-item';
-                li.innerHTML = `
-                    ${title} - <strong>${date}</strong> 
-                    <button onclick="toggleMilestone(this)">Mark Achieved</button>
-                `;
-                milestoneList.appendChild(li);
-                document.getElementById('milestone-title').value = '';
-                document.getElementById('milestone-date').value = '';
-                updateProgressBar();
-            } else {
-                alert('Please fill out all fields.');
+        // Data for Primary Education Age Discrepancy
+        const primaryAgeData = {
+            labels: ['Within Age', 'Outside Age'],
+            datasets: [{
+                label: 'Primary School Age Discrepancy (2018/19)',
+                data: [65, 25], // Example values
+                backgroundColor: ['#ff9f40', '#ffcd56'],
+                borderColor: ['#e07b39', '#f0c32f'],
+                borderWidth: 1
+            }]
+        };
+        new Chart(document.getElementById('primaryAgeDiscrepancy').getContext('2d'), {
+            type: 'doughnut',
+            data: primaryAgeData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: { callbacks: { label: (context) => `${context.label}: ${context.raw}%` } }
+                }
             }
-        }
+        });
 
-        function toggleMilestone(button) {
-            const li = button.parentElement;
-            li.classList.toggle('achieved');
-            button.textContent = li.classList.contains('achieved') ? 'Mark Not Achieved' : 'Mark Achieved';
-            updateProgressBar();
-        }
-
-        function updateProgressBar() {
-            const milestones = document.querySelectorAll('.progress-item');
-            const completedMilestones = document.querySelectorAll('.progress-item.achieved');
-            const progressBarContainer = document.getElementById('progress-bar-container');
-
-            if (milestones.length > 0) {
-                const percentage = (completedMilestones.length / milestones.length) * 100;
-                document.getElementById('progress-bar').style.width = percentage + '%';
-                document.getElementById('progress-text').innerText = Math.round(percentage) + '%';
-                progressBarContainer.style.display = 'block';
-            } else {
-                progressBarContainer.style.display = 'none';
+        // Data for Junior Secondary Enrollment
+        const juniorSecondaryData = {
+            labels: ['Urban', 'Rural'],
+            datasets: [{
+                label: 'Junior Secondary Enrollment (2018/19)',
+                data: [3480000, 3170000], // Example values
+                backgroundColor: ['#4e73df', '#36a2eb'],
+                borderColor: ['#2e59d9', '#2a5d9c'],
+                borderWidth: 1
+            }]
+        };
+        new Chart(document.getElementById('juniorSecondaryChart').getContext('2d'), {
+            type: 'pie',
+            data: juniorSecondaryData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: { callbacks: { label: (context) => `${context.label}: ${context.raw.toLocaleString()}` } }
+                }
             }
-        }
+        });
 
-        // Initialize quiz
-        startQuiz();
+        // Data for Senior Secondary Attendance
+        const seniorSecondaryData = {
+            labels: ['Urban Boys', 'Rural Boys', 'Urban Girls', 'Rural Girls'],
+            datasets: [{
+                label: 'Senior Secondary Attendance Rates (2018/19)',
+                data: [87, 54, 81, 54], // Example values
+                backgroundColor: ['#4e73df', '#36a2eb', '#ff6384', '#ffcd56'],
+                borderColor: ['#2e59d9', '#2a5d9c', '#d9534f', '#f0c32f'],
+                borderWidth: 1
+            }]
+        };
+        new Chart(document.getElementById('seniorSecondaryChart').getContext('2d'), {
+            type: 'bar',
+            data: seniorSecondaryData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: { callbacks: { label: (context) => `${context.label}: ${context.raw}%` } }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Attendance Rate (%)' }
+                    },
+                    x: {
+                        title: { display: true, text: 'Category' }
+                    }
+                }
+            }
+        });
     </script>
 </body>
-
 </html>

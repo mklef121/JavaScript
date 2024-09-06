@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nigeria's Education Sector Overview</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.css">
+    <style>
+        body { font-family: 'Arial', sans-serif; background-color: #f4f4f4; color: #333; margin: 0; padding: 0; }
+        .container { width: 80%; margin: 20px auto; }
+        .section { background: #fff; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h1, h2 { color: #006400; }
+        .chart-container { width: 100%; height: 400px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Nigeria's Education Sector Overview</h1>
+    <div class="section">
+        <h2>Early Childhood Education (ECCDE)</h2>
+        <div class="chart-container">
+            <canvas id="eccdeChart"></canvas>
+        </div>
+        <p>Only 1 in 3 children attends ECCDE, highlighting significant disparities between urban and rural areas.</p>
+    </div>
+    
+    <div class="section">
+        <h2>Primary Education Enrollment</h2>
+        <div class="chart-container">
+            <canvas id="primaryChart"></canvas>
+        </div>
+        <p>Enrollment shows gender parity, but with regional disparities. The GAR improved from 75% to 90%.</p>
+    </div>
+
+    <div class="section">
+        <h2>Junior Secondary Education</h2>
+        <div class="chart-container">
+            <canvas id="juniorSecondaryChart"></canvas>
+        </div>
+        <p>60% of junior secondary schools are private, with 80% of eligible children attending some form of education.</p>
+    </div>
+
+    <div class="section">
+        <h2>Senior Secondary Education</h2>
+        <div class="chart-container">
+            <canvas id="seniorSecondaryChart"></canvas>
+        </div>
+        <p>Attendance is higher among urban boys, with only 33% of students in the correct educational level for their age.</p>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Chart configurations would go here with data from the provided statistics
+    const ctxECCDE = document.getElementById('eccdeChart').getContext('2d');
+    const eccdeChart = new Chart(ctxECCDE, {
+        type: 'doughnut',
+        data: {
+            labels: ['Attending ECCDE', 'Not Attending'],
+            datasets: [{
+                data: [33, 67],
+                backgroundColor: ['#006400', '#8FBC8F'],
+            }]
+        },
+        options: { responsive: true }
+    });
+
+    // Similarly, other charts (primary, junior, senior) would be initialized here with their respective data
+</script>
+</body>
+</html>
