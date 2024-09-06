@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrepreneur's Guide Widget</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; background: #f4f4f9; margin: 0; padding: 0; }
+        .widget {
+            max-width: 1200px; margin: 20px auto; background: #fff; 
+            border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            overflow: hidden; padding: 20px; display: flex; flex-wrap: wrap;
+        }
+        .section {
+            flex: 1; min-width: 250px; margin: 10px; padding: 20px; 
+            border: 2px solid #e0e0e0; border-radius: 8px; transition: transform 0.3s;
+        }
+        .section:hover { transform: scale(1.02); }
+        h2 { color: #333; }
+        .colorful { background: linear-gradient(45deg, #ff6b6b, #4ecdc4); color: white; }
+        button, .milestone-btn {
+            background-color: #4CAF50; border: none; color: white; 
+            padding: 10px 20px; text-align: center; display: inline-block; 
+            font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 4px;
+        }
+        .progress-milestone { margin-top: 10px; }
+        .milestone-btn { background: #007BFF; }
+        .milestone-btn.achieved { background: #28a745; }
+        #quiz, #resources, #businessPlans { display: none; }
+    </style>
+</head>
+<body>
+<div class="widget">
+    <div class="section colorful">
+        <h2>Business Plans</h2>
+        <button onclick="showSection('businessPlans')">View Templates</button>
+    </div>
+    <div class="section colorful">
+        <h2>Business Quiz</h2>
+        <button onclick="startQuiz()">Start Quiz</button>
+    </div>
+    <div class="section colorful">
+        <h2>Startup Resources</h2>
+        <button onclick="showSection('resources')">Explore</button>
+    </div>
+    <div class="section colorful">
+        <h2>Progress Tracker</h2>
+        <input type="text" id="milestoneInput" placeholder="Enter milestone">
+        <button onclick="addMilestone()">Add Milestone</button>
+        <div id="milestonesList"></div>
+    </div>
+
+    <div id="businessPlans" class="section">
+        <!-- Content for business plans would go here with links to templates -->
+    </div>
+
+    <div id="quiz" class="section">
+        <!-- Quiz logic and questions would be dynamically inserted here -->
+    </div>
+
+    <div id="resources" class="section">
+        <!-- Links to videos, articles, and books -->
+    </div>
+</div>
+
+<script>
+    function showSection(sectionId) {
+        document.querySelectorAll('.section').forEach(el => el.style.display = 'none');
+        document.getElementById(sectionId).style.display = 'block';
+    }
+
+    function startQuiz() {
+        // Here you would load quiz questions and manage quiz state
+        alert('Quiz functionality to be implemented.');
+    }
+
+    function addMilestone() {
+        const milestone = document.getElementById('milestoneInput').value;
+        if (milestone) {
+            const div = document.createElement('div');
+            div.className = 'progress-milestone';
+            div.innerHTML = `<span>${milestone}</span>
+                             <button class="milestone-btn" onclick="toggleAchieved(this)">Mark Achieved</button>`;
+            document.getElementById('milestonesList').appendChild(div);
+            document.getElementById('milestoneInput').value = '';
+        }
+    }
+
+    function toggleAchieved(btn) {
+        btn.classList.toggle('achieved');
+        btn.textContent = btn.classList.contains('achieved') ? 'Unmark' : 'Mark Achieved';
+    }
+    
+    // Local storage could be used here to save milestones between sessions
+</script>
+
+</body>
+</html>

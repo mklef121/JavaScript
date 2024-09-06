@@ -51,3 +51,16 @@ Features:
 * Unless otherwise specified, generate code in a single block of html/css/js.
 * Plan out the code before starting to write it.
 
+
+Design a widget to guide aspiring entrepreneurs through the process of starting and growing a business.
+Use a single page of Javascript, HTML and CSS, ensure it is very colourful and aethetically pleasing. 
+
+Features include:
+- Business Plans: Provide real life templates and tools for creating and managing business plans.
+- Business Quiz: Interactive lessons and quizzes on entrepreneurship and business management
+- Startup Resources: Access to resources, articles, and videos on entrepreneurship. Ensure to recommend real video and real books not placeholders 
+- Progress Tracker: Create mile-stones for the user and enable them those track milestones and goals for their business development. The Milestone enterec can be marked as achieved and unmarked as not achieved
+
+* Unless otherwise specified, generate code in a single block of html/css/js.
+* Plan out the code before starting to write it.
+

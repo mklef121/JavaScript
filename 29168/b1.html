@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Entrepreneurship Guide Widget</title>
+<style>
+body { font-family: 'Arial', sans-serif; background-color: #f0f8ff; margin: 0; padding: 0; }
+header { background: linear-gradient(45deg, #ff6b6b, #4ecdc4); color: white; text-align: center; padding: 1em 0; }
+.widget-container { max-width: 800px; margin: 20px auto; padding: 20px; background: #fff; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+section { margin-bottom: 20px; padding: 20px; background: #e8f4f8; border-radius: 8px; }
+button { background-color: #55c57a; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; }
+button:hover { background-color: #28b485; }
+.quiz-answer { margin: 5px 0; padding: 10px; background: #f9f9f9; cursor: pointer; }
+.quiz-answer:hover { background: #e0e0e0; }
+#progressTracker li { cursor: pointer; list-style-type: none; background: #d1e7dd; margin: 5px 0; padding: 10px; }
+.completed { text-decoration: line-through; background: #bbf7d0 !important; }
+</style>
+</head>
+<body>
+
+<header>
+    <h1>Entrepreneur's Journey</h1>
+</header>
+
+<div class="widget-container">
+    <section id="businessPlans">
+        <h2>Business Plans</h2>
+        <a href="[real template link]" download>Download Business Plan Template</a>
+        <!-- Here you might want to integrate with an external service for editing -->
+    </section>
+
+    <section id="businessQuiz">
+        <h2>Business Quiz</h2>
+        <div id="quizContainer"></div>
+        <button id="submitQuiz">Submit</button>
+        <p id="quizFeedback"></p>
+    </section>
+
+    <section id="startupResources">
+        <h2>Startup Resources</h2>
+        <ul>
+            <li><a href="https://www.youtube.com/watch?v=realVideoId" target="_blank">Video: Entrepreneurship 101</a></li>
+            <li><a href="[link to real book]" target="_blank">Book: "The Lean Startup" by Eric Ries</a></li>
+        </ul>
+    </section>
+
+    <section id="progressTracker">
+        <h2>Progress Tracker</h2>
+        <input type="text" id="milestoneInput" placeholder="Add a new milestone">
+        <button onclick="addMilestone()">Add Milestone</button>
+        <ul id="milestonesList"></ul>
+    </section>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', (event) => {
+    const quizContainer = document.getElementById('quizContainer');
+    const quizQuestions = [
+        {question: "What is a USP?", answers: ["Unique Selling Proposition", "Ultimate Sales Product", "User Service Plan"], correct: 0},
+        // Add more questions here
+    ];
+    
+    function displayQuiz() {
+        quizContainer.innerHTML = quizQuestions.map((q, i) => `
+            <p>${q.question}</p>
+            ${q.answers.map((ans, j) => `<div class="quiz-answer" data-index="${j}">${ans}</div>`).join('')}
+        `).join('');
+    }
+
+    function checkQuiz() {
+        const answers = document.querySelectorAll('.quiz-answer');
+        let correct = 0;
+        answers.forEach(ans => {
+            ans.addEventListener('click', function() {
+                const isCorrect = this.getAttribute('data-index') == quizQuestions[this.closest('p').previousElementSibling.textContent].correct;
+                this.style.backgroundColor = isCorrect ? '#bbf7d0' : '#f8d7da';
+                if (isCorrect) correct++;
+            });
+        });
+        document.getElementById('submitQuiz').onclick = () => {
+            document.getElementById('quizFeedback').textContent = `You got ${correct} out of ${quizQuestions.length} correct!`;
+        };
+    }
+
+    function addMilestone() {
+        const input = document.getElementById('milestoneInput');
+        const milestonesList = document.getElementById('milestonesList');
+        if (input.value) {
+            const li = document.createElement('li');
+            li.textContent = input.value;
+            li.onclick = function() { this.classList.toggle('completed'); };
+            milestonesList.appendChild(li);
+            input.value = '';
+        }
+    }
+
+    displayQuiz();
+    checkQuiz();
+    
+    // Local storage for milestones could be implemented here
+});
+</script>
+
+</body>
+</html>
