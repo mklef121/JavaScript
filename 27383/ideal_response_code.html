@@ -14,7 +14,6 @@
         }
         .container {
             width: 90%;
-            max-width: 1200px;
             margin: auto;
             overflow: hidden;
         }
@@ -34,18 +33,18 @@
             padding: 20px;
             background: #fff;
             border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
         .section h2 {
             margin-top: 0;
         }
         .chart-container {
+            display: flex;
+            justify-content: center;
             position: relative;
             height: 400px;
             width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
         }
+
         .chart-text {
             text-align: center;
             margin: 20px 0;
@@ -124,8 +123,6 @@
             }]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
             scales: {
                 y: {
                     beginAtZero: true,
@@ -155,8 +152,6 @@
             }]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     position: 'bottom'
@@ -180,8 +175,6 @@
             }]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
             plugins: {
                 legend: { position: 'bottom' }
             }
@@ -203,8 +196,6 @@
             }]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
             scales: {
                 r: {
                     beginAtZero: true

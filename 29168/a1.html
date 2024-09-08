@@ -3,95 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entrepreneur's Guide Widget</title>
+    <title>Entrepreneur's Toolkit</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { font-family: 'Arial', sans-serif; background: #f4f4f9; margin: 0; padding: 0; }
-        .widget {
-            max-width: 1200px; margin: 20px auto; background: #fff; 
-            border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            overflow: hidden; padding: 20px; display: flex; flex-wrap: wrap;
-        }
-        .section {
-            flex: 1; min-width: 250px; margin: 10px; padding: 20px; 
-            border: 2px solid #e0e0e0; border-radius: 8px; transition: transform 0.3s;
-        }
-        .section:hover { transform: scale(1.02); }
-        h2 { color: #333; }
-        .colorful { background: linear-gradient(45deg, #ff6b6b, #4ecdc4); color: white; }
-        button, .milestone-btn {
-            background-color: #4CAF50; border: none; color: white; 
-            padding: 10px 20px; text-align: center; display: inline-block; 
-            font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 4px;
-        }
-        .progress-milestone { margin-top: 10px; }
-        .milestone-btn { background: #007BFF; }
-        .milestone-btn.achieved { background: #28a745; }
-        #quiz, #resources, #businessPlans { display: none; }
+        body { font-family: 'Arial', sans-serif; }
+        .widget-container { max-width: 1000px; margin: auto; padding: 20px; }
+        .nav-tabs { margin-bottom: 15px; }
+        .progress { height: 30px; font-size: 16px; }
+        .milestone-item { padding: 10px; border-bottom: 1px solid #eee; }
+        .milestone-item:last-child { border-bottom: none; }
+        .btn-achieve { margin-left: 10px; }
     </style>
 </head>
 <body>
-<div class="widget">
-    <div class="section colorful">
-        <h2>Business Plans</h2>
-        <button onclick="showSection('businessPlans')">View Templates</button>
-    </div>
-    <div class="section colorful">
-        <h2>Business Quiz</h2>
-        <button onclick="startQuiz()">Start Quiz</button>
-    </div>
-    <div class="section colorful">
-        <h2>Startup Resources</h2>
-        <button onclick="showSection('resources')">Explore</button>
-    </div>
-    <div class="section colorful">
-        <h2>Progress Tracker</h2>
-        <input type="text" id="milestoneInput" placeholder="Enter milestone">
-        <button onclick="addMilestone()">Add Milestone</button>
-        <div id="milestonesList"></div>
-    </div>
 
-    <div id="businessPlans" class="section">
-        <!-- Content for business plans would go here with links to templates -->
-    </div>
+<div class="widget-container">
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item"><a class="nav-link active" id="plans-tab" data-toggle="tab" href="#plans" role="tab" aria-controls="plans" aria-selected="true">Business Plans</a></li>
+        <li class="nav-item"><a class="nav-link" id="quiz-tab" data-toggle="tab" href="#quiz" role="tab" aria-controls="quiz" aria-selected="false">Quiz</a></li>
+        <li class="nav-item"><a class="nav-link" id="resources-tab" data-toggle="tab" href="#resources" role="tab" aria-controls="resources" aria-selected="false">Resources</a></li>
+        <li class="nav-item"><a class="nav-link" id="tracker-tab" data-toggle="tab" href="#tracker" role="tab" aria-controls="tracker" aria-selected="false">Progress</a></li>
+    </ul>
 
-    <div id="quiz" class="section">
-        <!-- Quiz logic and questions would be dynamically inserted here -->
-    </div>
+    <div class="tab-content" id="myTabContent">
+        <!-- Business Plans Tab -->
+        <div class="tab-pane fade show active" id="plans" role="tabpanel" aria-labelledby="plans-tab">
+            <h3>Create Your Business Plan</h3>
+            <p>Download templates or use our online editor.</p>
+            <a href="#" class="btn btn-primary">Download Template</a>
+        </div>
 
-    <div id="resources" class="section">
-        <!-- Links to videos, articles, and books -->
+        <!-- Business Quiz Tab -->
+        <div class="tab-pane fade" id="quiz" role="tabpanel" aria-labelledby="quiz-tab">
+            <h3>Test Your Knowledge</h3>
+            <button class="btn btn-info" onclick="startQuiz()">Start Quiz</button>
+            <div id="quizArea"></div>
+        </div>
+
+        <!-- Resources Tab -->
+        <div class="tab-pane fade" id="resources" role="tabpanel" aria-labelledby="resources-tab">
+            <h3>Learn More</h3>
+            <ul>
+                <li><a href="https://www.amazon.com/Lean-Startup-Entrepreneurs-Continuous-Innovation/dp/0307887898" target="_blank">The Lean Startup by Eric Ries</a></li>
+                <li><a href="https://www.youtube.com/watch?v=6o4YsoqHYdw" target="_blank">How to Start a Startup - Stanford's CS183B</a></li>
+            </ul>
+        </div>
+
+        <!-- Progress Tracker Tab -->
+        <div class="tab-pane fade" id="tracker" role="tabpanel" aria-labelledby="tracker-tab">
+            <h3>Track Your Progress</h3>
+            <div id="milestones"></div>
+            <button class="btn btn-success" onclick="addMilestone()">Add Milestone</button>
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" id="progressBar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+            </div>
+        </div>
     </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
-    function showSection(sectionId) {
-        document.querySelectorAll('.section').forEach(el => el.style.display = 'none');
-        document.getElementById(sectionId).style.display = 'block';
-    }
-
-    function startQuiz() {
-        // Here you would load quiz questions and manage quiz state
-        alert('Quiz functionality to be implemented.');
-    }
+    let milestones = [];
 
     function addMilestone() {
-        const milestone = document.getElementById('milestoneInput').value;
-        if (milestone) {
-            const div = document.createElement('div');
-            div.className = 'progress-milestone';
-            div.innerHTML = `<span>${milestone}</span>
-                             <button class="milestone-btn" onclick="toggleAchieved(this)">Mark Achieved</button>`;
-            document.getElementById('milestonesList').appendChild(div);
-            document.getElementById('milestoneInput').value = '';
+        let name = prompt("Enter milestone name:");
+        if (name) {
+            milestones.push({name: name, achieved: false});
+            updateMilestones();
         }
     }
 
-    function toggleAchieved(btn) {
-        btn.classList.toggle('achieved');
-        btn.textContent = btn.classList.contains('achieved') ? 'Unmark' : 'Mark Achieved';
+    function toggleAchievement(index) {
+        milestones[index].achieved = !milestones[index].achieved;
+        updateMilestones();
     }
-    
-    // Local storage could be used here to save milestones between sessions
+
+    function updateMilestones() {
+        let div = document.getElementById('milestones');
+        div.innerHTML = '';
+        milestones.forEach((m, index) => {
+            let item = document.createElement('div');
+            item.className = 'milestone-item';
+            item.innerHTML = m.name + `<button class="btn btn-sm btn-achieve ${m.achieved ? 'btn-secondary' : 'btn-outline-secondary'}" onclick="toggleAchievement(${index})">${m.achieved ? 'Achieved' : 'Mark Achieved'}</button>`;
+            div.appendChild(item);
+        });
+        updateProgressBar();
+    }
+
+    function updateProgressBar() {
+        const achieved = milestones.filter(m => m.achieved).length;
+        const total = milestones.length;
+        const percentage = total > 0 ? (achieved / total) * 100 : 0;
+        document.getElementById('progressBar').style.width = percentage + '%';
+        document.getElementById('progressBar').textContent = percentage.toFixed(2) + '%';
+    }
+
+    function startQuiz() {
+        // Placeholder for quiz functionality
+        document.getElementById('quizArea').innerHTML = "Quiz functionality will be implemented here.";
+    }
 </script>
 
 </body>

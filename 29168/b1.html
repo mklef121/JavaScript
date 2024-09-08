@@ -3,104 +3,88 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Entrepreneurship Guide Widget</title>
+<title>Entrepreneur's Journey</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 <style>
-body { font-family: 'Arial', sans-serif; background-color: #f0f8ff; margin: 0; padding: 0; }
-header { background: linear-gradient(45deg, #ff6b6b, #4ecdc4); color: white; text-align: center; padding: 1em 0; }
-.widget-container { max-width: 800px; margin: 20px auto; padding: 20px; background: #fff; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-section { margin-bottom: 20px; padding: 20px; background: #e8f4f8; border-radius: 8px; }
-button { background-color: #55c57a; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; }
-button:hover { background-color: #28b485; }
-.quiz-answer { margin: 5px 0; padding: 10px; background: #f9f9f9; cursor: pointer; }
-.quiz-answer:hover { background: #e0e0e0; }
-#progressTracker li { cursor: pointer; list-style-type: none; background: #d1e7dd; margin: 5px 0; padding: 10px; }
-.completed { text-decoration: line-through; background: #bbf7d0 !important; }
+    body { font-family: 'Arial', sans-serif; margin: 0; padding: 0; background: #f4f7fa; }
+    .widget-container { max-width: 800px; margin: 20px auto; background: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; }
+    header { background: #4CAF50; color: white; padding: 15px 0; text-align: center; }
+    nav { display: flex; background: #333; }
+    nav div { flex: 1; padding: 10px; text-align: center; color: white; cursor: pointer; }
+    nav div:hover, .active-tab { background: #4CAF50; }
+    .content { padding: 20px; }
+    .progress-bar { width: 100%; background: #e0e0e0; border-radius: 5px; }
+    .progress { height: 20px; background: #4CAF50; border-radius: 5px; text-align: center; color: white; }
+    .milestone { background: #fff; margin: 10px 0; padding: 10px; border-left: 4px solid #4CAF50; }
+    .milestone button { background: none; border: none; cursor: pointer; float: right; }
 </style>
 </head>
 <body>
-
-<header>
-    <h1>Entrepreneur's Journey</h1>
-</header>
-
 <div class="widget-container">
-    <section id="businessPlans">
-        <h2>Business Plans</h2>
-        <a href="[real template link]" download>Download Business Plan Template</a>
-        <!-- Here you might want to integrate with an external service for editing -->
-    </section>
-
-    <section id="businessQuiz">
-        <h2>Business Quiz</h2>
-        <div id="quizContainer"></div>
-        <button id="submitQuiz">Submit</button>
-        <p id="quizFeedback"></p>
-    </section>
-
-    <section id="startupResources">
-        <h2>Startup Resources</h2>
-        <ul>
-            <li><a href="https://www.youtube.com/watch?v=realVideoId" target="_blank">Video: Entrepreneurship 101</a></li>
-            <li><a href="[link to real book]" target="_blank">Book: "The Lean Startup" by Eric Ries</a></li>
-        </ul>
-    </section>
-
-    <section id="progressTracker">
-        <h2>Progress Tracker</h2>
-        <input type="text" id="milestoneInput" placeholder="Add a new milestone">
-        <button onclick="addMilestone()">Add Milestone</button>
-        <ul id="milestonesList"></ul>
-    </section>
+    <header>
+        <h1>Entrepreneur's Journey</h1>
+    </header>
+    <nav>
+        <div class="active-tab" onclick="showTab('businessPlans')">Business Plans</div>
+        <div onclick="showTab('businessQuiz')">Business Quiz</div>
+        <div onclick="showTab('startupResources')">Startup Resources</div>
+        <div onclick="showTab('progressTracker')">Progress Tracker</div>
+    </nav>
+    <div class="content">
+        <!-- Content for each tab will be dynamically inserted here -->
+    </div>
 </div>
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', (event) => {
-    const quizContainer = document.getElementById('quizContainer');
-    const quizQuestions = [
-        {question: "What is a USP?", answers: ["Unique Selling Proposition", "Ultimate Sales Product", "User Service Plan"], correct: 0},
-        // Add more questions here
-    ];
-    
-    function displayQuiz() {
-        quizContainer.innerHTML = quizQuestions.map((q, i) => `
-            <p>${q.question}</p>
-            ${q.answers.map((ans, j) => `<div class="quiz-answer" data-index="${j}">${ans}</div>`).join('')}
-        `).join('');
-    }
-
-    function checkQuiz() {
-        const answers = document.querySelectorAll('.quiz-answer');
-        let correct = 0;
-        answers.forEach(ans => {
-            ans.addEventListener('click', function() {
-                const isCorrect = this.getAttribute('data-index') == quizQuestions[this.closest('p').previousElementSibling.textContent].correct;
-                this.style.backgroundColor = isCorrect ? '#bbf7d0' : '#f8d7da';
-                if (isCorrect) correct++;
-            });
-        });
-        document.getElementById('submitQuiz').onclick = () => {
-            document.getElementById('quizFeedback').textContent = `You got ${correct} out of ${quizQuestions.length} correct!`;
-        };
-    }
-
-    function addMilestone() {
-        const input = document.getElementById('milestoneInput');
-        const milestonesList = document.getElementById('milestonesList');
-        if (input.value) {
-            const li = document.createElement('li');
-            li.textContent = input.value;
-            li.onclick = function() { this.classList.toggle('completed'); };
-            milestonesList.appendChild(li);
-            input.value = '';
+    function showTab(tabName) {
+        $('.content').html('Loading ' + tabName + '...');
+        // Here, fetch or generate content for each tab. This is a placeholder.
+        switch(tabName) {
+            case 'businessPlans':
+                $('.content').html(`
+                    <h2>Create Your Business Plan</h2>
+                    <input type="text" placeholder="Business Name" />
+                    <button>Create Plan</button>
+                    <p>Download a template: <a href="#">Tech Startup Plan</a></p>
+                `);
+                break;
+            case 'businessQuiz':
+                $('.content').html(`
+                    <h2>Entrepreneurship Quiz</h2>
+                    <p>What is the primary purpose of a business plan?</p>
+                    <input type="radio" name="quiz" value="a"> A) To attract investors<br>
+                    <input type="radio" name="quiz" value="b"> B) To guide business operations<br>
+                    <button>Submit</button>
+                `);
+                break;
+            case 'startupResources':
+                $('.content').html(`
+                    <h2>Resources</h2>
+                    <ul>
+                        <li><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank">Video: How to Start a Startup</a></li>
+                        <li><a href="https://www.amazon.com/Lean-Startup-Entrepreneurs-Continuous-Innovation/dp/0307887898" target="_blank">Book: The Lean Startup</a></li>
+                    </ul>
+                `);
+                break;
+            case 'progressTracker':
+                $('.content').html(`
+                    <h2>Progress Tracker</h2>
+                    <div class="milestone">Launch Website <button onclick="toggleAchieved(this)">✓</button></div>
+                    <div class="progress-bar"><div class="progress" style="width:50%;">50%</div></div>
+                `);
+                break;
         }
+        $('nav div').removeClass('active-tab');
+        $(`.nav div:nth-child(${tabName === 'businessPlans' ? 1 : tabName === 'businessQuiz' ? 2 : tabName === 'startupResources' ? 3 : 4})`).addClass('active-tab');
     }
 
-    displayQuiz();
-    checkQuiz();
-    
-    // Local storage for milestones could be implemented here
-});
-</script>
+    function toggleAchieved(btn) {
+        $(btn).text() === '✓' ? $(btn).text('✗') : $(btn).text('✓');
+        // Update progress here
+    }
 
+    // Initialize with the first tab
+    showTab('businessPlans');
+</script>
 </body>
 </html>

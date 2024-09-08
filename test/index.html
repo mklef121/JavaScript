@@ -3,424 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skills-to-Job Match Game</title>
+    <title>Informal Economy Report - Nigeria</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #e8f4f8;
+            line-height: 1.6;
             margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 90%;
+            margin: auto;
+            overflow: hidden;
+        }
+        header {
+            background: #333;
+            color: #fff;
+            padding-top: 30px;
+            min-height: 70px;
+            border-bottom: #fff 3px solid;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+        }
+        .section {
+            margin: 20px 0;
             padding: 20px;
-        }
-        .game-container {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-        .skills-container, .jobs-container {
-            width: 48%;
-        }
-        .skills-container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .jobs-container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .skill, .job-slot {
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        .skill {
-            background-color: #cce5ff;
-            border: 1px solid #007bff;
-            user-select: none;
-        }
-        .job-slot {
-            background-color: #f1f1f1;
-            border: 1px solid #ccc;
-            min-height: 60px;
-            position: relative;
-            overflow: auto;
-        }
-        .job-slot.expanded {
-            height: auto;
-            background-color: #d1ecf1;
-        }
-        .alert {
-            display: none;
-            color: #721c24;
-            background-color: #f8d7da;
-            border: 1px solid #f5c6cb;
-            padding: 10px;
+            background: #fff;
             border-radius: 5px;
-            margin-top: 20px;
         }
-        .chart-container, .upskill-suggestions {
-            margin-top: 20px;
+        .section h2 {
+            margin-top: 0;
         }
         .chart-container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .upskill-suggestions {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            display: none; /* Initially hidden */
-        }
-        .upskill-suggestions h3 {
-            margin: 0 0 15px;
-            font-size: 1.5em;
-            color: #333;
-        }
-        .upskill-suggestions ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        .upskill-suggestions li {
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            padding: 15px;
-            background-color: #f9f9f9;
-            transition: background-color 0.3s;
-        }
-        .upskill-suggestions li:hover {
-            background-color: #e2e6ea;
-        }
-        .upskill-suggestions a {
-            color: #007bff;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .upskill-suggestions a:hover {
-            text-decoration: underline;
-        }
-        .upskill-suggestions .job-title {
-            font-size: 1.2em;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #333;
-        }
-        .upskill-suggestions .icon {
-            font-size: 1.5em;
-            margin-right: 10px;
-            color: #007bff;
-        }
-        .upskill-suggestions .suggestion-item {
             display: flex;
-            align-items: center;
+            justify-content: center;
+            position: relative;
+            height: 400px;
+            width: 100%;
         }
-        @media (max-width: 768px) {
-            .game-container {
-                flex-direction: column;
-            }
-            .skills-container, .jobs-container {
-                width: 100%;
-            }
-        }
-        .summary {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
-        }
-        .summary h2 {
-            margin: 0 0 10px;
-            font-size: 1.5em;
-            color: #333;
-        }
-        .summary p {
-            margin: 0 0 10px;
-            line-height: 1.6;
-            color: #555;
-        }
-        .summary footer {
-            font-size: 0.9em;
-            color: #777;
-            border-top: 1px solid #ddd;
-            padding-top: 10px;
-            margin-top: 10px;
+
+        .chart-text {
+            text-align: center;
+            margin: 20px 0;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <h1>Skills-to-Job Match Game</h1>
-    <div class="game-container">
-        <div class="skills-container">
-            <div class="skill" draggable="true" id="skill1">Python Programming</div>
-            <div class="skill" draggable="true" id="skill2">JavaScript</div>
-            <div class="skill" draggable="true" id="skill3">Project Management</div>
-            <div class="skill" draggable="true" id="skill4">Data Visualization</div>
-            <div class="skill" draggable="true" id="skill5">HTML & CSS</div>
-            <div class="skill" draggable="true" id="skill6">UI/UX Design</div>
-            <div class="skill" draggable="true" id="skill7">SQL</div>
-            <div class="skill" draggable="true" id="skill8">Java</div>
-            <div class="skill" draggable="true" id="skill9">Agile Methodologies</div>
-            <div class="skill" draggable="true" id="skill10">Communication Skills</div>
+
+<header>
+    <div class="container">
+        <h1>Informal Economy Report - Nigeria</h1>
+    </div>
+</header>
+
+<div class="container">
+    <div class="section">
+        <h2>Overview of MSMEs in Nigeria</h2>
+        <p>Nigeria is home to approximately 40 million micro, small, and medium enterprises (MSMEs), with nearly 90% operating within the informal economy. This sector, often referred to as the shadow economy, consists of businesses that are generally untaxed and unregistered.</p>
+    </div>
+
+    <div class="section">
+        <h2>Age Distribution in the Informal Economy</h2>
+        <div class="chart-container">
+            <canvas id="ageDistributionChart"></canvas>
         </div>
-        <div class="jobs-container">
-            <div class="job-slot" id="job1">Data Scientist</div>
-            <div class="job-slot" id="job2">Full Stack Developer</div>
-            <div class="job-slot" id="job3">Project Manager</div>
-            <div class="job-slot" id="job4">Graphic Designer</div>
-            <div class="job-slot" id="job5">Software Engineer</div>
+        <div class="chart-text">
+            Age distribution of the informal economy workforce, highlighting the predominance of younger individuals.
         </div>
     </div>
-    <div class="alert" id="alert">Incorrect Skill! Please try again.</div>
-    <div class="chart-container">
-        <h2>Tech Job Trends</h2>
-        <canvas id="techTrendsChart"></canvas>
+
+    <div class="section">
+        <h2>Gender Representation</h2>
+        <div class="chart-container">
+            <canvas id="genderChart"></canvas>
+        </div>
+        <div class="chart-text">
+            Gender distribution within the informal economy, showcasing women's significant but minority presence.
+        </div>
     </div>
-    <div class="summary">
-        <h2>Tech Job Trends Summary</h2>
-        <p>
-            Over the past seven years, the technology job market has shown significant growth in terms of new job entries, salaries, and the demand for top tech skills. The number of new job entries in the tech sector has increased steadily each year, reflecting the expanding opportunities in this field. Average salaries for tech jobs have also risen consistently, indicating a higher valuation of tech expertise and the increasing cost of living.
-        </p>
-        <p>
-            The demand for key tech skills has grown sharply, driven by advancements in technology and the evolving needs of businesses. This is evidenced by a rising index representing the demand for skills such as programming, data analysis, and system design.
-        </p>
-        <footer>
-            Data sources: U.S. Bureau of Labor Statistics, LinkedIn Job Reports, Indeed Salary Data, and Glassdoor Job Trends.
-        </footer>
+
+    <div class="section">
+        <h2>Regional Distribution</h2>
+        <div class="chart-container">
+            <canvas id="regionalDistributionChart"></canvas>
+        </div>
+        <div class="chart-text">
+            Distribution of the informal economy across various regions of Nigeria.
+        </div>
     </div>
-    <div class="upskill-suggestions" id="upskill-suggestions">
-        <h3>Upskilling Suggestions</h3>
-        <ul>
-            <li>
-                <div class="job-title">Data Scientist</div>
-                <div class="suggestion-item">
-                    <span class="icon">📊</span>
-                    <div>
-                        Advanced Python Programming - <a href="https://www.datacamp.com/courses/advanced-python-for-data-science">DataCamp</a>
-                    </div>
-                </div>
-                <div class="suggestion-item">
-                    <span class="icon">🤖</span>
-                    <div>
-                        Machine Learning Specialization - <a href="https://www.coursera.org/specializations/machine-learning">Coursera</a>
-                    </div>
-                </div>
-                <div class="suggestion-item">
-                    <span class="icon">📉</span>
-                    <div>
-                        Data Visualization with Tableau - <a href="https://www.udemy.com/course/tableau-data-visualization/">Udemy</a>
-                    </div>
-                </div>
-            </li>
-            <li>
-                <div class="job-title">Full Stack Developer</div>
-                <div class="suggestion-item">
-                    <span class="icon">💻</span>
-                    <div>
-                        Full Stack Web Development with React - <a href="https://www.udacity.com/course/full-stack-web-developer-nanodegree--nd0044">Udacity</a>
-                    </div>
-                </div>
-                <div class="suggestion-item">
-                    <span class="icon">🔧</span>
-                    <div>
-                        Backend Development with Node.js - <a href="https://www.pluralsight.com/courses/nodejs-introduction">Pluralsight</a>
-                    </div>
-                </div>
-                <div class="suggestion-item">
-                    <span class="icon">📅</span>
-                    <div>
-                        Database Management with SQL - <a href="https://www.codecademy.com/learn/learn-sql">Codecademy</a>
-                    </div>
-                </div>
-            </li>
-            <li>
-                <div class="job-title">Project Manager</div>
-                <div class="suggestion-item">
-                    <span class="icon">🗂️</span>
-                    <div>
-                        PMP Certification - <a href="https://www.pmi.org/certifications/project-management-pmp">Project Management Institute</a>
-                    </div>
-                </div>
-                <div class="suggestion-item">
-                    <span class="icon">🔄</span>
-                    <div>
-                        Certified ScrumMaster - <a href="https://www.scrumalliance.org/getattachment/certifications/scrum-master/csm">Scrum Alliance</a>
-                    </div>
-                </div>
-                <div class="suggestion-item">
-                    <span class="icon">📈</span>
-                    <div>
-                        Advanced Project Management Strategies - <a href="https://www.linkedin.com/learning/advanced-project-management">LinkedIn Learning</a>
-                    </div>
-                </div>
-            </li>
-            <li>
-                <div class="job-title">Graphic Designer</div>
-                <div class="suggestion-item">
-                    <span class="icon">🎨</span>
-                    <div>
-                        Master Adobe Creative Suite - <a href="https://helpx.adobe.com/creative-cloud.html">Adobe Learn</a>
-                    </div>
-                </div>
-                <div class="suggestion-item">
-                    <span class="icon">📐</span>
-                    <div>
-                        UI/UX Design Fundamentals - <a href="https://www.coursera.org/learn/ui-ux-design">Coursera</a>
-                    </div>
-                </div>
-                <div class="suggestion-item">
-                    <span class="icon">📁</span>
-                    <div>
-                        Portfolio Development - <a href="https://www.behance.net/">Behance</a>
-                    </div>
-                </div>
-            </li>
-            <li>
-                <div class="job-title">Software Engineer</div>
-                <div class="suggestion-item">
-                    <span class="icon">🛠️</span>
-                    <div>
-                        Advanced Java Programming - <a href="https://www.udemy.com/course/advanced-java-programming/">Udemy</a>
-                    </div>
-                </div>
-                <div class="suggestion-item">
-                    <span class="icon">📚</span>
-                    <div>
-                        Software Engineering Principles - <a href="https://www.edx.org/course/software-engineering-principles">edX</a>
-                    </div>
-                </div>
-                <div class="suggestion-item">
-                    <span class="icon">🔍</span>
-                    <div>
-                        System Design and Architecture - <a href="https://www.pluralsight.com/paths/system-design">Pluralsight</a>
-                    </div>
-                </div>
-            </li>
-        </ul>
+
+    <div class="section">
+        <h2>Key Industries in the Informal Economy</h2>
+        <div class="chart-container">
+            <canvas id="industryDistributionChart"></canvas>
+        </div>
+        <div class="chart-text">
+            Breakdown of different industries within the informal economy and their contributions.
+        </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        // Drag and Drop functionality
-        const skills = document.querySelectorAll('.skill');
-        const jobSlots = document.querySelectorAll('.job-slot');
-        const alertBox = document.getElementById('alert');
-        const upskillSuggestions = document.getElementById('upskill-suggestions');
-        let correctMatches = 0;
+</div>
 
-        skills.forEach(skill => {
-            skill.addEventListener('dragstart', (e) => {
-                e.dataTransfer.setData('text', e.target.id);
-            });
-        });
-
-        jobSlots.forEach(slot => {
-            slot.addEventListener('dragover', (e) => {
-                e.preventDefault();
-            });
-
-            slot.addEventListener('drop', (e) => {
-                e.preventDefault();
-                const skillId = e.dataTransfer.getData('text');
-                const skill = document.getElementById(skillId);
-
-                if (isCorrectSkill(slot, skill)) {
-                    slot.classList.add('expanded');
-                    slot.appendChild(skill);
-                    correctMatches++;
-                    if (correctMatches === jobSlots.length) {
-                        upskillSuggestions.style.display = 'block';
-                    }
-                } else {
-                    alertBox.style.display = 'block';
-                    setTimeout(() => {
-                        alertBox.style.display = 'none';
-                    }, 1500);
-                }
-            });
-        });
-
-        function isCorrectSkill(slot, skill) {
-            const matches = {
-                'job1': ['skill1', 'skill4', 'skill7'],
-                'job2': ['skill2', 'skill5', 'skill6', 'skill8'],
-                'job3': ['skill3', 'skill9', 'skill10'],
-                'job4': ['skill4', 'skill6', 'skill10'],
-                'job5': ['skill2', 'skill5', 'skill8']
-            };
-            return matches[slot.id] && matches[slot.id].includes(skill.id);
-        }
-
-        function renderChart() {
-            const ctx = document.getElementById('techTrendsChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['2017', '2018', '2019', '2020', '2021', '2022', '2023'],
-                    datasets: [
-                        {
-                            label: 'Number of New Tech Job Entries',
-                            data: [1500, 1600, 1700, 1800, 2000, 2200, 2400],
-                            borderColor: '#007bff',
-                            backgroundColor: 'rgba(0, 123, 255, 0.1)',
-                            fill: true,
-                        },
-                        {
-                            label: 'Average Salary ($)',
-                            data: [70000, 72000, 74000, 76000, 78000, 80000, 82000],
-                            borderColor: '#28a745',
-                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                            fill: true,
-                        },
-                        {
-                            label: 'Top Tech Skills Demand Index',
-                            data: [80, 85, 90, 95, 100, 105, 110],
-                            borderColor: '#dc3545',
-                            backgroundColor: 'rgba(220, 53, 69, 0.1)',
-                            fill: true,
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(tooltipItem) {
-                                    return `${tooltipItem.dataset.label}: ${tooltipItem.raw}`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Year'
-                            }
-                        },
-                        y: {
-                            title: {
-                                display: true,
-                                text: 'Value'
-                            }
-                        }
+<script>
+    // Age Distribution Chart
+    var ctxAge = document.getElementById('ageDistributionChart').getContext('2d');
+    new Chart(ctxAge, {
+        type: 'bar',
+        data: {
+            labels: ['25-34', '35-44', '18-24', '45-54', '55-64', '65+'],
+            datasets: [{
+                label: 'Percentage (%)',
+                data: [43.1, 28.9, 14.4, 10, 2.8, 0.6],
+                backgroundColor: '#007bff',
+                borderColor: '#0056b3',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) { return value + '%' }
                     }
                 }
-            });
+            },
+            plugins: {
+                legend: { display: false }
+            }
         }
-        renderChart();
+    });
 
-    </script>
+    // Gender Distribution Chart
+    var ctxGender = document.getElementById('genderChart').getContext('2d');
+    new Chart(ctxGender, {
+        type: 'doughnut',
+        data: {
+            labels: ['Women', 'Men'],
+            datasets: [{
+                label: 'Gender Distribution',
+                data: [37.1, 62.9],
+                backgroundColor: ['#ff6384', '#36a2eb'],
+                borderColor: ['#ff6384', '#36a2eb'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    // Regional Distribution Chart
+    var ctxRegion = document.getElementById('regionalDistributionChart').getContext('2d');
+    new Chart(ctxRegion, {
+        type: 'polarArea',
+        data: {
+            labels: ['South-West', 'North-Central', 'North-East', 'North-West', 'South-East', 'South-South'],
+            datasets: [{
+                label: 'Regional Contribution (%)',
+                data: [30, 17, 6, 12, 12, 20],
+                backgroundColor: ['#ffce56', '#ff9f40', '#ff6384', '#36a2eb', '#4bc0c0', '#9966ff'],
+                borderColor: '#fff',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+
+    // Industry Distribution Chart
+    var ctxIndustry = document.getElementById('industryDistributionChart').getContext('2d');
+    new Chart(ctxIndustry, {
+        type: 'radar',
+        data: {
+            labels: ['Retail & General Trade', 'Food & Drinks', 'Oil & Gas', 'Health Care', 'Fashion and Beauty', 'Beauty and Personal Care', 'Agriculture', 'Construction', 'Education', 'Arts & Creative', 'Casual Use', 'Professional Services', 'Others'],
+            datasets: [{
+                label: 'Industry Share (%)',
+                data: [24, 13.4, 2.7, 2.8, 8.1, 6.9, 6.2, 4.3, 4.1, 2.9, 3, 4, 11],
+                backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                borderColor: '#007bff',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                r: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+</script>
+
 </body>
 </html>

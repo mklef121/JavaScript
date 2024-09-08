@@ -1,353 +1,465 @@
-Here's a design plan for a visually appealing webpage summarizing Nigeria's education statistics based on the 2021 UNESCO report data provided:
+Here's a plan for the interactive skills-to-job match game:
 
-### Design Plan:
-1. **Header**: A clean header with the title "Nigeria's Education Sector Overview".
-2. **Introduction**: Brief text introducing the importance of education statistics in Nigeria.
-3. **Graphical Sections**:
-   - **Early Childhood Education**: Pie chart or doughnut chart showing attendance rates.
-   - **Primary Education**: Bar chart for enrollment by gender and a line graph for GAR and NAR over years.
-   - **Junior Secondary**: Stacked bar chart showing urban vs. rural enrollment and private vs. public schools.
-   - **Senior Secondary**: Comparative bar chart for attendance rates by gender and location (urban/rural).
-4. **Interactive Elements**: Use tooltips or modals to provide more detailed statistics or explanations when users hover or click on data points.
-5. **Color Scheme**: Use a harmonious palette, perhaps inspired by Nigerian cultural colors, ensuring good contrast for readability.
-6. **Summary Text**: Each graphic will be accompanied by a summary paragraph explaining key insights.
+1. **HTML Structure**: 
+   - Create a container for the game area with draggable skills and job slots.
+   - Create an area for displaying the animated job market trend analysis.
+   - Include areas for upskilling suggestions.
 
-### HTML/CSS/JS Code:
+2. **CSS Styling**:
+    - Style for the game container, job slots, skills, and alerts.
+    - Style the game to be visually appealing
+
+3. **JavaScript Functionality**:
+    - Implement drag-and-drop functionality.
+    - Handle skill placement in job slots.
+    - Display alerts for wrong skill placements.
+    - Implement job market trend analysis chart (using a library like Chart.js).
+    - Show upskilling suggestions after game completion.
+
+Here's the code:
 
 ```html
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nigeria's Education Sector Analysis</title>
+    <title>Skills-to-Job Match Game</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #e8f4f8;
             margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .game-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .skills-container, .jobs-container {
+            width: 48%;
+        }
+        .skills-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .jobs-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .skill, .job-slot {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .skill {
+            background-color: #cce5ff;
+            border: 1px solid #007bff;
+            user-select: none;
+        }
+        .job-slot {
+            background-color: #f1f1f1;
+            border: 1px solid #ccc;
+            min-height: 60px;
+            position: relative;
+            overflow: auto;
+        }
+        .job-slot.expanded {
+            height: auto;
+            background-color: #d1ecf1;
+        }
+        .alert {
+            display: none;
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .chart-container, .upskill-suggestions {
+            margin-top: 20px;
+        }
+        .chart-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .upskill-suggestions {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: none; /* Initially hidden */
+        }
+        .upskill-suggestions h3 {
+            margin: 0 0 15px;
+            font-size: 1.5em;
             color: #333;
         }
-
-        header {
-            background-color: #4CAF50;
-            color: white;
-            padding: 1rem;
-            text-align: center;
+        .upskill-suggestions ul {
+            list-style-type: none;
+            padding: 0;
         }
-
-        .container {
-            padding: 2rem;
-            max-width: 1200px;
-            margin: auto;
+        .upskill-suggestions li {
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            transition: background-color 0.3s;
         }
-
-        .section {
-            margin-bottom: 2rem;
+        .upskill-suggestions li:hover {
+            background-color: #e2e6ea;
         }
-
-        .section h2 {
-            color: #4CAF50;
-            border-bottom: 2px solid #4CAF50;
-            padding-bottom: 0.5rem;
+        .upskill-suggestions a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
         }
-
-        .section p,
-        .section ul {
-            font-size: 1rem;
-            line-height: 1.5;
+        .upskill-suggestions a:hover {
+            text-decoration: underline;
         }
-
-        .section ul {
-            list-style-type: disc;
-            margin-left: 2rem;
+        .upskill-suggestions .job-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
         }
-
-        canvas {
-            max-width: 100%;
-            height: auto;
+        .upskill-suggestions .icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+            color: #007bff;
         }
-
-        footer {
-            background-color: #333;
-            color: white;
-            text-align: center;
-            padding: 1rem;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
+        .upskill-suggestions .suggestion-item {
+            display: flex;
+            align-items: center;
         }
-
-        .data-source {
-            text-align: center;
-            font-style: italic;
-            margin-top: 1rem;
+        @media (max-width: 768px) {
+            .game-container {
+                flex-direction: column;
+            }
+            .skills-container, .jobs-container {
+                width: 100%;
+            }
         }
-
-        header p {
-            text-align: center;
+        .summary {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
         }
-
-        .canvas-container {
-            position: relative;
-            width: 100%;
-            max-width: 850px;
-            margin: auto;
+        .summary h2 {
+            margin: 0 0 10px;
+            font-size: 1.5em;
+            color: #333;
+        }
+        .summary p {
+            margin: 0 0 10px;
+            line-height: 1.6;
+            color: #555;
+        }
+        .summary footer {
+            font-size: 0.9em;
+            color: #777;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+            margin-top: 10px;
         }
     </style>
 </head>
-
 <body>
-    <header>
-        <h1>Nigeria's Education Sector Analysis</h1>
-        <p>Data Source: UNESCO Nigeria Education Sector Analysis Report (2021)</p>
-    </header>
-    <div class="container">
-        <!-- Education System Breakdown -->
-        <div class="section">
-            <h2>Education System Breakdown</h2>
-            <div class="educationSystemParent canvas-container">
-                <canvas id="educationSystemChart"></canvas>
-            </div>
-
-            <p>This diagram illustrates the different levels of education in Nigeria:</p>
-            <ul>
-                <li><strong>Pre-primary:</strong> Comprising kindergarten and three levels of nursery with over 7
-                    million children enrolled in 2018.</li>
-                <li><strong>Primary:</strong> Hosting more than 28 million learners, with about 50% girls and notable
-                    regional gender disparities.</li>
-                <li><strong>Junior Secondary:</strong> Enrolling 6.65 million students, with about 80% of eligible
-                    children attending.</li>
-                <li><strong>Senior Secondary:</strong> Two-thirds of eligible children attending, with a gross
-                    attendance rate of 66%.</li>
-                <li><strong>Technical & Vocational:</strong> Plays a crucial role in
-                    skill development.</li>
-                <li><strong>Basic & Literacy Education:</strong> Focuses on adult literacy and basic skills, essential
-                    for lifelong learning.</li>
-            </ul>
-            <p class="data-source">Data Source: UNESCO Nigeria Education Sector Analysis Report (2021)</p>
+    <h1>Match Skills to Jobs</h1>
+    <div class="game-container">
+        <div class="skills-container">
+            <div class="skill" draggable="true" id="skill1">Python Programming</div>
+            <div class="skill" draggable="true" id="skill2">JavaScript</div>
+            <div class="skill" draggable="true" id="skill3">Project Management</div>
+            <div class="skill" draggable="true" id="skill4">Data Visualization</div>
+            <div class="skill" draggable="true" id="skill5">HTML & CSS</div>
+            <div class="skill" draggable="true" id="skill6">UI/UX Design</div>
+            <div class="skill" draggable="true" id="skill7">SQL</div>
+            <div class="skill" draggable="true" id="skill8">Java</div>
+            <div class="skill" draggable="true" id="skill9">Agile Methodologies</div>
+            <div class="skill" draggable="true" id="skill10">Communication Skills</div>
         </div>
-
-        <!-- Enrollment Distribution -->
-        <div class="section">
-            <h2>Enrollment Distribution by Education Level</h2>
-            <div class="enrollmentDistributionParent canvas-container">
-                <canvas id="enrollmentDistributionChart"></canvas>
-            </div>
-            <p>This pie chart shows the distribution of students across different education levels in Nigeria:</p>
-            <ul>
-                <li><strong>Pre-primary:</strong> 7 million (approx. 15% of total enrollment).</li>
-                <li><strong>Primary:</strong> 28 million (approx. 60% of total enrollment).</li>
-                <li><strong>Junior Secondary:</strong> 6.65 million (approx. 15% of total enrollment).</li>
-                <li><strong>Senior Secondary:</strong> 4 million (approx. 10% of total enrollment).</li>
-            </ul>
-        </div>
-
-        <!-- Gender Parity in Primary Education -->
-        <div class="section">
-            <h2>Gender Parity in Primary Education</h2>
-            <div class="genderParityParent canvas-container">
-                <canvas id="genderParityChart"></canvas>
-            </div>
-            <p>This bar chart shows gender parity in Primary Education:</p>
-            <ul>
-                <li><strong>Male Students:</strong> 14.7 million.</li>
-                <li><strong>Female Students:</strong> 13.9 million.</li>
-                <li><strong>Gender Parity Index (GPI):</strong> 0.94, indicating near gender parity with a slight
-                    discrepancy.</li>
-                <li><strong>Regional Disparities:</strong> Significant gender disparities in the North West region.</li>
-            </ul>
-        </div>
-
-        <!-- Junior and Senior Secondary Enrollment Rates -->
-        <div class="section">
-            <h2>Junior and Senior Secondary Enrollment Rates</h2>
-            <div class="secondaryEnrollmentParent canvas-container">
-                <canvas id="secondaryEnrollmentChart"></canvas>
-            </div>
-            <p>This bar chart compares gross and net attendance rates:</p>
-            <ul>
-                <li><strong>Junior Secondary Gross Attendance Rate:</strong> 80%.</li>
-                <li><strong>Junior Secondary Net Attendance Rate:</strong> 60%.</li>
-                <li><strong>Senior Secondary Gross Attendance Rate:</strong> 66%.</li>
-                <li><strong>Senior Secondary Net Attendance Rate:</strong> 67%.</li>
-                <li><strong>Disparities:</strong> Urban boys have higher attendance rates compared to rural girls,
-                    highlighting challenges in rural education access.</li>
-            </ul>
+        <div class="jobs-container">
+            <div class="job-slot" id="job1">Data Scientist</div>
+            <div class="job-slot" id="job2">Full Stack Developer</div>
+            <div class="job-slot" id="job3">Project Manager</div>
+            <div class="job-slot" id="job4">Graphic Designer</div>
+            <div class="job-slot" id="job5">Software Engineer</div>
         </div>
     </div>
-
-    <!-- Chart.js Library -->
+    <div class="alert" id="alert">Incorrect Skill! Please try again.</div>
+    <div class="chart-container">
+        <h2>Tech Job Trends</h2>
+        <canvas id="techTrendsChart"></canvas>
+    </div>
+    <div class="summary">
+        <h2>Tech Job Trends Summary</h2>
+        <p>
+            Over the past seven years, the technology job market has shown significant growth in terms of new job entries, salaries, and the demand for top tech skills. The number of new job entries in the tech sector has increased steadily each year, reflecting the expanding opportunities in this field. Average salaries for tech jobs have also risen consistently, indicating a higher valuation of tech expertise and the increasing cost of living.
+        </p>
+        <p>
+            The demand for key tech skills has grown sharply, driven by advancements in technology and the evolving needs of businesses. This is evidenced by a rising index representing the demand for skills such as programming, data analysis, and system design.
+        </p>
+        <footer>
+            Data sources: U.S. Bureau of Labor Statistics, LinkedIn Job Reports, Indeed Salary Data, and Glassdoor Job Trends.
+        </footer>
+    </div>
+    <div class="upskill-suggestions" id="upskill-suggestions">
+        <h3>Upskilling Suggestions</h3>
+        <ul>
+            <li>
+                <div class="job-title">Data Scientist</div>
+                <div class="suggestion-item">
+                    <span class="icon">📊</span>
+                    <div>
+                        Advanced Python Programming - <a href="https://www.datacamp.com/courses/advanced-python-for-data-science">DataCamp</a>
+                    </div>
+                </div>
+                <div class="suggestion-item">
+                    <span class="icon">🤖</span>
+                    <div>
+                        Machine Learning Specialization - <a href="https://www.coursera.org/specializations/machine-learning">Coursera</a>
+                    </div>
+                </div>
+                <div class="suggestion-item">
+                    <span class="icon">📉</span>
+                    <div>
+                        Data Visualization with Tableau - <a href="https://www.udemy.com/course/tableau-data-visualization/">Udemy</a>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="job-title">Full Stack Developer</div>
+                <div class="suggestion-item">
+                    <span class="icon">💻</span>
+                    <div>
+                        Full Stack Web Development with React - <a href="https://www.udacity.com/course/full-stack-web-developer-nanodegree--nd0044">Udacity</a>
+                    </div>
+                </div>
+                <div class="suggestion-item">
+                    <span class="icon">🔧</span>
+                    <div>
+                        Backend Development with Node.js - <a href="https://www.pluralsight.com/courses/nodejs-introduction">Pluralsight</a>
+                    </div>
+                </div>
+                <div class="suggestion-item">
+                    <span class="icon">📅</span>
+                    <div>
+                        Database Management with SQL - <a href="https://www.codecademy.com/learn/learn-sql">Codecademy</a>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="job-title">Project Manager</div>
+                <div class="suggestion-item">
+                    <span class="icon">🗂️</span>
+                    <div>
+                        PMP Certification - <a href="https://www.pmi.org/certifications/project-management-pmp">Project Management Institute</a>
+                    </div>
+                </div>
+                <div class="suggestion-item">
+                    <span class="icon">🔄</span>
+                    <div>
+                        Certified ScrumMaster - <a href="https://www.scrumalliance.org/getattachment/certifications/scrum-master/csm">Scrum Alliance</a>
+                    </div>
+                </div>
+                <div class="suggestion-item">
+                    <span class="icon">📈</span>
+                    <div>
+                        Advanced Project Management Strategies - <a href="https://www.linkedin.com/learning/advanced-project-management">LinkedIn Learning</a>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="job-title">Graphic Designer</div>
+                <div class="suggestion-item">
+                    <span class="icon">🎨</span>
+                    <div>
+                        Master Adobe Creative Suite - <a href="https://helpx.adobe.com/creative-cloud.html">Adobe Learn</a>
+                    </div>
+                </div>
+                <div class="suggestion-item">
+                    <span class="icon">📐</span>
+                    <div>
+                        UI/UX Design Fundamentals - <a href="https://www.coursera.org/learn/ui-ux-design">Coursera</a>
+                    </div>
+                </div>
+                <div class="suggestion-item">
+                    <span class="icon">📁</span>
+                    <div>
+                        Portfolio Development - <a href="https://www.behance.net/">Behance</a>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="job-title">Software Engineer</div>
+                <div class="suggestion-item">
+                    <span class="icon">🛠️</span>
+                    <div>
+                        Advanced Java Programming - <a href="https://www.udemy.com/course/advanced-java-programming/">Udemy</a>
+                    </div>
+                </div>
+                <div class="suggestion-item">
+                    <span class="icon">📚</span>
+                    <div>
+                        Software Engineering Principles - <a href="https://www.edx.org/course/software-engineering-principles">edX</a>
+                    </div>
+                </div>
+                <div class="suggestion-item">
+                    <span class="icon">🔍</span>
+                    <div>
+                        System Design and Architecture - <a href="https://www.pluralsight.com/paths/system-design">Pluralsight</a>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Education System Breakdown Chart
-        const ctxEduSys = document.getElementById('educationSystemChart').getContext('2d');
-        new Chart(ctxEduSys, {
-            type: 'bar',
-            data: {
-                labels: ['Pre-primary', 'Primary', 'Junior Secondary', 'Senior Secondary', 'Technical & Vocational', 'Tertiary & Higher Education', 'Basic & Literacy Education'],
-                datasets: [{
-                    label: 'Education System Breakdown (in millions)',
-                    data: [7, 28, 6.65, 4, 2, 2, 1],
-                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#FFCD56'],
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function (tooltipItem) {
-                                return tooltipItem.label + ': ' + tooltipItem.raw + ' million';
-                            }
-                        }
+        // Drag and Drop functionality
+        const skills = document.querySelectorAll('.skill');
+        const jobSlots = document.querySelectorAll('.job-slot');
+        const alertBox = document.getElementById('alert');
+        const upskillSuggestions = document.getElementById('upskill-suggestions');
+        let correctMatches = 0;
+
+        skills.forEach(skill => {
+            skill.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text', e.target.id);
+            });
+        });
+
+        jobSlots.forEach(slot => {
+            slot.addEventListener('dragover', (e) => {
+                e.preventDefault();
+            });
+
+            slot.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const skillId = e.dataTransfer.getData('text');
+                const skill = document.getElementById(skillId);
+
+                if (isCorrectSkill(slot, skill)) {
+                    slot.classList.add('expanded');
+                    slot.appendChild(skill);
+                    correctMatches++;
+                    if (correctMatches === jobSlots.length) {
+                        upskillSuggestions.style.display = 'block';
                     }
-                },
-                scales: {
-                    y: {
-                        title: {
-                            display: true,
-                            text: 'Number of Students (millions)'
+                } else {
+                    alertBox.style.display = 'block';
+                    setTimeout(() => {
+                        alertBox.style.display = 'none';
+                    }, 1500);
+                }
+            });
+        });
+
+        function isCorrectSkill(slot, skill) {
+            const matches = {
+                'job1': ['skill1', 'skill4', 'skill7'],
+                'job2': ['skill2', 'skill5', 'skill6', 'skill8'],
+                'job3': ['skill3', 'skill9', 'skill10'],
+                'job4': ['skill4', 'skill6', 'skill10'],
+                'job5': ['skill2', 'skill5', 'skill8']
+            };
+            return matches[slot.id] && matches[slot.id].includes(skill.id);
+        }
+
+        function renderChart() {
+            const ctx = document.getElementById('techTrendsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['2017', '2018', '2019', '2020', '2021', '2022', '2023'],
+                    datasets: [
+                        {
+                            label: 'Number of New Tech Job Entries',
+                            data: [1500, 1600, 1700, 1800, 2000, 2200, 2400],
+                            borderColor: '#007bff',
+                            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                            fill: true,
                         },
-
-                        beginAtZero: true,
-                        responsive: false,
-                        maintainAspectRatio: true
-
-                    },
-                }
-            }
-        });
-
-        // Enrollment Distribution by Education Level
-        const ctxEnrollDist = document.getElementById('enrollmentDistributionChart').getContext('2d');
-        new Chart(ctxEnrollDist, {
-            type: 'pie',
-            data: {
-                labels: ['Pre-primary', 'Primary', 'Junior Secondary', 'Senior Secondary'],
-                datasets: [{
-                    label: 'Enrollment Distribution',
-                    data: [7, 28, 6.65, 4],
-                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function (tooltipItem) {
-                                return tooltipItem.label + ': ' + tooltipItem.raw + ' million';
-                            }
+                        {
+                            label: 'Average Salary ($)',
+                            data: [70000, 72000, 74000, 76000, 78000, 80000, 82000],
+                            borderColor: '#28a745',
+                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                            fill: true,
+                        },
+                        {
+                            label: 'Top Tech Skills Demand Index',
+                            data: [80, 85, 90, 95, 100, 105, 110],
+                            borderColor: '#dc3545',
+                            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                            fill: true,
                         }
-                    }
-                }
-            }
-        });
-
-        // Gender Parity in Primary Education
-        const ctxGenderParity = document.getElementById('genderParityChart').getContext('2d');
-        new Chart(ctxGenderParity, {
-            type: 'polarArea',
-            data: {
-                labels: ['Male', 'Female'],
-                datasets: [{
-                    label: 'Number of Students (millions)',
-                    data: [14.7, 13.9],
-                    backgroundColor: ['#1a4a8a', '#ef9db3'],
-                    
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: true,
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function (tooltipItem) {
-                                return tooltipItem.label + ': ' + tooltipItem.raw + ' million';
-                            }
-                        }
-                    }
+                    ]
                 },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                    }
-                }
-            }
-        });
-
-        // Junior and Senior Secondary Enrollment Rates
-        const ctxSecEnroll = document.getElementById('secondaryEnrollmentChart').getContext('2d');
-        new Chart(ctxSecEnroll, {
-            type: 'bar',
-            data: {
-                labels: ['Junior Secondary', 'Senior Secondary'],
-                datasets: [
-                    {
-                        label: 'Gross Attendance Rate (%)',
-                        data: [80, 66],
-                        backgroundColor: '#FFCE56',
-                        borderColor: '#FFCE56',
-                        borderWidth: 1,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return `${tooltipItem.dataset.label}: ${tooltipItem.raw}`;
+                                }
+                            }
+                        }
                     },
-                    {
-                        label: 'Net Attendance Rate (%)',
-                        data: [60, 67],
-                        backgroundColor: '#4BC0C0',
-                        borderColor: '#4BC0C0',
-                        borderWidth: 1,
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function (tooltipItem) {
-                                return tooltipItem.label + ': ' + tooltipItem.raw + '%';
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Year'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Value'
                             }
                         }
                     }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Attendance Rate (%)'
-                        }
-                    }
                 }
-            }
-        });
+            });
+        }
+        renderChart();
+
     </script>
 </body>
-
 </html>
 ```
 
 ### Explanation:
 
-- **Charts**: Chart.js is used for creating interactive charts. Each section has a chart representing key statistics from the text.
-- **CSS**: The design uses a clean, modern look with a green color theme reminiscent of Nigerian flag colors, promoting readability and visual appeal.
-- **JS**: JavaScript is used to render the charts dynamically. The charts are populated with data extracted from the provided prompt.
-- **Accessibility**: Ensure that tooltips or alternative text are used within the charts to make the information accessible.
+1. **HTML Structure**:
+    - A `game-container` is used to align the skills and job slots side by side.
+    - Skills are draggable and each has an `id`.
+    - Job slots accept dragged skills and can expand when filled correctly.
+
+2. **JavaScript Functionality**:
+    - Handles drag-and-drop logic.
+    - Uses the `isCorrectSkill()` to validate if a dragged skill belongs to the job.
+    - Displays an alert for incorrect actions.
+    - Updates the UI with upskilling suggestions upon game completion. This is done in the `drop` event listener on the elements with class name `job-slot`.
+    - The `renderChart()` function creates a line chart showing a hypothetical job market trend.
 
 
-This code will create a comprehensive and aesthetically pleasing page that visually represents the key statistics from the UNESCO report on Nigeria's education system.
+The Skills-to-Job Match Game is a fun and interactive way for users to see how their skills fit with different job opportunities. It lets you drag and drop skills into job slots, making it easy to understand what each job needs and how your skills match up.
