@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Female Health Tracker</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.min.css">
+  <style>
+    /* Existing styles remain the same, but we'll add styles for toast notifications */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+
+    #calendar {
+      margin: 20px auto;
+      max-width: 90%;
+    }
+
+    #inputs {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      margin: 20px auto;
+    }
+
+    #inputs label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    #inputs input[type="date"],
+    #inputs input[type="number"] {
+      width: calc(100% - 20px);
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    #inputs button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 15px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    #inputs button:hover {
+      background-color: #0056b3;
+    }
+
+    .fc-event.period {
+      background-color: red;
+      border-color: red;
+    }
+
+    .fc-event.ovulation {
+      background-color: blue;
+      border-color: blue;
+    }
+
+    .fc-day-today {
+      background-color: yellow !important;
+    }
+
+    /* Toast Notification Styles */
+    .toast {
+      position: fixed;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #333;
+      color: #fff;
+      padding: 16px;
+      border-radius: 5px;
+      visibility: hidden;
+      opacity: 0;
+      transition: visibility 0.3s, opacity 0.3s linear;
+    }
+
+    .toast.show {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .toast.error {
+      background-color: #d9534f;
+    }
+
+    .toast.success {
+      background-color: #5cb85c;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="calendar"></div>
+
+  <form id="inputs">
+    <label for="startDate">Last Period Start Date:</label>
+    <input type="date" id="startDate">
+    <label for="duration">Average Period Duration (days):</label>
+    <input type="number" id="duration" min="1" value="5">
+    <button type="submit">Update Calendar</button>
+  </form>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.1/main.min.js"></script>
+  <script>
+    // ... (JavaScript code from previous response goes here, with modifications for toast notifications)
+    document.addEventListener('DOMContentLoaded', function () {
+      const calendarEl = document.getElementById('calendar');
+      const inputsForm = document.getElementById('inputs');
+      let calendar;
+      // Adding toast functionality
+      function showToast(message, type = 'info') {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.remove('error', 'success');
+        toast.classList.add(type);
+        toast.classList.add('show');
+
+        setTimeout(() => {
+          toast.classList.remove('show');
+        }, 3000); // Hide toast after 3 seconds
+      }
+
+      document.getElementById('inputs').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const startDateInput = document.getElementById('startDate');
+        const durationInput = document.getElementById('duration');
+
+        if (!startDateInput.value || !durationInput.value) {
+          showToast('Please fill in all fields.', 'error');
+          return;
+        }
+
+        // If validations pass, proceed with calendar update
+        const startDate = new Date(startDateInput.value);
+        const duration = parseInt(durationInput.value, 10);
+
+        const events = predictEvents(startDate, duration);
+        calendar.removeAllEvents();
+        calendar.addEventSource(events);
+
+        showToast('Calendar updated successfully!', 'success');
+      });
+
+      // ... (rest of the JavaScript code, including predictEvents function and FullCalendar initialization)
+      function predictEvents(startDate, duration) {
+        const periodEvents = [];
+        const ovulationEvents = [];
+        const cycleLength = 28; // Simplification: assuming a 28-day cycle for ovulation calculation
+        const ovulationOffset = 14;
+
+        for (let month = 0; month < 12; month++) {
+          const periodStart = new Date(startDate.getTime());
+          periodStart.setMonth(startDate.getMonth() + month);
+          const periodEnd = new Date(periodStart.getTime());
+          periodEnd.setDate(periodStart.getDate() + duration - 1);
+
+          const ovulationStart = new Date(periodStart.getTime());
+          ovulationStart.setDate(periodStart.getDate() - ovulationOffset);
+          const ovulationEnd = new Date(ovulationStart.getTime());
+          ovulationEnd.setDate(ovulationStart.getDate() + 2);
+
+          periodEvents.push({
+            title: 'Period',
+            start: periodStart,
+            end: periodEnd,
+            className: 'period'
+          });
+
+          ovulationEvents.push({
+            title: 'Ovulation',
+            start: ovulationStart,
+            end: ovulationEnd,
+            className: 'ovulation'
+          });
+        }
+
+        return periodEvents.concat(ovulationEvents);
+      }
+
+      calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        events: [],
+        eventDidMount: function (info) {
+          info.el.title = info.event.title;
+        }
+      });
+
+      calendar.render();
+    })
+  </script>
+
+</body>
+
+</html>
