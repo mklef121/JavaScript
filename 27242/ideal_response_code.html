@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -59,7 +58,7 @@
             border-radius: 50%;
         }
 
-        #score-display, #high-score-display {
+        #score-display, #high-score-display, #level-display {
             position: absolute;
             font-size: 1.5vh;
             padding: 5px;
@@ -76,6 +75,14 @@
             color: white;
             background: rgba(0,0,0,0.5);
             display: none;
+            position: absolute;
+        }
+
+        #level-display {
+            top: 30px;
+            left: 10px;
+            color: white;
+            background: rgba(0,0,0,0.5);
         }
 
         #start-screen, #game-over-screen {
@@ -116,12 +123,11 @@
         }
     </style>
 </head>
-
 <body>
     <div id="game-container">
         <div id="player" class="game-element"></div>
         <div id="score-display">Score: 0</div>
-        <div id="high-score-display"></div>
+        <div id="level-display">Level: 1</div>
         <div id="start-screen">
             <h1>Platform Jumper</h1>
             <p>Use arrow keys to move and jump.</p>
@@ -131,24 +137,26 @@
         <div id="game-over-screen">
             <h1>Game Over</h1>
             <p id="final-score"></p>
+            <div id="high-score-display"></div>
+
             <button class="button" onclick="location.reload()">Restart Game</button>
         </div>
     </div>
 
     <script>
-       const gameContainer = document.getElementById('game-container');
+        const gameContainer = document.getElementById('game-container');
         const player = document.getElementById('player');
         const scoreDisplay = document.getElementById('score-display');
+        const levelDisplay = document.getElementById('level-display');
         const startScreen = document.getElementById('start-screen');
         const gameOverScreen = document.getElementById('game-over-screen');
         const finalScoreDisplay = document.getElementById('final-score');
-        const highScoreDisplay = document.createElement('div');
-        highScoreDisplay.id = 'high-score-display';
-        highScoreDisplay.style.cssText = 'position: absolute; top: 10px; left: 10px; color: white; background: rgba(0,0,0,0.5); padding: 5px; display: none;';
-        gameContainer.appendChild(highScoreDisplay);
+        const highScoreDisplay = document.getElementById('high-score-display');
         let highScore = localStorage.getItem('platformJumperHighScore') || 0;
-
+        
         let score = 0;
+        let level = 1;
+        let scoreThreshold = 20;
         let platforms = [];
         let obstacles = [];
         let items = [];
@@ -157,41 +165,41 @@
         let isJumping = false;
         let gameRunning = false;
         let speedMultiplier = 1;
-        const platformHeight = 20; // Height of platforms
-        const playerHeight = 30; // Height of the player
-        const playerWidth = 30; // Width of the player
+        const platformHeight = 20;
+        const playerHeight = 30;
+        const playerWidth = 30;
 
         function startGame() {
             startScreen.style.display = 'none';
             gameRunning = true;
             resetPlayer();
             score = 0;
+            level = 1;
             updateScoreDisplay();
             requestAnimationFrame(updateGame);
-            highScoreDisplay.style.display = 'none'; // Hide high score celebration at start
+            highScoreDisplay.style.display = 'none';
         }
 
         function celebrateNewHighScore() {
             highScoreDisplay.textContent = `New High Score: ${highScore}!`;
             highScoreDisplay.style.display = 'block';
-            // Flash the high score message
             let opacity = 1;
             const flash = setInterval(() => {
                 opacity = opacity > 0 ? opacity - 0.1 : 1;
                 highScoreDisplay.style.opacity = opacity;
             }, 100);
 
-            // Stop flashing after a few seconds
             setTimeout(() => {
                 clearInterval(flash);
                 highScoreDisplay.style.opacity = 1;
-                highScoreDisplay.style.display = 'none'; // Optionally hide after celebration
+                highScoreDisplay.style.display = 'none';
             }, 3000);
         }
 
         function updateScoreDisplay() {
             scoreDisplay.textContent = `Score: ${score}`;
             highScoreDisplay.textContent = `High Score: ${highScore}`;
+            levelDisplay.textContent = `Level: ${level}`;
         }
 
         function checkHighScore() {
@@ -220,8 +228,6 @@
             }
         }
 
-
-
         function updatePlatforms() {
             if (platforms.length === 0 || platforms[platforms.length - 1].right < gameContainer.offsetWidth) {
                 createPlatform();
@@ -233,41 +239,35 @@
             });
         }
 
-
         function updateObstacles() {
             if (Math.random() < 0.05) {
                 createObstacle();
             }
             obstacles = obstacles.filter(obstacle => {
                 obstacle.right -= 3 * speedMultiplier;
-                if (obstacle.right + 30 < 0) { // Check if the obstacle has moved out of the screen
-                    obstacle.element.remove(); // Remove the obstacle from the DOM
-                    return false; // Exclude it from the array
+                if (obstacle.right + 30 < 0) {
+                    obstacle.element.remove();
+                    return false;
                 }
                 obstacle.element.style.right = `${obstacle.right}px`;
-                return true; // Keep it in the array
+                return true;
             });
         }
 
-
         function updateItems() {
-            // Create new items occasionally
             if (Math.random() < 0.03) {
                 createItem();
             }
-
-            // Update and remove items that are out of view
             items = items.filter(item => {
                 item.right -= 2 * speedMultiplier;
-                if (item.right + 20 < 0) { // Check if the item has moved out of the screen (with item width considered)
-                    item.element.remove(); // Remove the item from the DOM
-                    return false; // Exclude it from the array
+                if (item.right + 20 < 0) {
+                    item.element.remove();
+                    return false;
                 }
                 item.element.style.right = `${item.right}px`;
-                return true; // Keep it in the array
+                return true;
             });
         }
-
 
         function createPlatform() {
             const platform = {
@@ -277,7 +277,7 @@
             const platformElement = document.createElement('div');
             platformElement.className = 'platform game-element';
             platformElement.style.width = `${platform.width}px`;
-            platformElement.style.bottom = '0px'; // Ensure the platform is at the bottom
+            platformElement.style.bottom = '0px';
             gameContainer.appendChild(platformElement);
             platform.element = platformElement;
             platforms.push(platform);
@@ -289,7 +289,7 @@
             };
             const obstacleElement = document.createElement('div');
             obstacleElement.className = 'obstacle game-element';
-            obstacleElement.style.bottom = '0px'; // Ensure the obstacle is at the bottom
+            obstacleElement.style.bottom = '0px';
             gameContainer.appendChild(obstacleElement);
             obstacle.element = obstacleElement;
             obstacles.push(obstacle);
@@ -301,7 +301,7 @@
             };
             const itemElement = document.createElement('div');
             itemElement.className = 'item game-element';
-            itemElement.style.bottom = '30px'; // Set item height above the ground
+            itemElement.style.bottom = '30px';
             gameContainer.appendChild(itemElement);
             item.element = itemElement;
             items.push(item);
@@ -325,10 +325,9 @@
 
             platforms.forEach(platform => {
                 const platformRect = platform.element.getBoundingClientRect();
-                // Check if player is on top of the platform and falling
                 if (collide(platform.element) && playerRect.bottom <= platformRect.top + platformHeight && playerVelocityY > 0) {
                     playerVelocityY = 0;
-                    player.style.bottom = `${platformRect.top + platformHeight}px`; // Adjust for platform height
+                    player.style.bottom = `${platformRect.top + platformHeight}px`;
                     isJumping = false;
                 }
             });
@@ -336,6 +335,11 @@
             items = items.filter(item => {
                 if (collide(item.element)) {
                     score++;
+                    if (score >= level * scoreThreshold) {
+                        level++;
+                        speedMultiplier += 0.5; // Increase difficulty
+                        updateScoreDisplay(); // Update score and level display
+                    }
                     scoreDisplay.textContent = `Score: ${score}`;
                     item.element.remove();
                     return false;
@@ -346,7 +350,7 @@
 
         function gameOver() {
             gameRunning = false;
-            checkHighScore(); // Check if this game's score is a new high score
+            checkHighScore();
             finalScoreDisplay.textContent = `Final Score: ${score}`;
             gameOverScreen.style.display = 'flex';
             updateScoreDisplay(); // Update high score display one last time
@@ -356,7 +360,7 @@
             if (isJumping) {
                 playerVelocityY += gravity;
                 let newBottom = Math.abs(parseFloat(playerVelocityY));
-                if (newBottom <= 0) {  // Player has landed on the ground
+                if (newBottom <= 0) {
                     newBottom = 0;
                     playerVelocityY = 0;
                     isJumping = false;
@@ -364,7 +368,6 @@
                 player.style.bottom = `${newBottom}px`;
             }
 
-            // Ensure the player is not going beyond the container bounds horizontally
             let currentLeft = parseInt(player.style.left) || 0;
             if (currentLeft < 0) currentLeft = 0;
             if (currentLeft > gameContainer.offsetWidth - playerWidth) {
@@ -373,12 +376,10 @@
             player.style.left = `${currentLeft}px`;
         }
 
-
         document.addEventListener('keydown', function (event) {
-            // if (event.key === 'ArrowUp' && !isJumping) {
             if (event.key === 'ArrowUp') {
                 if (playerVelocityY > -60) {
-                    playerVelocityY = -60
+                    playerVelocityY = -60;
                 }
                 isJumping = true;
             }
@@ -390,9 +391,7 @@
             }
         });
 
-        // Initialize game elements
         createPlatform();
     </script>
 </body>
-
 </html>
