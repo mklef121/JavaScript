@@ -53,7 +53,6 @@ Features:
 
 
 Design a widget to guide aspiring entrepreneurs through the process of starting and growing a business.
-Use a single page of Javascript, HTML and CSS, ensure it is very colourful and aethetically pleasing. 
 
 Features include:
 - Business Plans: Provide real life templates and tools for creating and managing business plans.
@@ -135,3 +134,24 @@ Create an interactive skills-to-job match game that has the following features
 - show visual upskilling suggestions after a game is won
 
 The page should be properly designed and visually aesthetic
+
+
+Nigeria national Bureau of Statistics released a Nigerian Gross Domestic Product report for Q4 2023 that provides data on Quarterly Gross Domestic Product (GDP) estimates for the four quarters of 2022, the annual figure for 2022, the four quarters of 2023, and the annual figure for 2023.
+Nigeria’s Gross Domestic Product (GDP) grew by 3.46% (year-on-year) in real terms in the fourth quarter of 2023. This growth rate is lower than the 3.52% recorded in the fourth quarter of 2022 and higher than the third quarter of 2023 growth of 2.54%. The performance of the GDP in the fourth quarter of 2023 was driven mainly by the Services sector, which recorded a growth of 3.98% and contributed 56.55% to the aggregate GDP. The agriculture sector grew by 2.10%, from the growth
+of 2.05% recorded in the fourth quarter of 2022. The growth of the industry sector was 3.86%, an improvement from -0.94% recorded in the fourth quarter of 2022. In terms of share of the GDP, industry, and the services sectors contributed more to the aggregate GDP in the fourth quarter of 2023 compared to the fourth quarter of 2022. On an annual basis, GDP grew by 2.74% in 2023 relative to 3.10% in 2022. In the quarter under review, aggregate GDP stood at N65,908,258.59 million in nominal terms. This performance is higher when compared to the fourth quarter of 2022 which recorded aggregate GDP of N56,757,889.95 million, indicating a year-on-year nominal growth of 16.12%.
+The Nigerian economy is usually classified broadly into the oil and non-oil sectors. In the oil sector, the nation in the fourth quarter of 2023 recorded an average daily oil production of 1.55 million barrels per day (mbpd), higher than the daily average production of 1.34mbpd recorded in the same quarter of 2022 by 0.21mbpd and higher than the third quarter of 2023 production volume of 1.45 mbpd by 0.10mbpd. 
+The real growth of the oil sector was 12.11% (year-on-year) in Q4 2023, indicating an increase of 25.50% points relative to the rate recorded in the corresponding quarter of 2022 (-13.38%). Growth also increased by 12.96% points when compared to Q3 2023 which was –0.85%. On a quarter-on-quarter basis, the oil sector recorded a growth rate of -3.81% in Q4 2023. On an annual basis, the oil sector growth stood at -2.22% in 2023 compared to -19.22% in 2022. The Oil sector contributed 4.70% to the total real GDP in Q4 2023, up from the figure recorded in the corresponding period of 2022 and down from the preceding quarter, where it contributed 4.34% and 5.48% respectively.
+The non-oil sector grew by 3.07% in real terms during the reference quarter (Q4 2023). This rate was
+lower by 1.37% points compared to the rate recorded in the same quarter of 2022 and 0.32% points
+higher than the third quarter of 2023. This sector was driven in the fourth quarter of 2023 mainly by
+Financial and Insurance (Financial Institutions); Information and Communication (Telecommunication); Agriculture (Crop production); Trade; Construction; Manufacturing (Food, Beverage, and Tobacco) and Real Estate, accounting for positive GDP growth. On an annual basis, the non-oil sector growth in 2023 stood at 3.04% relative to 4.84% recorded in 2022.
+In real terms, the non-oil sector contributed 95.30% to the nation’s GDP in the fourth quarter of 2023, lower than the share recorded in the fourth quarter of 2022 which was 95.66% and higher than the third quarter of 2023 recorded as 94.52%.
+
+
+Generate some graphics that help me understand Nigerias economic growth, problems and revenue using the information here.
+Do not just generate graphics, add summary text that will add better understanding to the graphics and the page should be properly designed and visually aesthetic
+
+- Big summary numbers are highlighted in horizontal properly designed tabs with color accents to denote the value severity
+- The theme of the page can be toggled. In dark mode texts should be brighter, colors and shadows enhance.
+- add summary text that will add better understanding to the graphics and the page should be properly designed and visually aesthetic
+

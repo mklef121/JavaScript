@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nigeria Economic Overview</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+            transition: background-color 0.5s, color 0.5s;
+        }
+        header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+        .theme-toggle {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+        }
+        .theme-toggle button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 25px;
+            background-color: #fff;
+            color: #007bff;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .theme-toggle button:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+        #container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .summary-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .summary-tab {
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            color: #333;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .summary-tab:nth-child(1) {
+            background: #d0e9f4; /* Slightly thicker light blue */
+        }
+        .summary-tab:nth-child(2) {
+            background: #e2e7f0; /* Slightly thicker light gray */
+        }
+        .summary-tab:nth-child(3) {
+            background: #d8e2e6; /* Slightly thicker light gray-blue */
+        }
+        .summary-tab:nth-child(4) {
+            background: #f9dcdc; /* Slightly thicker light pink */
+        }
+        .summary-tab h3 {
+            margin: 0;
+            font-size: 1rem;
+            color: #555;
+        }
+        .summary-tab p {
+            font-size: 2rem;
+            font-weight: 600;
+            margin: 10px 0 0;
+            color: #333;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .card h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+        }
+        .chart-container {
+            margin-top: 20px;
+        }
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+        .chart-description {
+            font-size: 0.875rem;
+            color: #666;
+            margin-top: 10px;
+        }
+        .dark-theme {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        .dark-theme header {
+            background-color: #1e1e1e;
+        }
+        .dark-theme header h1 {
+            color: #e0e0e0;
+        }
+        .dark-theme .summary-tab {
+            background: #2e2e2e;
+            color: #e0e0e0;
+        }
+        .dark-theme .summary-tab h3 {
+            color: #b0b0b0;
+        }
+        .dark-theme .summary-tab p {
+            color: #e0e0e0;
+        }
+        .dark-theme .card {
+            background: #1e1e1e;
+            color: #e0e0e0;
+        }
+        .dark-theme .card h2 {
+            color: #e0e0e0;
+        }
+        .dark-theme .chart-description {
+            color: #b0b0b0;
+        }
+
+        .gdp-chart {
+            display: flex;
+            justify-content: center;
+            position: relative;
+            width: 100%;
+            max-height: 500px;
+            margin: auto;
+            margin-bottom: 20px;
+            margin-top: 20px;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Nigeria Economic Overview</h1>
+        <div class="theme-toggle">
+            <button id="toggle-theme">🌙</button>
+        </div>
+    </header>
+    <div id="container">
+        <div class="summary-tabs">
+            <div class="summary-tab growth-rate">
+                <h3>Quarterly GDP Growth Rate</h3>
+                <p>3.46%</p>
+            </div>
+            <div class="summary-tab gdp-rate">
+                <h3>Annual GDP Growth Rate</h3>
+                <p>2.74%</p>
+            </div>
+            <div class="summary-tab production-rate">
+                <h3>Oil Production (mbpd)</h3>
+                <p>1.55</p>
+            </div>
+            <div class="summary-tab annual-rate">
+                <h3>Nominal GDP (Q4 2023)</h3>
+                <p>N65.91 Trillion</p>
+            </div>
+        </div>
+        <div class="card">
+            <h2>Quarterly GDP Growth Rates</h2>
+            <div class="chart-container">
+                <canvas id="gdpGrowthChart"></canvas>
+                <p class="chart-description">This line chart illustrates the quarterly GDP growth rates for 2022 and 2023. It highlights the fluctuations in Nigeria's economic performance across different quarters.</p>
+            </div>
+        </div>
+        <div class="card">
+            <h2>GDP Contribution by Sector (Q4 2023)</h2>
+            <div class="chart-container gdp-chart">
+                <canvas id="sectorPieChart"></canvas>
+            </div>
+            <p class="chart-description">The pie chart shows the contribution of various sectors to Nigeria's GDP in Q4 2023, with Services being the largest contributor followed by Agriculture, Industry, and Oil.</p>
+
+        </div>
+        <div class="card">
+            <h2>Oil Production and Growth Rates</h2>
+            <div class="chart-container">
+                <canvas id="oilProductionBarChart"></canvas>
+                <p class="chart-description">This bar chart compares Nigeria's oil production and sector growth rates for Q4 2023, illustrating improvements in oil production alongside significant growth in the oil sector.</p>
+            </div>
+        </div>
+        <div class="card">
+            <h2>Annual GDP Growth Rates</h2>
+            <div class="chart-container">
+                <canvas id="annualGDPChart"></canvas>
+                <p class="chart-description">This bar chart provides a comparison of Nigeria's annual GDP growth rates for 2022 and 2023, highlighting the overall economic trends and shifts over the past two years.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+    <script>
+        // Data for Quarterly GDP Growth Rates
+        const gdpGrowthData = {
+            labels: ['Q4 2022', 'Q1 2023', 'Q2 2023', 'Q3 2023', 'Q4 2023'],
+            datasets: [{
+                label: 'GDP Growth Rate (%)',
+                data: [3.52, 3.08, 2.70, 2.54, 3.46],
+                borderColor: '#007bff',
+                backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                fill: true
+            }]
+        };
+
+        // Quarterly GDP Growth Rates Chart
+        const ctxGDPGrowth = document.getElementById('gdpGrowthChart').getContext('2d');
+        new Chart(ctxGDPGrowth, {
+            type: 'line',
+            data: gdpGrowthData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true },
+                    tooltip: { callbacks: { label: (context) => `${context.dataset.label}: ${context.raw}%` } }
+                },
+                scales: {
+                    x: { title: { display: true, text: 'Quarter' } },
+                    y: { title: { display: true, text: 'Growth Rate (%)' }, beginAtZero: true }
+                }
+            }
+        });
+
+        // Data for GDP Contribution by Sector
+        const sectorData = {
+            labels: ['Services', 'Agriculture', 'Industry', 'Oil'],
+            datasets: [{
+                label: 'GDP Contribution (%)',
+                data: [56.55, 20.95, 17.80, 4.70],
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0']
+            }]
+        };
+
+        // GDP Contribution by Sector Pie Chart
+        const ctxSectorPie = document.getElementById('sectorPieChart').getContext('2d');
+        new Chart(ctxSectorPie, {
+            type: 'pie',
+            data: sectorData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: { callbacks: { label: (context) => `${context.label}: ${context.raw}%` } }
+                }
+            }
+        });
+
+        // Data for Oil Production and Growth Rates
+        const oilProductionData = {
+            labels: ['Q4 2022', 'Q3 2023', 'Q4 2023'],
+            datasets: [
+                {
+                    label: 'Oil Production (mbpd)',
+                    data: [1.34, 1.45, 1.55],
+                    backgroundColor: '#FFCE56',
+                    borderColor: '#FFCE56',
+                    borderWidth: 1,
+                    type: 'bar'
+                },
+                {
+                    label: 'Oil Sector Growth Rate (%)',
+                    data: [-13.38, -0.85, 12.11],
+                    backgroundColor: '#36A2EB',
+                    borderColor: '#36A2EB',
+                    borderWidth: 1,
+                    type: 'line'
+                }
+            ]
+        };
+
+        // Oil Production and Growth Rates Bar Chart
+        const ctxOilProduction = document.getElementById('oilProductionBarChart').getContext('2d');
+        new Chart(ctxOilProduction, {
+            type: 'bar',
+            data: oilProductionData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: { callbacks: { label: (context) => `${context.dataset.label}: ${context.raw}` } }
+                },
+                scales: {
+                    x: { title: { display: true, text: 'Quarter' } },
+                    y: { title: { display: true, text: 'Value' }, beginAtZero: true }
+                }
+            }
+        });
+
+        // Data for Annual GDP Growth Rates
+        const annualGDPData = {
+            labels: ['2022', '2023'],
+            datasets: [{
+                label: 'Annual GDP Growth Rate (%)',
+                data: [3.10, 2.74],
+                backgroundColor: ['#FFCE56', '#4BC0C0'],
+                borderColor: ['#FFCE56', '#4BC0C0'],
+                borderWidth: 1
+            }]
+        };
+
+        // Annual GDP Growth Rates Bar Chart
+        const ctxAnnualGDP = document.getElementById('annualGDPChart').getContext('2d');
+        new Chart(ctxAnnualGDP, {
+            type: 'bar',
+            data: annualGDPData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: { callbacks: { label: (context) => `${context.dataset.label}: ${context.raw}%` } }
+                },
+                scales: {
+                    x: { title: { display: true, text: 'Year' } },
+                    y: { title: { display: true, text: 'Growth Rate (%)' }, beginAtZero: true }
+                }
+            }
+        });
+
+        // Toggle Theme
+        document.getElementById('toggle-theme').addEventListener('click', () => {
+            document.body.classList.toggle('dark-theme');
+        });
+    </script>
+</body>
+</html>
