@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piano Game</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #3498db, #8e44ad, #f39c12);
+            /* Richer, balanced gradient */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: #f5f5f5;
+            /* Soft white text for better contrast */
+            transition: background 0.3s ease;
+        }
+
+        h1 {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #fff;
+            /* Bright white for title contrast */
+            letter-spacing: 1px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.8);
+            /* Semi-transparent white background */
+            color: #333;
+            /* Dark text for card content */
+        }
+
+        button {
+            background: linear-gradient(145deg, #42a5f5, #0d47a1);
+            /* Muted blue for buttons */
+            color: #fff;
+            /* White text on buttons */
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.3em;
+            border: none;
+            background: linear-gradient(145deg, #64b5f6, #1e88e5);
+            color: #fff;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, background 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+        }
+
+        button:active {
+            background: linear-gradient(145deg, #42a5f5, #0d47a1);
+            transform: translateY(0);
+        }
+
+
+
+        .container {
+            text-align: center;
+            width: 100%;
+            max-width: 800px;
+            padding: 0 20px;
+            /* Add padding to make sure the content does not hit screen edges */
+            box-sizing: border-box;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 20px 0;
+            color: #00796b;
+        }
+
+        #instructions {
+            font-size: 1.2em;
+            margin: 20px 0;
+        }
+
+        #level,
+        #score {
+            font-size: 1.8em;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        .piano-cover {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            width: 100%;
+            overflow-x: auto;
+            /* Allow horizontal scroll on small screens */
+        }
+
+        .piano {
+            display: flex;
+            align-items: flex-end;
+            position: relative;
+            height: 200px;
+            width: 100%;
+            /* Use full width */
+            max-width: 1000px;
+            /* Adjust based on the number of keys */
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .key {
+            height: 100%;
+            position: relative;
+            cursor: pointer;
+            box-sizing: border-box;
+            border-radius: 3px;
+            transition: transform 0.2s ease;
+        }
+
+        /* White key styling for realism */
+        .white-key {
+            width: 60px;
+            margin-right: -1px;
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2), inset 0 -5px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 5px 5px;
+        }
+
+
+        .key.pressed {
+            transform: scale(0.97);
+            background: #ccc;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .falling-ball {
+            width: 30px;
+            height: 30px;
+            background: #ff7043;
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: translateX(-50%);
+            transition: top 0.5s linear;
+        }
+
+        .controls {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        #start.hidden {
+            display: none;
+        }
+
+        #game-over {
+            font-size: 2em;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.7);
+            /* Darker, semi-transparent background for contrast */
+            color: #fff;
+            /* White text for better readability */
+            text-align: center;
+            max-width: 90%;
+        }
+
+        #game-over {
+            background: rgba(244, 67, 54, 0.8);
+            /* Semi-transparent red for game over */
+        }
+
+
+        /* Responsive Styling */
+        @media (max-width: 800px) {
+            h1 {
+                font-size: 2.5em;
+            }
+
+            .piano {
+                height: 180px;
+                max-width: 100%;
+                /* Ensure piano scales with screen size */
+            }
+
+            .white-key {
+                width: 50px;
+            }
+
+            .black-key {
+                width: 35px;
+            }
+
+            button {
+                padding: 12px 25px;
+                font-size: 1.2em;
+            }
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .piano {
+                height: 150px;
+            }
+
+            .white-key {
+                width: 40px;
+            }
+
+            .black-key {
+                width: 30px;
+            }
+
+            button {
+                padding: 10px 20px;
+                font-size: 1.1em;
+            }
+        }
+
+
+        @keyframes sparkle {
+            0% {
+                opacity: 0;
+                transform: scale(0);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(0);
+            }
+        }
+
+        #celebration {
+            font-size: 2em;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            background: rgba(76, 175, 80, 0.9);
+            /* Semi-transparent green */
+            color: #fff;
+            /* White text */
+            text-align: center;
+            max-width: 90%;
+            z-index: 1000;
+            /* Ensure it stays on top */
+            position: relative;
+            margin-top: 40px;
+        }
+
+        #celebration::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.5) 20%, rgba(0, 0, 0, 0) 70%);
+            animation: sparkle 2s infinite;
+            pointer-events: none;
+        }
+
+        #celebration::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 223, 0, 0.5) 20%, rgba(0, 0, 0, 0) 70%);
+            animation: sparkle 2s infinite;
+            pointer-events: none;
+        }
+
+        /* Confetti styles */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ffeb3b;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            animation: confetti-fall 1s ease-in forwards;
+        }
+
+        @keyframes confetti-fall {
+            from {
+                transform: translateY(-100vh);
+                opacity: 1;
+            }
+
+            to {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="container">
+        <h1>Piano Game</h1>
+        <div id="instructions" class="card">Press the key from which the ball is dropping. Click "Start Game" to begin.
+        </div>
+        <div id="level" class="card">Level: 1</div>
+        <div id="score" class="card">Score: 0</div>
+        <div class="piano-cover">
+            <div class="piano">
+                <!-- White keys -->
+                <div class="key white-key" data-note="C4"></div>
+                <div class="key white-key" data-note="D4"></div>
+                <div class="key white-key" data-note="E4"></div>
+                <div class="key white-key" data-note="F4"></div>
+                <div class="key white-key" data-note="G4"></div>
+                <div class="key white-key" data-note="A4"></div>
+                <div class="key white-key" data-note="B4"></div>
+                <div class="key white-key" data-note="C5"></div>
+                <div class="key white-key" data-note="D5"></div>
+                <div class="key white-key" data-note="E5"></div>
+                <div class="key white-key" data-note="F5"></div>
+                <div class="key white-key" data-note="G5"></div>
+                <div class="key white-key" data-note="A5"></div>
+                <div class="key white-key" data-note="B5"></div>
+            </div>
+        </div>
+        <div class="controls">
+            <button id="start">Start Game</button>
+        </div>
+        <div id="game-over" class="card">Game Over!</div>
+        <div id="celebration" class="card">
+            <div id="confetti-container"></div>
+            <div>Congratulations, you won!</div>
+        </div>
+    </div>
+    <script src="https://unpkg.com/tone"></script>
+    <script>
+        const pianoKeys = document.querySelectorAll('.key');
+        const levelDisplay = document.getElementById('level');
+        const scoreDisplay = document.getElementById('score');
+        const instructions = document.getElementById('instructions');
+        const startButton = document.getElementById('start');
+        const gameOverDisplay = document.getElementById('game-over');
+        const celebrationDisplay = document.getElementById('celebration');
+        const confettiContainer = document.getElementById('confetti-container');
+
+        let currentLevel = 1;
+        let score = 0;
+        let turns = 0;
+        let ball;
+        let dropInterval;
+        let ballSpeed = 5000; // Initial drop speed in milliseconds
+        const maxTurns = 20;
+        const maxLevel = 5;
+        let gameActive = false; // Track if the game is active
+        let ballKey = null; // Track the key where the ball is currently falling
+
+        // Initialize Tone.js instruments
+        const synth = new Tone.Synth().toDestination();
+
+        function playSound(note) {
+            synth.triggerAttackRelease(note, '8n');
+        }
+
+        function startGame() {
+            currentLevel = 1;
+            score = 0;
+            turns = 0;
+            ballSpeed = 5000; // Reset ball speed
+            gameActive = true;
+            ballKey = null; // Reset ball key
+            levelDisplay.textContent = 'Level: ' + currentLevel;
+            scoreDisplay.textContent = 'Score: ' + score;
+            instructions.textContent = 'Press the key from which the ball is dropping.';
+            gameOverDisplay.style.display = 'none';
+            celebrationDisplay.style.display = 'none';
+            startButton.classList.add('hidden');
+            generateBallDrop();
+        }
+
+        function generateBallDrop() {
+            // Determine the key to drop the ball from
+            const randomIndex = Math.floor(Math.random() * pianoKeys.length);
+            const key = pianoKeys[randomIndex];
+            const keyRect = key.getBoundingClientRect();
+
+            // Create ball
+            if (ball) ball.remove();
+            ball = document.createElement('div');
+            ball.className = 'falling-ball';
+            ball.style.left = `${keyRect.left + keyRect.width / 2}px`; // Center horizontally
+            ball.style.top = `${keyRect.top}px`; // Align with the top of the key
+            document.body.appendChild(ball);
+
+            // Set the key where the ball is dropping from
+            ballKey = key;
+
+
+            // Start dropping the ball
+            let startTime = null;
+            function animateBallDrop(timestamp) {
+                if (!startTime) startTime = timestamp;
+                const progress = timestamp - startTime;
+                const ballRect = ball.getBoundingClientRect();
+                const keyRect = ballKey.getBoundingClientRect();
+                const ballTop = Math.min(ballRect.top + (progress / ballSpeed) * keyRect.height, keyRect.bottom);
+                ball.style.top = `${ballTop}px`;
+
+                if (ballRect.bottom <= keyRect.bottom) {
+                    requestAnimationFrame(animateBallDrop);
+                    return
+                } else {
+                    endGame(); // End the game if the ball falls off the key
+                }
+            }
+
+            requestAnimationFrame(animateBallDrop);
+
+            // Increase speed with each level
+            if (turns >= maxTurns) {
+                if (currentLevel < maxLevel) {
+
+                    currentLevel++;
+                    turns = 0;
+                    ballSpeed = Math.max(1000, ballSpeed - 1000); // Increase speed, limit to minimum
+                    levelDisplay.textContent = 'Level: ' + currentLevel;
+                    generateBallDrop(); // Drop a new ball for the next level
+                } else {
+                    endGame(true); // Celebrate completion of Level 5
+                }
+            }
+
+        }
+
+        function handleKeyPress(key) {
+            playSound(key.dataset.note);
+            if (gameActive) {
+                if (key === ballKey) {
+                    score += 2;
+                    scoreDisplay.textContent = 'Score: ' + score;
+                    turns++;
+                    generateBallDrop(); // Drop a new ball
+                } else {
+                    endGame(); // End the game on incorrect key press
+                }
+            }
+        }
+
+        function endGame(levelCompleted = false) {
+            gameActive = false;
+            if (levelCompleted) {
+                celebrationDisplay.style.display = 'block'; // Show celebration message
+                setTimeout(() => {
+                    createConfetti();
+                }, 100); // Delay confetti for effect
+                setTimeout(() => {
+                    clearConfetti();
+                }, 3000); // Keep confetti for 4 seconds
+
+            } else {
+                gameOverDisplay.style.display = 'block'; // Show game over message
+            }
+            startButton.classList.remove('hidden');
+            if (ball) ball.remove(); // Remove ball when game is over
+        }
+
+        function createConfetti() {
+
+            const colors = ['#ffeb3b', '#4caf50', '#00bcd4', '#e91e63'];
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = `${Math.random() * 10 + 5}px`;
+                confetti.style.height = confetti.style.width;
+                confetti.style.left = `${Math.random() * 100}vw`;
+                confetti.style.animationDuration = `${Math.random() * 1 + 1}s`;
+                confettiContainer.appendChild(confetti);
+            }
+        }
+
+        function clearConfetti() {
+            while (confettiContainer.firstChild) {
+                confettiContainer.removeChild(confettiContainer.firstChild);
+            }
+        }
+
+        pianoKeys.forEach(key => {
+            key.addEventListener('mousedown', () => {
+                key.classList.add('pressed');
+                handleKeyPress(key);
+            });
+
+            key.addEventListener('mouseup', () => {
+                key.classList.remove('pressed');
+            });
+
+            key.addEventListener('mouseleave', () => {
+                key.classList.remove('pressed');
+            });
+        });
+
+        startButton.addEventListener('click', startGame);
+    </script>
+</body>
+
+</html>

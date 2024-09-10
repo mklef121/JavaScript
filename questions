@@ -155,3 +155,52 @@ Do not just generate graphics, add summary text that will add better understandi
 - The theme of the page can be toggled. In dark mode texts should be brighter, colors and shadows enhance.
 - add summary text that will add better understanding to the graphics and the page should be properly designed and visually aesthetic
 
+
+Develop an Interactive Map for Hiking Trails
+
+Features to Implement:
+- Implement dynamic animations for trail difficulty using animated colors and icons.
+- Use p5.js to create interactive weather condition visualizations like animated clouds or rain.
+- Integrate 3D elevation maps using three.js for an immersive experience.
+- Enhance real-time GPS tracking with custom animated markers and smooth transitions.
+
+* Unless otherwise specified, generate code in a single block of html/css/js.
+* Plan out the code before starting to write it.
+
+Develop a Platform Shooter game
+It should have realistic graphics and should look visually appealing
+
+Features:
+- Side-Scrolling Action: Classic 2D or 3D platformer with shooting elements.
+- Character Abilities: Different weapons and abilities for combat.
+- Level Design: Challenging levels with enemies, obstacles, and platforms.
+- Power-Ups: Collect power-ups to enhance abilities or gain temporary advantages.
+- Boss Fights: Unique and challenging boss encounters.
+- Multiplayer Mode: Cooperative or competitive shooting against other players.
+
+* Unless otherwise specified, generate code in a single block of html/css/js.
+* Plan out the code before starting to write it.
+
+
+Implement a piano game where a user can play the piano keys for fun
+
+Features: 
+- The main keys of a standard piano should be in the game
+- The key sounds should play all music notes available
+    - use real sounds and not dummy sound links
+- Add a competitive game feature where a user is given a set of keys to play as they keep rolling down
+    - When the game starts, let a ball drop from the top of a random key
+    - The user is expected to press the button on which the ball is dropping from
+    - When a user clicks the button, they should be given a score of two and the ball should repeat the process on another random piano key
+    - If the ball drops off the piano key without the key being clicked, the game ends
+    - Let there be 20 turns per level with a max of  5 levels.
+    - When a user successfully finishes level 5, show a celebration
+    - The game should start or restart when the user clicks on the start game button.
+    - The users score should be displayed as he plays
+    - Show a congratulatory message when the user wins all levels
+- The game should be visually appealing with realistic keys
+
+
+* Unless otherwise specified, generate code in a single block of html/css/js.
+* Plan out the code before starting to write it.
+

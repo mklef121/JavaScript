@@ -2,133 +2,180 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Home Energy Dashboard</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>Piano Play Game</title>
     <style>
-        .dashboard { padding: 20px; }
-        .graph-area, .appliances, .scheduler, .battery { 
-            border: 1px solid #ddd; 
-            padding: 15px; 
-            margin: 10px 0; 
-            border-radius: 5px;
-        }
-        .appliance-icon {
-            cursor: move;
-            padding: 10px;
-            margin: 5px;
-            display: inline-block;
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
         }
-        #batteryLevel {
-            width: 100px;
-            height: 200px;
-            background: linear-gradient(to top, green 0%, yellow 50%, red 100%);
-            position: relative;
+        #piano {
+            display: flex;
+            margin-top: 20px;
         }
-        #batteryIndicator {
-            width: 100%;
+        .key {
+            width: 40px;
+            height: 120px;
+            border: 1px solid #000;
+            background: white;
+            text-align: center;
+            line-height: 200px;
+            cursor: pointer;
+            margin: 2px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+            transition: all 0.07s;
+        }
+        .key:active, .key.active {
+            background: #ddd;
+            transform: scale(0.98);
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        .black {
             background: black;
+            color: white;
+            width: 30px;
+            height: 80px;
+            margin: 0 -15px;
+            z-index: 2;
+        }
+        #gameArea {
+            margin-top: 20px;
+            text-align: center;
+        }
+        #ball {
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            border-radius: 50%;
             position: absolute;
-            bottom: 0;
+            display: none;
+        }
+        #score, #level {
+            font-size: 20px;
+            margin: 10px 0;
         }
     </style>
 </head>
 <body>
-<div class="container dashboard">
-    <h2>Smart Home Energy Dashboard</h2>
-    <div class="row">
-        <div class="col-md-6 graph-area">
-            <canvas id="energyGraph"></canvas>
-        </div>
-        <div class="col-md-6 appliances">
-            <h4>Appliances</h4>
-            <div id="appliancesArea">
-                <div class="appliance-icon" draggable="true">Fridge</div>
-                <div class="appliance-icon" draggable="true">AC</div>
-                <!-- Add more appliances as needed -->
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6 scheduler">
-            <h4>Time-of-Use Rate Scheduler</h4>
-            <div id="scheduler"></div>
-        </div>
-        <div class="col-md-6 battery">
-            <h4>Battery Status</h4>
-            <div id="batteryLevel"><div id="batteryIndicator"></div></div>
-        </div>
-    </div>
+
+<div id="piano">
+    <!-- Piano keys will be dynamically added here -->
 </div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+<div id="gameArea">
+    <button id="startGame">Start Game</button>
+    <div id="score">Score: 0</div>
+    <div id="level">Level: 1</div>
+    <div id="ball"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.1/howler.min.js"></script>
 <script>
-$(function() {
-    // Drag and Drop
-    $(".appliance-icon").draggable({
-        revert: "invalid",
-        helper: "clone"
-    });
+    const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+    const octaves = [4, 5]; // We'll use two octaves for simplicity
+    let keys = [];
+    let gameInterval;
+    let score = 0;
+    let level = 1;
+    let turnsLeft = 20;
 
-    // Droppable area could be added here if needed
-
-    // Chart.js for energy usage
-    var ctx = document.getElementById('energyGraph').getContext('2d');
-    var chart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: [],
-            datasets: [{
-                label: 'Energy Usage',
-                data: [],
-                borderColor: 'rgba(75, 192, 192, 1)',
-                fill: false
-            }]
-        },
-        options: {
-            animation: {
-                duration: 0 // general animation time
-            },
-            scales: {
-                xAxes: [{
-                    type: 'realtime',
-                    realtime: {
-                        duration: 20000,
-                        refresh: 1000,
-                        delay: 2000,
-                        onRefresh: chart => {
-                            chart.data.datasets.forEach(dataset => {
-                                dataset.data.push({
-                                    x: Date.now(),
-                                    y: Math.random() * 100 // Replace with real data
-                                });
-                            });
-                        }
-                    }
-                }]
-            }
-        }
-    });
-
-    // Battery status animation
-    function updateBatteryLevel(level) {
-        let height = level + '%';
-        $('#batteryIndicator').css('height', height);
+    function createPiano() {
+        const piano = document.getElementById('piano');
+        octaves.forEach(octave => {
+            notes.forEach((note, index) => {
+                const key = document.createElement('div');
+                key.className = `key ${note.includes('#') ? 'black' : ''}`;
+                key.id = `${note}${octave}`;
+                key.dataset.note = `${note}${octave}`;
+                piano.appendChild(key);
+                keys.push(key);
+            });
+        });
     }
 
-    // Simulate battery usage
-    setInterval(() => {
-        let randomLevel = Math.floor(Math.random() * 100);
-        updateBatteryLevel(randomLevel);
-    }, 3000);
+    function playNote(note) {
+        const sound = new Howl({
+            src: [`path/to/real/piano/sounds/${note}.mp3`],
+            onend: () => document.querySelector(`#${note}`).classList.remove('active')
+        });
+        sound.play();
+        document.querySelector(`#${note}`).classList.add('active');
+    }
 
-    // Time-of-Use Scheduler would require more complex interaction, possibly involving a library or custom code for schedule setting
-});
+    function startGame() {
+        score = 0;
+        level = 1;
+        turnsLeft = 20;
+        updateDisplay();
+        document.getElementById('ball').style.display = 'block';
+        gameInterval = setInterval(dropBall, 1000);
+    }
+
+    function dropBall() {
+        if (turnsLeft <= 0 && level < 5) {
+            levelUp();
+            return;
+        } else if (turnsLeft <= 0 && level === 5) {
+            endGame(true); // Win condition
+            return;
+        }
+
+        turnsLeft--;
+        const randomKey = keys[Math.floor(Math.random() * keys.length)];
+        const ball = document.getElementById('ball');
+        const rect = randomKey.getBoundingClientRect();
+        ball.style.left = `${rect.left + rect.width / 2 - 10}px`;
+        ball.style.top = '0px';
+        
+        const dropAnimation = ball.animate([
+            { top: '0px' },
+            { top: `${rect.top + rect.height - 20}px` }
+        ], {
+            duration: 1000,
+            fill: 'forwards'
+        });
+
+        dropAnimation.onfinish = () => {
+            if (!randomKey.classList.contains('active')) {
+                endGame(false);
+            }
+        };
+    }
+
+    function levelUp() {
+        level++;
+        turnsLeft = 20;
+        updateDisplay();
+        if (level > 5) {
+            endGame(true);
+        }
+    }
+
+    function endGame(win) {
+        clearInterval(gameInterval);
+        document.getElementById('ball').style.display = 'none';
+        alert(win ? 'Congratulations! You won!' : 'Game Over!');
+    }
+
+    function updateDisplay() {
+        document.getElementById('score').textContent = `Score: ${score}`;
+        document.getElementById('level').textContent = `Level: ${level}`;
+    }
+
+    document.getElementById('startGame').addEventListener('click', startGame);
+    keys.forEach(key => key.addEventListener('click', function() {
+        if (this.classList.contains('active')) {
+            score += 2;
+            updateDisplay();
+            this.classList.remove('active');
+            playNote(this.id);
+        }
+    }));
+
+    createPiano();
 </script>
+
 </body>
 </html>
