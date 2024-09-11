@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tetris Game</title>
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f0f0f0;
+        margin: 0;
+    }
+    .game-container {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    #gameBoard {
+        display: grid;
+        grid-template-columns: repeat(10, 20px);
+        grid-gap: 1px;
+        background: #000;
+    }
+    .cell {
+        width: 20px;
+        height: 20px;
+        background: #fff;
+    }
+    .info {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-between;
+    }
+    button {
+        margin-top: 10px;
+        padding: 10px 15px;
+        font-size: 1em;
+        cursor: pointer;
+    }
+    @media (max-width: 600px) {
+        #gameBoard {
+            grid-template-columns: repeat(10, 15px);
+        }
+        .cell {
+            width: 15px;
+            height: 15px;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="game-container">
+    <div id="gameBoard"></div>
+    <div class="info">
+        <div>Score: <span id="score">0</span></div>
+        <div>Lines: <span id="lines">0</span></div>
+    </div>
+    <button onclick="startGame()">Start/Restart</button>
+    <button onclick="togglePause()">Pause/Resume</button>
+</div>
+
+<script>
+    const board = document.getElementById('gameBoard');
+    const scoreDisplay = document.getElementById('score');
+    const linesDisplay = document.getElementById('lines');
+    const colors = ['cyan', 'yellow', 'purple', 'green', 'red', 'blue', 'orange'];
+    const shapes = [
+        [[1,1,1,1]], // I
+        [[1,1],[1,1]], // O
+        [[0,1,0],[1,1,1]], // T
+        [[0,1,1],[1,1,0]], // S
+        [[1,1,0],[0,1,1]], // Z
+        [[1,0,0],[1,1,1]], // J
+        [[0,0,1],[1,1,1]]  // L
+    ];
+
+    let grid = Array(20).fill().map(() => Array(10).fill(0));
+    let currentShape, currentX, currentY, isGameOver = false, score = 0, lines = 0, isPaused = false;
+    const width = 10, height = 20;
+
+    function createBoard() {
+        for(let y = 0; y < height; y++) {
+            for(let x = 0; x < width; x++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.dataset.x = x;
+                cell.dataset.y = y;
+                board.appendChild(cell);
+            }
+        }
+    }
+
+    function draw() {
+        grid.forEach((row, y) => {
+            row.forEach((value, x) => {
+                const cell = document.querySelector(`[data-x="${x}"][data-y="${y}"]`);
+                if (value) {
+                    cell.style.backgroundColor = colors[value - 1];
+                } else {
+                    cell.style.backgroundColor = '#fff';
+                }
+            });
+        });
+    }
+
+    function newShape() {
+        const id = Math.floor(Math.random() * shapes.length);
+        currentShape = shapes[id];
+        currentX = Math.floor((width - currentShape[0].length) / 2);
+        currentY = 0;
+        if (!canMove(currentShape, currentX, currentY)) {
+            gameOver();
+        }
+    }
+
+    function canMove(shape, x, y) {
+        for(let i = 0; i < shape.length; i++) {
+            for(let j = 0; j < shape[i].length; j++) {
+                if (shape[i][j]) {
+                    const newX = x + j;
+                    const newY = y + i;
+                    if (newX < 0 || newX >= width || newY >= height || (newY >= 0 && grid[newY][newX])) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    function placeShape() {
+        for(let i = 0; i < currentShape.length; i++) {
+            for(let j = 0; j < currentShape[i].length; j++) {
+                if (currentShape[i][j]) {
+                    grid[currentY + i][currentX + j] = currentShape[i][j];
+                }
+            }
+        }
+        checkLines();
+        if (!isGameOver) newShape();
+    }
+
+    function checkLines() {
+        for(let y = height - 1; y >= 0;) {
+            if (grid[y].every(cell => cell !== 0)) {
+                for(let ty = y; ty > 0; ty--) {
+                    grid[ty] = [...grid[ty-1]];
+                }
+                grid[0] = Array(10).fill(0);
+                lines++;
+                score += 100;
+                linesDisplay.textContent = lines;
+                scoreDisplay.textContent = score;
+            } else {
+                y--;
+            }
+        }
+    }
+
+    function rotate(shape) {
+        return shape[0].map((_, index) => 
+            shape.map(row => row[index]).reverse()
+        );
+    }
+
+    function gameLoop() {
+        if (!isPaused && !isGameOver) {
+            if (canMove(currentShape, currentX, currentY + 1)) {
+                currentY++;
+            } else {
+                placeShape();
+            }
+            draw();
+        }
+        if (!isGameOver) setTimeout(gameLoop, 500);
+    }
+
+    function gameOver() {
+        isGameOver = true;
+        alert('Game Over! Your score: ' + score);
+    }
+
+    function startGame() {
+        grid = Array(20).fill().map(() => Array(10).fill(0));
+        score = 0;
+        lines = 0;
+        isGameOver = false;
+        isPaused = false;
+        scoreDisplay.textContent = score;
+        linesDisplay.textContent = lines;
+        newShape();
+        draw();
+        gameLoop();
+    }
+
+    function togglePause() {
+        isPaused = !isPaused;
+        if (!isPaused) gameLoop();
+    }
+
+    document.addEventListener('keydown', event => {
+        if (isGameOver || isPaused) return;
+        switch(event.key) {
+            case 'ArrowLeft':
+                if (canMove(currentShape, currentX - 1, currentY)) currentX--;
+                break;
+            case 'ArrowRight':
+                if (canMove(currentShape, currentX + 1, currentY)) currentX++;
+                break;
+            case 'ArrowDown':
+                if (canMove(currentShape, currentX, currentY + 1)) currentY++;
+                break;
+            case ' ':
+                let rotated = rotate(currentShape);
+                if (canMove(rotated, currentX, currentY)) currentShape = rotated;
+                break;
+        }
+        draw();
+    });
+
+    createBoard();
+    startGame();
+</script>
+</body>
+</html>

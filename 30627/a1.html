@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tetris Game</title>
+<style>
+    body { font-family: 'Arial', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f0f0f0; margin: 0; }
+    #game-container { display: flex; flex-direction: column; align-items: center; }
+    #game-board { display: grid; grid-template-columns: repeat(10, 20px); grid-gap: 1px; background: #000; border: 2px solid #333; }
+    .cell { width: 20px; height: 20px; background: #111; }
+    .tetromino { background: cyan; }
+    #score, #lines { margin: 10px 0; }
+    .controls button { margin: 5px; padding: 10px; font-size: 16px; }
+    @media (max-width: 600px) {
+        #game-board { grid-template-columns: repeat(10, 15px); }
+        .cell { width: 15px; height: 15px; }
+    }
+</style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="game-board"></div>
+    <div id="score">Score: 0</div>
+    <div id="lines">Lines: 0</div>
+    <div class="controls">
+        <button onclick="startGame()">Start/Restart</button>
+        <button onclick="togglePause()">Pause</button>
+    </div>
+</div>
+
+<script>
+const width = 10;
+const height = 20;
+const grid = document.getElementById('game-board');
+let squares = Array.from(document.querySelectorAll('#game-board div'));
+let score = 0;
+let linesCleared = 0;
+let currentPosition = 4;
+let currentRotation = 0;
+let timerId;
+let isPaused = false;
+
+// Tetromino shapes
+const lTetromino = [
+  [[1, width+1, width*2+1, 2], [width, width+1, width+2, width*2+2], [1, width+1, width*2+1, width*2], [width, width*2, width*2+1, width*2+2]],
+  // ... other shapes (J, Z, O, S, T, I) similarly defined
+];
+
+const colors = ['orange', 'blue', 'cyan', 'yellow', 'green', 'purple', 'red'];
+
+// Functions for game logic would go here:
+function draw() { /* Drawing logic */ }
+function undraw() { /* Undraw logic */ }
+function moveDown() { /* Move tetromino down */ }
+function freeze() { /* Freeze tetromino in place */ }
+function control(e) { /* Handle key presses */ }
+function gameOver() { /* End game logic */ }
+function clearLines() { /* Check and clear lines */ }
+function addScore() { /* Update score */ }
+
+function startGame() {
+    if (timerId) clearInterval(timerId);
+    timerId = setInterval(moveDown, 500);
+    // Reset game state
+}
+
+function togglePause() {
+    isPaused = !isPaused;
+    if(isPaused) {
+        clearInterval(timerId);
+    } else {
+        timerId = setInterval(moveDown, 500);
+    }
+}
+
+// Event listeners and initial setup
+document.addEventListener('keydown', control);
+
+// Initial board setup
+for(let i = 0; i < 200; i++) {
+    const div = document.createElement('div');
+    grid.appendChild(div);
+}
+
+// Game initialization would continue here
+</script>
+
+</body>
+</html>
