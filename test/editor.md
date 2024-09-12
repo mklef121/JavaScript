@@ -1,465 +1,567 @@
-Here's a plan for the interactive skills-to-job match game:
+### Planning the Code
 
-1. **HTML Structure**: 
-   - Create a container for the game area with draggable skills and job slots.
-   - Create an area for displaying the animated job market trend analysis.
-   - Include areas for upskilling suggestions.
+To create a functional and interactive HTML page showcasing various data visualizations for the provided data using ApexCharts and a map Library, the following plan will guide the development:
 
-2. **CSS Styling**:
-    - Style for the game container, job slots, skills, and alerts.
-    - Style the game to be visually appealing
+1. **HTML Structure**:
+   - **Container**: A central div that holds all content sections and charts.
+   - **Chart Containers**: Dedicated `div` elements for each type of chart and the map.
+   - **Map Container**: A `div` for rendering the map.
+   - **Sections**: Additional sections for textual content like notable cassava varieties and key factors contributing to food insecurity.
 
-3. **JavaScript Functionality**:
-    - Implement drag-and-drop functionality.
-    - Handle skill placement in job slots.
-    - Display alerts for wrong skill placements.
-    - Implement job market trend analysis chart (using a library like Chart.js).
-    - Show upskilling suggestions after game completion.
+2. **CSS**:
+   - **Responsive Design**: Ensure that the page layout adjusts for various screen sizes. Use flexbox and media queries to handle different screen dimensions, ensuring that charts and the map adapt fluidly.
+   - **Chart and Map Styles**: Define dimensions and positioning to maintain readability and accessibility across devices.
 
-Here's the code:
+3. **JavaScript**:
+   - **ApexCharts**: Initialize various chart types (bar, pie, line, radialBar, and polarArea) to visualize data interactively. Apply animations to enhance user engagement and provide dynamic visual feedback.
+   - **Map**: Setup and configure the map to display food insecurity data with interactive markers. Adjust the map’s center and zoom level to focus on Nigeria.
+
 
 ```html
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skills-to-Job Match Game</title>
+    <title>Nigeria Food Insecurity and Cassava Industry Report 2024</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #e8f4f8;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f4f4;
         }
-        .game-container {
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            padding: 20px;
+            background: #fff;
+            margin: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1,
+        h2 {
+            color: #333;
+        }
+
+        .chart-container {
             display: flex;
             justify-content: space-between;
-            gap: 20px;
-            margin-bottom: 40px;
+            flex-wrap: wrap;
+            width: 100%;
+            margin: 20px 0;
         }
-        .skills-container, .jobs-container {
-            width: 48%;
+
+        .chart {
+            width: 45%;
+            margin: 10px;
         }
-        .skills-container {
-            background-color: #fff;
+
+        #map {
+            height: 400px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+
+        .section {
+            margin: 20px 0;
             padding: 20px;
+            background: #eaf0f9;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-        .jobs-container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+        .section h2 {
+            margin: 0 0 10px 0;
+            color: #004080;
         }
-        .skill, .job-slot {
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 6px;
-            cursor: pointer;
+
+        .section ul {
+            list-style-type: disc;
+            margin: 0;
+            padding: 0 20px;
         }
-        .skill {
-            background-color: #cce5ff;
-            border: 1px solid #007bff;
-            user-select: none;
+
+        .section li {
+            margin: 5px 0;
         }
-        .job-slot {
-            background-color: #f1f1f1;
-            border: 1px solid #ccc;
-            min-height: 60px;
-            position: relative;
-            overflow: auto;
-        }
-        .job-slot.expanded {
-            height: auto;
-            background-color: #d1ecf1;
-        }
-        .alert {
-            display: none;
-            color: #721c24;
-            background-color: #f8d7da;
-            border: 1px solid #f5c6cb;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 20px;
-        }
-        .chart-container, .upskill-suggestions {
-            margin-top: 20px;
-        }
-        .chart-container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .upskill-suggestions {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            display: none; /* Initially hidden */
-        }
-        .upskill-suggestions h3 {
-            margin: 0 0 15px;
-            font-size: 1.5em;
-            color: #333;
-        }
-        .upskill-suggestions ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        .upskill-suggestions li {
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            padding: 15px;
-            background-color: #f9f9f9;
-            transition: background-color 0.3s;
-        }
-        .upskill-suggestions li:hover {
-            background-color: #e2e6ea;
-        }
-        .upskill-suggestions a {
-            color: #007bff;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .upskill-suggestions a:hover {
-            text-decoration: underline;
-        }
-        .upskill-suggestions .job-title {
-            font-size: 1.2em;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #333;
-        }
-        .upskill-suggestions .icon {
-            font-size: 1.5em;
-            margin-right: 10px;
-            color: #007bff;
-        }
-        .upskill-suggestions .suggestion-item {
-            display: flex;
-            align-items: center;
-        }
-        @media (max-width: 768px) {
-            .game-container {
-                flex-direction: column;
-            }
-            .skills-container, .jobs-container {
-                width: 100%;
-            }
-        }
-        .summary {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
-        }
-        .summary h2 {
-            margin: 0 0 10px;
-            font-size: 1.5em;
-            color: #333;
-        }
-        .summary p {
-            margin: 0 0 10px;
+
+        .key-factors p {
+            font-size: 1.1em;
             line-height: 1.6;
-            color: #555;
+            color: #333;
         }
-        .summary footer {
-            font-size: 0.9em;
-            color: #777;
-            border-top: 1px solid #ddd;
-            padding-top: 10px;
-            margin-top: 10px;
+
+        @media (max-width: 767px) {
+            .chart-container {
+                flex-direction: row;
+            }
+
+            .chart {
+                width: 100%;
+                margin: 10px 0;
+            }
+
         }
     </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </head>
+
 <body>
-    <h1>Match Skills to Jobs</h1>
-    <div class="game-container">
-        <div class="skills-container">
-            <div class="skill" draggable="true" id="skill1">Python Programming</div>
-            <div class="skill" draggable="true" id="skill2">JavaScript</div>
-            <div class="skill" draggable="true" id="skill3">Project Management</div>
-            <div class="skill" draggable="true" id="skill4">Data Visualization</div>
-            <div class="skill" draggable="true" id="skill5">HTML & CSS</div>
-            <div class="skill" draggable="true" id="skill6">UI/UX Design</div>
-            <div class="skill" draggable="true" id="skill7">SQL</div>
-            <div class="skill" draggable="true" id="skill8">Java</div>
-            <div class="skill" draggable="true" id="skill9">Agile Methodologies</div>
-            <div class="skill" draggable="true" id="skill10">Communication Skills</div>
+    <div class="container">
+        <h1>Nigeria Food Insecurity and Cassava Industry Report 2024</h1>
+
+        <div class="chart-container">
+            <div class="chart">
+                <h2>Food Insecurity: 2023 vs 2024</h2>
+                <div id="barChart"></div>
+            </div>
+            <div class="chart">
+                <h2>Food Insecurity by Region</h2>
+                <div id="pieChart"></div>
+            </div>
         </div>
-        <div class="jobs-container">
-            <div class="job-slot" id="job1">Data Scientist</div>
-            <div class="job-slot" id="job2">Full Stack Developer</div>
-            <div class="job-slot" id="job3">Project Manager</div>
-            <div class="job-slot" id="job4">Graphic Designer</div>
-            <div class="job-slot" id="job5">Software Engineer</div>
+
+        <div class="chart-container">
+            <div class="chart">
+                <h2>Inflation Impact on Food Prices</h2>
+                <div id="lineChart"></div>
+            </div>
+            <div class="chart">
+                <h2>Food Production vs. Consumption</h2>
+                <div id="barChart2"></div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart">
+                <h2>Recent Humanitarian Crises Impact</h2>
+                <div id="polarChart"></div>
+            </div>
+            <div class="chart">
+                <h2>Cassava Production vs. Demand</h2>
+                <div id="cassavaBarChart"></div>
+            </div>
+        </div>
+
+        <div class="single-chart">
+            <h2>Cassava Production Share</h2>
+            <div id="cassavaPieChart"></div>
+        </div>
+
+
+        <div class="section">
+            <h2>Notable Cassava Varieties</h2>
+            <ul>
+                <li><strong>TMS 30572:</strong> High yield and disease resistance.</li>
+                <li><strong>NR8082:</strong> Known for its drought resistance.</li>
+                <li><strong>TME 419:</strong> Popular for its high starch content.</li>
+                <li><strong>Yellow root:</strong> Notable for its distinct color and nutritional benefits.</li>
+                <li><strong>TMS 90257:</strong> Favored for its adaptability to various soil types.</li>
+                <li><strong>UMUCASS 47 (game changer):</strong> Significant for its resistance to major pests.</li>
+                <li><strong>UMUCASS 48 (obasanjo-2):</strong> Known for its high root yield.</li>
+                <li><strong>UMUCASS 49 (hope):</strong> Adapted to various ecological zones.</li>
+                <li><strong>UMUCASS 50 (baba-70):</strong> High resistance to diseases.</li>
+                <li><strong>UMUCASS 51 (poundable):</strong> Ideal for making traditional dishes.</li>
+            </ul>
+        </div>
+
+
+        <div class="single-chart">
+            <h2>Food Insecurity by State</h2>
+            <div id="map"></div>
+        </div>
+
+
+        <div class="section key-factors">
+            <h2>Key Factors Contributing to Food Insecurity</h2>
+            <p>Food insecurity in Nigeria is driven by a combination of factors that exacerbate the crisis. These
+                include:</p>
+            <ul>
+                <li><strong>Ongoing Conflicts:</strong> Armed conflicts in various regions disrupt food supply chains
+                    and access.</li>
+                <li><strong>Climate Change:</strong> Extreme weather patterns, including flooding and droughts,
+                    negatively impact agricultural productivity.</li>
+                <li><strong>Inflation:</strong> Rising inflation rates increase the cost of food and essential non-food
+                    commodities.</li>
+                <li><strong>Economic Instability:</strong> The devaluation of the naira and the discontinuation of the
+                    fuel subsidy contribute to rising living costs.</li>
+                <li><strong>Violence and Banditry:</strong> Persistent violence and crime further hinder food
+                    availability and distribution.</li>
+            </ul>
         </div>
     </div>
-    <div class="alert" id="alert">Incorrect Skill! Please try again.</div>
-    <div class="chart-container">
-        <h2>Tech Job Trends</h2>
-        <canvas id="techTrendsChart"></canvas>
-    </div>
-    <div class="summary">
-        <h2>Tech Job Trends Summary</h2>
-        <p>
-            Over the past seven years, the technology job market has shown significant growth in terms of new job entries, salaries, and the demand for top tech skills. The number of new job entries in the tech sector has increased steadily each year, reflecting the expanding opportunities in this field. Average salaries for tech jobs have also risen consistently, indicating a higher valuation of tech expertise and the increasing cost of living.
-        </p>
-        <p>
-            The demand for key tech skills has grown sharply, driven by advancements in technology and the evolving needs of businesses. This is evidenced by a rising index representing the demand for skills such as programming, data analysis, and system design.
-        </p>
-        <footer>
-            Data sources: U.S. Bureau of Labor Statistics, LinkedIn Job Reports, Indeed Salary Data, and Glassdoor Job Trends.
-        </footer>
-    </div>
-    <div class="upskill-suggestions" id="upskill-suggestions">
-        <h3>Upskilling Suggestions</h3>
-        <ul>
-            <li>
-                <div class="job-title">Data Scientist</div>
-                <div class="suggestion-item">
-                    <span class="icon">📊</span>
-                    <div>
-                        Advanced Python Programming - <a href="https://www.datacamp.com/courses/advanced-python-for-data-science">DataCamp</a>
-                    </div>
-                </div>
-                <div class="suggestion-item">
-                    <span class="icon">🤖</span>
-                    <div>
-                        Machine Learning Specialization - <a href="https://www.coursera.org/specializations/machine-learning">Coursera</a>
-                    </div>
-                </div>
-                <div class="suggestion-item">
-                    <span class="icon">📉</span>
-                    <div>
-                        Data Visualization with Tableau - <a href="https://www.udemy.com/course/tableau-data-visualization/">Udemy</a>
-                    </div>
-                </div>
-            </li>
-            <li>
-                <div class="job-title">Full Stack Developer</div>
-                <div class="suggestion-item">
-                    <span class="icon">💻</span>
-                    <div>
-                        Full Stack Web Development with React - <a href="https://www.udacity.com/course/full-stack-web-developer-nanodegree--nd0044">Udacity</a>
-                    </div>
-                </div>
-                <div class="suggestion-item">
-                    <span class="icon">🔧</span>
-                    <div>
-                        Backend Development with Node.js - <a href="https://www.pluralsight.com/courses/nodejs-introduction">Pluralsight</a>
-                    </div>
-                </div>
-                <div class="suggestion-item">
-                    <span class="icon">📅</span>
-                    <div>
-                        Database Management with SQL - <a href="https://www.codecademy.com/learn/learn-sql">Codecademy</a>
-                    </div>
-                </div>
-            </li>
-            <li>
-                <div class="job-title">Project Manager</div>
-                <div class="suggestion-item">
-                    <span class="icon">🗂️</span>
-                    <div>
-                        PMP Certification - <a href="https://www.pmi.org/certifications/project-management-pmp">Project Management Institute</a>
-                    </div>
-                </div>
-                <div class="suggestion-item">
-                    <span class="icon">🔄</span>
-                    <div>
-                        Certified ScrumMaster - <a href="https://www.scrumalliance.org/getattachment/certifications/scrum-master/csm">Scrum Alliance</a>
-                    </div>
-                </div>
-                <div class="suggestion-item">
-                    <span class="icon">📈</span>
-                    <div>
-                        Advanced Project Management Strategies - <a href="https://www.linkedin.com/learning/advanced-project-management">LinkedIn Learning</a>
-                    </div>
-                </div>
-            </li>
-            <li>
-                <div class="job-title">Graphic Designer</div>
-                <div class="suggestion-item">
-                    <span class="icon">🎨</span>
-                    <div>
-                        Master Adobe Creative Suite - <a href="https://helpx.adobe.com/creative-cloud.html">Adobe Learn</a>
-                    </div>
-                </div>
-                <div class="suggestion-item">
-                    <span class="icon">📐</span>
-                    <div>
-                        UI/UX Design Fundamentals - <a href="https://www.coursera.org/learn/ui-ux-design">Coursera</a>
-                    </div>
-                </div>
-                <div class="suggestion-item">
-                    <span class="icon">📁</span>
-                    <div>
-                        Portfolio Development - <a href="https://www.behance.net/">Behance</a>
-                    </div>
-                </div>
-            </li>
-            <li>
-                <div class="job-title">Software Engineer</div>
-                <div class="suggestion-item">
-                    <span class="icon">🛠️</span>
-                    <div>
-                        Advanced Java Programming - <a href="https://www.udemy.com/course/advanced-java-programming/">Udemy</a>
-                    </div>
-                </div>
-                <div class="suggestion-item">
-                    <span class="icon">📚</span>
-                    <div>
-                        Software Engineering Principles - <a href="https://www.edx.org/course/software-engineering-principles">edX</a>
-                    </div>
-                </div>
-                <div class="suggestion-item">
-                    <span class="icon">🔍</span>
-                    <div>
-                        System Design and Architecture - <a href="https://www.pluralsight.com/paths/system-design">Pluralsight</a>
-                    </div>
-                </div>
-            </li>
-        </ul>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script>
-        // Drag and Drop functionality
-        const skills = document.querySelectorAll('.skill');
-        const jobSlots = document.querySelectorAll('.job-slot');
-        const alertBox = document.getElementById('alert');
-        const upskillSuggestions = document.getElementById('upskill-suggestions');
-        let correctMatches = 0;
-
-        skills.forEach(skill => {
-            skill.addEventListener('dragstart', (e) => {
-                e.dataTransfer.setData('text', e.target.id);
-            });
-        });
-
-        jobSlots.forEach(slot => {
-            slot.addEventListener('dragover', (e) => {
-                e.preventDefault();
-            });
-
-            slot.addEventListener('drop', (e) => {
-                e.preventDefault();
-                const skillId = e.dataTransfer.getData('text');
-                const skill = document.getElementById(skillId);
-
-                if (isCorrectSkill(slot, skill)) {
-                    slot.classList.add('expanded');
-                    slot.appendChild(skill);
-                    correctMatches++;
-                    if (correctMatches === jobSlots.length) {
-                        upskillSuggestions.style.display = 'block';
+        document.addEventListener('DOMContentLoaded', function () {
+            // Data for Charts
+            const foodInsecurityData = {
+                series: [{
+                    name: 'Food Insecure People (Millions)',
+                    data: [18.6, 26.5]
+                }],
+                chart: {
+                    type: 'bar',
+                    height: 350,
+                    animations: {
+                        enabled: true,
+                        easing: 'easeinout',
+                        speed: 1000
                     }
-                } else {
-                    alertBox.style.display = 'block';
-                    setTimeout(() => {
-                        alertBox.style.display = 'none';
-                    }, 1500);
-                }
-            });
-        });
-
-        function isCorrectSkill(slot, skill) {
-            const matches = {
-                'job1': ['skill1', 'skill4', 'skill7'],
-                'job2': ['skill2', 'skill5', 'skill6', 'skill8'],
-                'job3': ['skill3', 'skill9', 'skill10'],
-                'job4': ['skill4', 'skill6', 'skill10'],
-                'job5': ['skill2', 'skill5', 'skill8']
-            };
-            return matches[slot.id] && matches[slot.id].includes(skill.id);
-        }
-
-        function renderChart() {
-            const ctx = document.getElementById('techTrendsChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['2017', '2018', '2019', '2020', '2021', '2022', '2023'],
-                    datasets: [
-                        {
-                            label: 'Number of New Tech Job Entries',
-                            data: [1500, 1600, 1700, 1800, 2000, 2200, 2400],
-                            borderColor: '#007bff',
-                            backgroundColor: 'rgba(0, 123, 255, 0.1)',
-                            fill: true,
-                        },
-                        {
-                            label: 'Average Salary ($)',
-                            data: [70000, 72000, 74000, 76000, 78000, 80000, 82000],
-                            borderColor: '#28a745',
-                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                            fill: true,
-                        },
-                        {
-                            label: 'Top Tech Skills Demand Index',
-                            data: [80, 85, 90, 95, 100, 105, 110],
-                            borderColor: '#dc3545',
-                            backgroundColor: 'rgba(220, 53, 69, 0.1)',
-                            fill: true,
-                        }
-                    ]
                 },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(tooltipItem) {
-                                    return `${tooltipItem.dataset.label}: ${tooltipItem.raw}`;
-                                }
-                            }
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: '55%',
+                        endingShape: 'rounded'
+                    }
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                xaxis: {
+                    categories: ['October 2023', '2024 Projection']
+                },
+                yaxis: {
+                    title: {
+                        text: 'Millions'
+                    }
+                },
+                title: {
+                    text: 'Food Insecurity: 2023 vs 2024',
+                    align: 'left'
+                },
+                tooltip: {
+                    theme: 'dark',
+                    y: {
+                        formatter: function (value) {
+                            return value + "M";
                         }
+                    }
+                },
+                states: {
+                    hover: {
+                        filter: 'none'
+                    }
+                }
+            };
+
+            const foodInsecurityByRegionData = {
+                series: [15.3, 3.3], // Data for 'Other Regions' and 'Northeast (BAY)'
+                chart: {
+                    type: 'pie',
+                    height: 350,
+                    // width: "100%",
+                    animations: {
+                        enabled: true,
+                        easing: 'easeinout',
+                        speed: 1000
+                    }
+                },
+                plotOptions: {
+                    labels: {
+                        show: false,
                     },
-                    scales: {
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Year'
-                            }
+                    pie: {
+                        dataLabels: {
+                            offset: 0,
+                            minAngleToShowLabel: 55
                         },
-                        y: {
-                            title: {
-                                display: true,
-                                text: 'Value'
-                            }
+                        labels: {
+                            show: false,
+                        }
+                    }
+                },
+                labels: ['Other Regions', 'Northeast (BAY)'],
+                title: {
+                    text: 'Food Insecurity by Region',
+                    align: 'left'
+                },
+                tooltip: {
+                    theme: 'dark',
+                    y: {
+                        formatter: function (value) {
+                            return value + "M";
                         }
                     }
                 }
-            });
-        }
-        renderChart();
+            };
 
+            const inflationData = {
+                series: [{
+                    name: 'Inflation Rate (%)',
+                    data: [12, 14, 16, 18]
+                }],
+                chart: {
+                    type: 'line',
+                    height: 350,
+                    animations: {
+                        enabled: true,
+                        easing: 'easeinout',
+                        speed: 1000
+                    }
+                },
+                xaxis: {
+                    categories: ['2020', '2021', '2022', '2023']
+                },
+                yaxis: {
+                    title: {
+                        text: 'Percentage'
+                    }
+                },
+                title: {
+                    text: 'Inflation Impact on Food Prices',
+                    align: 'left'
+                },
+                tooltip: {
+                    theme: 'dark',
+                    y: {
+                        formatter: function (value) {
+                            return value + "%";
+                        }
+                    }
+                }
+            };
+
+            const foodProductionVsConsumptionData = {
+                series: [{
+                    name: 'Food Production (Million Metric Tons)',
+                    data: [70, 72, 75, 80]
+                }, {
+                    name: 'Food Consumption (Million Metric Tons)',
+                    data: [65, 68, 70, 73]
+                }],
+                chart: {
+                    type: 'bar',
+                    height: 350,
+                    animations: {
+                        enabled: true,
+                        easing: 'easeinout',
+                        speed: 1000
+                    }
+                },
+                xaxis: {
+                    categories: ['2020', '2021', '2022', '2023']
+                },
+                yaxis: {
+                    title: {
+                        text: 'Million Metric Tons'
+                    }
+                },
+                title: {
+                    text: 'Food Production vs. Consumption',
+                    align: 'left'
+                },
+                tooltip: {
+                    theme: 'dark',
+                    y: {
+                        formatter: function (value) {
+                            return value + " MT";
+                        }
+                    }
+                }
+            };
+
+            const humanitarianCrisisData = {
+                series: [45, 55], // Data for 'Floods' and 'Conflict'
+                chart: {
+                    type: 'polarArea',
+                    height: 350,
+                    animations: {
+                        enabled: true,
+                        easing: 'easeinout',
+                        speed: 1000
+                    }
+                },
+                labels: ['Floods', 'Conflict'],
+                title: {
+                    text: 'Recent Humanitarian Crises Impact',
+                    align: 'left'
+                },
+                tooltip: {
+                    theme: 'dark',
+                    y: {
+                        formatter: function (value) {
+                            return value + "%";
+                        }
+                    }
+                },
+                fill: {
+                    opacity: 0.8
+                },
+                responsive: [{
+                    breakpoint: 480,
+                    options: {
+                        chart: {
+                            width: 200
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }]
+            };
+
+            const cassavaProductionData = {
+                series: [{
+                    name: 'Cassava Production (Million Metric Tons)',
+                    data: [61.121]
+                }, {
+                    name: 'Average Annual Demand (Million Metric Tons)',
+                    data: [36.0]
+                }],
+                chart: {
+                    type: 'bar',
+                    height: 350,
+                    animations: {
+                        enabled: true,
+                        easing: 'easeinout',
+                        speed: 1000
+                    }
+                },
+                xaxis: {
+                    categories: ['2021']
+                },
+                yaxis: {
+                    title: {
+                        text: 'Million Metric Tons'
+                    }
+                },
+                title: {
+                    text: 'Cassava Production vs. Demand',
+                    align: 'left'
+                },
+                tooltip: {
+                    theme: 'dark',
+                    y: {
+                        formatter: function (value) {
+                            return value + " MT";
+                        }
+                    }
+                }
+            };
+
+            const cassavaProductionShareData = {
+                series: [42.25, 30, 27.75], // Nigeria, Congo, Tanzania, and Other
+                chart: {
+                    type: 'radialBar',
+                    height: 350,
+                    animations: {
+                        enabled: true,
+                        easing: 'easeinout',
+                        speed: 1000
+                    }
+                },
+                plotOptions: {
+                    radialBar: {
+                        startAngle: 0,
+                        endAngle: 270,
+                        hollow: {
+                            margin: 5,
+                            size: '30%',
+                            background: 'transparent',
+                            image: undefined,
+                        },
+                        dataLabels: {
+                            name: {
+                                show: true,
+                                fontSize: '16px',
+                                color: '#333',
+                                offsetY: -10
+                            },
+                            value: {
+                                show: true,
+                                fontSize: '14px',
+                                color: '#333',
+                                offsetY: 5
+                            }
+                        },
+                        barLabels: {
+                            enabled: true,
+                            useSeriesColors: true,
+                            offsetX: -8,
+                            fontSize: '16px',
+                            formatter: function (seriesName, opts) {
+                                return seriesName + ":  " + opts.w.globals.series[opts.seriesIndex] + "%"
+                            },
+                        },
+                    }
+                },
+                labels: ['Nigeria', 'Congo', 'Tanzania'],
+                title: {
+                    text: 'Cassava Production Share',
+                    align: 'left'
+                },
+                tooltip: {
+                    theme: 'dark',
+                    y: {
+                        formatter: function (value) {
+                            return value + "%";
+                        }
+                    }
+                }
+            };
+
+            // Render the charts
+            new ApexCharts(document.querySelector("#barChart"), foodInsecurityData).render();
+            new ApexCharts(document.querySelector("#pieChart"), foodInsecurityByRegionData).render();
+            new ApexCharts(document.querySelector("#lineChart"), inflationData).render();
+            new ApexCharts(document.querySelector("#barChart2"), foodProductionVsConsumptionData).render();
+            new ApexCharts(document.querySelector("#polarChart"), humanitarianCrisisData).render();
+            new ApexCharts(document.querySelector("#cassavaBarChart"), cassavaProductionData).render();
+            new ApexCharts(document.querySelector("#cassavaPieChart"), cassavaProductionShareData).render();
+
+            // Initialize Leaflet map for Food Insecurity by State
+            var map = L.map('map').setView([10.4515, 8.5833], 6); // Centered around Nigeria
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Example markers for states (add actual coordinates and severity data)
+            const states = [
+                { name: 'Borno', coords: [11.0, 13.0], severity: 'High' },
+                { name: 'Adamawa', coords: [10.0, 13.0], severity: 'Medium' },
+                { name: 'Yobe', coords: [12.0, 11.0], severity: 'High' },
+                { name: 'Katsina', coords: [12.5, 7.5], severity: 'Medium' },
+                { name: 'Kaduna', coords: [10.0, 7.5], severity: 'High' }
+            ];
+
+            states.forEach(state => {
+                L.marker(state.coords)
+                    .addTo(map)
+                    .bindPopup(`<b>${state.name}</b><br>Severity: ${state.severity}`);
+            })
+        });
     </script>
 </body>
+
 </html>
 ```
 
-### Explanation:
 
-1. **HTML Structure**:
-    - A `game-container` is used to align the skills and job slots side by side.
-    - Skills are draggable and each has an `id`.
-    - Job slots accept dragged skills and can expand when filled correctly.
+### Explanation
 
-2. **JavaScript Functionality**:
-    - Handles drag-and-drop logic.
-    - Uses the `isCorrectSkill()` to validate if a dragged skill belongs to the job.
-    - Displays an alert for incorrect actions.
-    - Updates the UI with upskilling suggestions upon game completion. This is done in the `drop` event listener on the elements with class name `job-slot`.
-    - The `renderChart()` function creates a line chart showing a hypothetical job market trend.
+1. **HTML**:
+   - The HTML layout includes multiple `div` elements organized into containers for each chart and a map. Each chart is rendered within its own `div` to ensure proper layout and isolation of visualization components.
+   - The `map` div is specifically designated for rendering the Leaflet map, which will visually represent food insecurity hotspots across Nigeria.
+
+2. **CSS**:
+   - **Responsive Styles**: Utilize flexbox to align charts side by side on larger screens and stack them vertically on smaller screens. This ensures that the layout remains user-friendly regardless of the device's screen size.
+   - **Media Queries**: Adjust chart sizes and map height to ensure optimal visibility and usability on various devices, including tablets and smartphones.
+
+3. **JavaScript**:
+   - **Chart Initialization**: Use ApexCharts to create and configure charts for various data sets, including food insecurity projections, regional distribution, and economic impacts with animations enabled for smoother transitions and interactions.
+   - **Map Configuration**: Initialize a Leaflet map centered on Nigeria, adding interactive markers to highlight key regions affected by food insecurity.
 
 
-The Skills-to-Job Match Game is a fun and interactive way for users to see how their skills fit with different job opportunities. It lets you drag and drop skills into job slots, making it easy to understand what each job needs and how your skills match up.
+This code provides a responsive layout with interactive charts and a map for visualizing key data related to food insecurity and the cassava industry in Nigeria.

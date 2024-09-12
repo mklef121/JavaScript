@@ -1,528 +1,304 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nigeria Food Insecurity and Cassava Industry Report 2024</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Enhanced Weather App</title>
+    <link href='https://fonts.googleapis.com/css?family=Poppins:400,600&display=swap' rel='stylesheet'>
+    <link href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" rel="stylesheet"/>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-color: #f4f4f4;
+            background: #2C3E50;
+            font-family: 'Poppins', sans-serif;
+            color: #FFF;
+            scroll-behavior: smooth;
         }
 
         .container {
-            width: 90%;
-            max-width: 1200px;
             padding: 20px;
-            background: #fff;
-            margin: 20px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        h1,
-        h2 {
-            color: #333;
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
         }
 
-        .chart-container {
+        form {
             display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            width: 100%;
-            margin: 20px 0;
-        }
-
-        .chart {
-            width: 45%;
-            margin: 10px;
-        }
-
-        #map {
-            height: 400px;
-            width: 100%;
+            justify-content: center;
             margin-bottom: 20px;
         }
 
+        input {
+            font-size: 1.2rem;
+            padding: 10px;
+            width: 60%;
+            border: none;
+            border-radius: 5px;
+        }
 
-        .section {
-            margin: 20px 0;
+        button {
+            padding: 10px;
+            font-size: 1.2rem;
+            background-color: #f39c12;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-left: 10px;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #e67e22;
+        }
+
+        .cities {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-gap: 20px;
+        }
+
+        .city {
+            background-color: #34495e;
             padding: 20px;
-            background: #eaf0f9;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            text-align: center;
+            position: relative;
+            transition: transform 0.3s ease, background-color 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
 
-        .section h2 {
-            margin: 0 0 10px 0;
-            color: #004080;
+        .city:hover {
+            transform: scale(1.05);
         }
 
-        .section ul {
-            list-style-type: disc;
-            margin: 0;
-            padding: 0 20px;
+        .city h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
         }
 
-        .section li {
+        .city-temp {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .weather-icon {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 15px;
+        }
+
+        .weather-details {
+            margin-top: 10px;
+            padding: 15px;
+            text-align: left;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .weather-details p {
             margin: 5px 0;
+            font-size: 0.9rem;
         }
 
-        .key-factors p {
-            font-size: 1.1em;
-            line-height: 1.6;
-            color: #333;
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
         }
 
-        @media (max-width: 767px) {
-            .chart-container {
-                flex-direction: row;
-            }
+        .modal-content {
+            background-color: #34495e;
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+        }
 
-            .chart {
-                width: 100%;
-                margin: 10px 0;
-            }
+        .modal-content .city-name {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
 
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2rem;
+            color: white;
+            cursor: pointer;
+        }
+
+        .map-container {
+            height: 300px;
+            margin-top: 20px;
+            border-radius: 10px;
         }
     </style>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </head>
-
 <body>
-    <div class="container">
-        <h1>Nigeria Food Insecurity and Cassava Industry Report 2024</h1>
+<div class="container">
+    <h1> Weather App</h1>
+    <form>
+        <input id="city-input" placeholder="Enter city name..." type="text">
+        <button type="submit">Submit</button>
+    </form>
+    <ul class="cities"></ul>
+</div>
 
-        <div class="chart-container">
-            <div class="chart">
-                <h2>Food Insecurity: 2023 vs 2024</h2>
-                <div id="barChart"></div>
-            </div>
-            <div class="chart">
-                <h2>Food Insecurity by Region</h2>
-                <div id="pieChart"></div>
-            </div>
-        </div>
-
-        <div class="chart-container">
-            <div class="chart">
-                <h2>Inflation Impact on Food Prices</h2>
-                <div id="lineChart"></div>
-            </div>
-            <div class="chart">
-                <h2>Food Production vs. Consumption</h2>
-                <div id="barChart2"></div>
-            </div>
-        </div>
-
-        <div class="chart-container">
-            <div class="chart">
-                <h2>Recent Humanitarian Crises Impact</h2>
-                <div id="polarChart"></div>
-            </div>
-            <div class="chart">
-                <h2>Cassava Production vs. Demand</h2>
-                <div id="cassavaBarChart"></div>
-            </div>
-        </div>
-
-        <div class="single-chart">
-            <h2>Cassava Production Share</h2>
-            <div id="cassavaPieChart"></div>
-        </div>
-
-
-        <div class="section">
-            <h2>Notable Cassava Varieties</h2>
-            <ul>
-                <li><strong>TMS 30572:</strong> High yield and disease resistance.</li>
-                <li><strong>NR8082:</strong> Known for its drought resistance.</li>
-                <li><strong>TME 419:</strong> Popular for its high starch content.</li>
-                <li><strong>Yellow root:</strong> Notable for its distinct color and nutritional benefits.</li>
-                <li><strong>TMS 90257:</strong> Favored for its adaptability to various soil types.</li>
-                <li><strong>UMUCASS 47 (game changer):</strong> Significant for its resistance to major pests.</li>
-                <li><strong>UMUCASS 48 (obasanjo-2):</strong> Known for its high root yield.</li>
-                <li><strong>UMUCASS 49 (hope):</strong> Adapted to various ecological zones.</li>
-                <li><strong>UMUCASS 50 (baba-70):</strong> High resistance to diseases.</li>
-                <li><strong>UMUCASS 51 (poundable):</strong> Ideal for making traditional dishes.</li>
-            </ul>
-        </div>
-
-
-        <div class="single-chart">
-            <h2>Food Insecurity by State</h2>
-            <div id="map"></div>
-        </div>
-
-
-        <div class="section key-factors">
-            <h2>Key Factors Contributing to Food Insecurity</h2>
-            <p>Food insecurity in Nigeria is driven by a combination of factors that exacerbate the crisis. These
-                include:</p>
-            <ul>
-                <li><strong>Ongoing Conflicts:</strong> Armed conflicts in various regions disrupt food supply chains
-                    and access.</li>
-                <li><strong>Climate Change:</strong> Extreme weather patterns, including flooding and droughts,
-                    negatively impact agricultural productivity.</li>
-                <li><strong>Inflation:</strong> Rising inflation rates increase the cost of food and essential non-food
-                    commodities.</li>
-                <li><strong>Economic Instability:</strong> The devaluation of the naira and the discontinuation of the
-                    fuel subsidy contribute to rising living costs.</li>
-                <li><strong>Violence and Banditry:</strong> Persistent violence and crime further hinder food
-                    availability and distribution.</li>
-            </ul>
-        </div>
+<!-- Modal for weather details -->
+<div class="modal" id="weather-modal">
+    <div class="modal-content">
+        <span class="close-modal" id="close-modal">&times;</span>
+        <div class="city-name" id="modal-city-name"></div>
+        <div class="map-container" id="map"></div>
+        <div class="weather-details" id="modal-weather-details"></div>
     </div>
+</div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Data for Charts
-            const foodInsecurityData = {
-                series: [{
-                    name: 'Food Insecure People (Millions)',
-                    data: [18.6, 26.5]
-                }],
-                chart: {
-                    type: 'bar',
-                    height: 350,
-                    animations: {
-                        enabled: true,
-                        easing: 'easeinout',
-                        speed: 1000
-                    }
-                },
-                plotOptions: {
-                    bar: {
-                        horizontal: false,
-                        columnWidth: '55%',
-                        endingShape: 'rounded'
-                    }
-                },
-                dataLabels: {
-                    enabled: false
-                },
-                xaxis: {
-                    categories: ['October 2023', '2024 Projection']
-                },
-                yaxis: {
-                    title: {
-                        text: 'Millions'
-                    }
-                },
-                title: {
-                    text: 'Food Insecurity: 2023 vs 2024',
-                    align: 'left'
-                },
-                tooltip: {
-                    theme: 'dark',
-                    y: {
-                        formatter: function (value) {
-                            return value + "M";
-                        }
-                    }
-                },
-                states: {
-                    hover: {
-                        filter: 'none'
-                    }
-                }
-            };
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script>
+  const apiKey = 'YOUR_API_KEY';
+  const form = document.querySelector('form');
+  const input = document.querySelector('#city-input');
+  const list = document.querySelector('.cities');
+  const modal = document.querySelector('#weather-modal');
+  const closeModalBtn = document.querySelector('#close-modal');
+  let map;
 
-            const foodInsecurityByRegionData = {
-                series: [15.3, 3.3], // Data for 'Other Regions' and 'Northeast (BAY)'
-                chart: {
-                    type: 'pie',
-                    height: 350,
-                    // width: "100%",
-                    animations: {
-                        enabled: true,
-                        easing: 'easeinout',
-                        speed: 1000
-                    }
-                },
-                plotOptions: {
-                    labels: {
-                        show: false,
-                    },
-                    pie: {
-                        dataLabels: {
-                            offset: 0,
-                            minAngleToShowLabel: 55
-                        },
-                        labels: {
-                            show: false,
-                        }
-                    }
-                },
-                labels: ['Other Regions', 'Northeast (BAY)'],
-                title: {
-                    text: 'Food Insecurity by Region',
-                    align: 'left'
-                },
-                tooltip: {
-                    theme: 'dark',
-                    y: {
-                        formatter: function (value) {
-                            return value + "M";
-                        }
-                    }
-                }
-            };
+  // Get weather for closest city using geolocation
+  window.onload = async function() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        const { latitude, longitude } = position.coords;
+        const weatherData = await getWeatherDataByCoords(latitude, longitude);
+        if (weatherData) {
+          renderWeatherCard(weatherData);
+        }
+      }, async () => {
+        // Fallback to London if geolocation fails
+        const londonWeather = await getWeatherData('London');
+        if (londonWeather) {
+          renderWeatherCard(londonWeather);
+        }
+      });
+    } else {
+      // Fallback to London if geolocation is not supported
+      const londonWeather = await getWeatherData('London');
+      if (londonWeather) {
+        renderWeatherCard(londonWeather);
+      }
+    }
+  };
 
-            const inflationData = {
-                series: [{
-                    name: 'Inflation Rate (%)',
-                    data: [12, 14, 16, 18]
-                }],
-                chart: {
-                    type: 'line',
-                    height: 350,
-                    animations: {
-                        enabled: true,
-                        easing: 'easeinout',
-                        speed: 1000
-                    }
-                },
-                xaxis: {
-                    categories: ['2020', '2021', '2022', '2023']
-                },
-                yaxis: {
-                    title: {
-                        text: 'Percentage'
-                    }
-                },
-                title: {
-                    text: 'Inflation Impact on Food Prices',
-                    align: 'left'
-                },
-                tooltip: {
-                    theme: 'dark',
-                    y: {
-                        formatter: function (value) {
-                            return value + "%";
-                        }
-                    }
-                }
-            };
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const city = input.value;
+    if (city) {
+      const weatherData = await getWeatherData(city);
+      if (weatherData) {
+        renderWeatherCard(weatherData);
+        input.value = '';
+      }
+    }
+  });
 
-            const foodProductionVsConsumptionData = {
-                series: [{
-                    name: 'Food Production (Million Metric Tons)',
-                    data: [70, 72, 75, 80]
-                }, {
-                    name: 'Food Consumption (Million Metric Tons)',
-                    data: [65, 68, 70, 73]
-                }],
-                chart: {
-                    type: 'bar',
-                    height: 350,
-                    animations: {
-                        enabled: true,
-                        easing: 'easeinout',
-                        speed: 1000
-                    }
-                },
-                xaxis: {
-                    categories: ['2020', '2021', '2022', '2023']
-                },
-                yaxis: {
-                    title: {
-                        text: 'Million Metric Tons'
-                    }
-                },
-                title: {
-                    text: 'Food Production vs. Consumption',
-                    align: 'left'
-                },
-                tooltip: {
-                    theme: 'dark',
-                    y: {
-                        formatter: function (value) {
-                            return value + " MT";
-                        }
-                    }
-                }
-            };
+  closeModalBtn.addEventListener('click', () => {
+    modal.style.display = 'none';
+  });
 
-            const humanitarianCrisisData = {
-                series: [45, 55], // Data for 'Floods' and 'Conflict'
-                chart: {
-                    type: 'polarArea',
-                    height: 350,
-                    animations: {
-                        enabled: true,
-                        easing: 'easeinout',
-                        speed: 1000
-                    }
-                },
-                labels: ['Floods', 'Conflict'],
-                title: {
-                    text: 'Recent Humanitarian Crises Impact',
-                    align: 'left'
-                },
-                tooltip: {
-                    theme: 'dark',
-                    y: {
-                        formatter: function (value) {
-                            return value + "%";
-                        }
-                    }
-                },
-                fill: {
-                    opacity: 0.8
-                },
-                responsive: [{
-                    breakpoint: 480,
-                    options: {
-                        chart: {
-                            width: 200
-                        },
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }]
-            };
+  async function getWeatherData(city) {
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching weather data', error);
+      return null;
+    }
+  }
 
-            const cassavaProductionData = {
-                series: [{
-                    name: 'Cassava Production (Million Metric Tons)',
-                    data: [61.121]
-                }, {
-                    name: 'Average Annual Demand (Million Metric Tons)',
-                    data: [36.0]
-                }],
-                chart: {
-                    type: 'bar',
-                    height: 350,
-                    animations: {
-                        enabled: true,
-                        easing: 'easeinout',
-                        speed: 1000
-                    }
-                },
-                xaxis: {
-                    categories: ['2021']
-                },
-                yaxis: {
-                    title: {
-                        text: 'Million Metric Tons'
-                    }
-                },
-                title: {
-                    text: 'Cassava Production vs. Demand',
-                    align: 'left'
-                },
-                tooltip: {
-                    theme: 'dark',
-                    y: {
-                        formatter: function (value) {
-                            return value + " MT";
-                        }
-                    }
-                }
-            };
+  async function getWeatherDataByCoords(lat, lon) {
+    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching weather data by coordinates', error);
+      return null;
+    }
+  }
 
-            const cassavaProductionShareData = {
-                series: [42.25, 30, 27.75], // Nigeria, Congo, Tanzania, and Other
-                chart: {
-                    type: 'radialBar',
-                    height: 350,
-                    animations: {
-                        enabled: true,
-                        easing: 'easeinout',
-                        speed: 1000
-                    }
-                },
-                plotOptions: {
-                    radialBar: {
-                        startAngle: 0,
-                        endAngle: 270,
-                        hollow: {
-                            margin: 5,
-                            size: '30%',
-                            background: 'transparent',
-                            image: undefined,
-                        },
-                        dataLabels: {
-                            name: {
-                                show: true,
-                                fontSize: '16px',
-                                color: '#333',
-                                offsetY: -10
-                            },
-                            value: {
-                                show: true,
-                                fontSize: '14px',
-                                color: '#333',
-                                offsetY: 5
-                            }
-                        },
-                        barLabels: {
-                            enabled: true,
-                            useSeriesColors: true,
-                            offsetX: -8,
-                            fontSize: '16px',
-                            formatter: function (seriesName, opts) {
-                                return seriesName + ":  " + opts.w.globals.series[opts.seriesIndex] + "%"
-                            },
-                        },
-                    }
-                },
-                labels: ['Nigeria', 'Congo', 'Tanzania'],
-                title: {
-                    text: 'Cassava Production Share',
-                    align: 'left'
-                },
-                tooltip: {
-                    theme: 'dark',
-                    y: {
-                        formatter: function (value) {
-                            return value + "%";
-                        }
-                    }
-                }
-            };
+  function renderWeatherCard(data) {
+    const { name, sys, main, weather, wind, coord } = data;
+    const cityElement = document.createElement('div');
+    cityElement.classList.add('city');
 
-            // Render the charts
-            new ApexCharts(document.querySelector("#barChart"), foodInsecurityData).render();
-            new ApexCharts(document.querySelector("#pieChart"), foodInsecurityByRegionData).render();
-            new ApexCharts(document.querySelector("#lineChart"), inflationData).render();
-            new ApexCharts(document.querySelector("#barChart2"), foodProductionVsConsumptionData).render();
-            new ApexCharts(document.querySelector("#polarChart"), humanitarianCrisisData).render();
-            new ApexCharts(document.querySelector("#cassavaBarChart"), cassavaProductionData).render();
-            new ApexCharts(document.querySelector("#cassavaPieChart"), cassavaProductionShareData).render();
+    const temp = Math.round(main.temp);
+    const bgColor = temp > 25 ? '#e67e22' : temp < 10 ? '#3498db' : '#2ecc71';
+    cityElement.style.backgroundColor = bgColor;
 
-            // Initialize Leaflet map for Food Insecurity by State
-            var map = L.map('map').setView([10.4515, 8.5833], 6); // Centered around Nigeria
+    cityElement.innerHTML = `
+            <h2>${name}, ${sys.country}</h2><small> Click to see map</small>
+            <div class="city-temp">${temp}°C</div>
+            <img class="weather-icon" src="https://openweathermap.org/img/wn/${weather[0].icon}@2x.png" alt="${weather[0].description}">
+            <p class="weather-description">${weather[0].description}</p>
+            <div class="weather-details">
+                <p><strong>Humidity:</strong> ${main.humidity}%</p>
+                <p><strong>Wind Speed:</strong> ${wind.speed} m/s</p>
+                <p><strong>Pressure:</strong> ${main.pressure} hPa</p>
+                <p><strong>Feels Like:</strong> ${Math.round(main.feels_like)}°C</p>
+                <p><strong>Sunrise:</strong> ${formatTime(sys.sunrise)}</p>
+                <p><strong>Sunset:</strong> ${formatTime(sys.sunset)}</p>
+            </div>
+        `;
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(map);
+    cityElement.addEventListener('click', () => {
+      showModal(data);
+    });
 
-            // Example markers for states (add actual coordinates and severity data)
-            const states = [
-                { name: 'Borno', coords: [11.0, 13.0], severity: 'High' },
-                { name: 'Adamawa', coords: [10.0, 13.0], severity: 'Medium' },
-                { name: 'Yobe', coords: [12.0, 11.0], severity: 'High' },
-                { name: 'Katsina', coords: [12.5, 7.5], severity: 'Medium' },
-                { name: 'Kaduna', coords: [10.0, 7.5], severity: 'High' }
-            ];
+    list.appendChild(cityElement);
+  }
 
-            states.forEach(state => {
-                L.marker(state.coords)
-                    .addTo(map)
-                    .bindPopup(`<b>${state.name}</b><br>Severity: ${state.severity}`);
-            })
-        });
-    </script>
+  function showModal(data) {
+    const { name, coord } = data;
+    document.querySelector('#modal-city-name').textContent = name;
+    modal.style.display = 'flex';
+
+    if (!map) {
+      map = L.map('map').setView([coord.lat, coord.lon], 10);
+    } else {
+      map.setView([coord.lat, coord.lon], 10);
+    }
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+  }
+
+  function formatTime(unixTimestamp) {
+    const date = new Date(unixTimestamp * 1000);
+    const hours = date.getHours();
+    const minutes = '0' + date.getMinutes();
+    return `${hours}:${minutes.substr(-2)}`;
+  }
+</script>
+
 </body>
-
 </html>
