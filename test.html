@@ -3,373 +3,255 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tetris Game</title>
+    <title>Economic Policymaker Simulator</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #282c34;
-            color: #61dafb;
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+        }
+        .chart-grid {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
+            flex-direction: row;
+            gap: 1rem;
         }
-
-        #game-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: #20232a;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        .chart-grid > div {
+            flex: 1;
         }
-
-        #board {
-            display: grid;
-            grid-template-columns: repeat(10, 30px);
-            grid-template-rows: repeat(20, 30px);
-            gap: 1px;
-            background: #000;
-            border: 2px solid #444;
-            border-radius: 5px;
-        }
-
-        .cell {
-            width: 30px;
-            height: 30px;
-            background: #333;
-            transition: background 0.3s ease;
-        }
-
-        #controls {
-            margin-top: 15px;
-        }
-
-        button {
-            background: #61dafb;
-            border: none;
-            color: #20232a;
-            padding: 10px 20px;
-            font-size: 16px;
-            margin: 5px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s ease, transform 0.3s ease;
-        }
-
-        button:hover {
-            background: #21a1f1;
-            transform: scale(1.05);
-        }
-
-        button:active {
-            transform: scale(1);
-        }
-
-        #scoreboard {
-            margin-top: 20px;
-            font-size: 20px;
-        }
-
-        #scoreboard div {
-            margin: 5px 0;
-        }
-
-        .game-over-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.8);
-            color: #61dafb;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            text-align: center;
-            visibility: hidden;
-            opacity: 0;
-            transition: visibility 0.3s, opacity 0.3s ease;
-        }
-
-        .game-over-overlay.visible {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        .game-over-overlay button {
-            background: #ff6f61;
-        }
-
-        .game-over-overlay button:hover {
-            background: #ff3d3d;
+        @media (max-width: 768px) {
+            .chart-grid {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
-<body>
-    <div id="game-container">
-        <div id="board"></div>
-        <div id="controls">
-            <button id="start">Start</button>
-            <button id="pause">Pause</button>
-            <button id="reset">Reset</button>
-        </div>
-        <div id="scoreboard">
-            <div>Score: <span id="score">0</span></div>
-            <div>Lines Cleared: <span id="lines">0</span></div>
-        </div>
-    </div>
-    <div class="game-over-overlay" id="game-over-overlay">
-        <div>Game Over!</div>
-        <div>Your Final Score: <span id="final-score">0</span></div>
-        <button id="restart">Restart</button>
+<body class="bg-gray-100">
+
+    <!-- Header -->
+    <header class="bg-blue-800 text-white p-4 text-center">
+        <h1 class="text-2xl font-bold">Economic Policymaker Simulator</h1>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container mx-auto p-4">
+
+        <!-- Control Panel -->
+        <section class="bg-white shadow-md rounded-lg p-4 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Control Panel</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Fiscal Policy Controls -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-2">Fiscal Policy</h3>
+                    <label class="block mb-2">Tax Rate:
+                        <input type="range" id="taxRate" min="0" max="50" value="20" class="w-full">
+                    </label>
+                    <label class="block mb-2">Government Spending:
+                        <input type="range" id="govSpending" min="0" max="100" value="50" class="w-full">
+                    </label>
+                </div>
+                <!-- Monetary Policy Controls -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-2">Monetary Policy</h3>
+                    <label class="block mb-2">Interest Rate:
+                        <input type="range" id="interestRate" min="0" max="10" value="5" class="w-full">
+                    </label>
+                    <label class="block mb-2">Money Supply:
+                        <input type="range" id="moneySupply" min="0" max="100" value="50" class="w-full">
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Economic Indicators -->
+        <section class="bg-white shadow-md rounded-lg p-4 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Economic Indicators</h2>
+            <div id="indicators" class="text-lg">
+                <p>GDP: $<span id="gdp">1000</span> Billion</p>
+                <p>Inflation Rate: <span id="inflation">2.5</span>%</p>
+                <p>Unemployment Rate: <span id="unemployment">5.0</span>%</p>
+                <p>Public Debt: $<span id="publicDebt">500</span> Billion</p>
+            </div>
+        </section>
+
+        <!-- Graphs -->
+        <section class="bg-white shadow-md rounded-lg p-4 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Economic Trends</h2>
+            <div class="chart-grid">
+                <!-- GDP Chart -->
+                <div class="chart-container">
+                    <canvas id="gdpChart"></canvas>
+                </div>
+                <!-- Inflation Rate Chart -->
+                <div class="chart-container">
+                    <canvas id="inflationChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scenario Controls -->
+        <section class="bg-white shadow-md rounded-lg p-4 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Select Scenario</h2>
+            <div class="flex gap-4">
+                <button id="recession" class="bg-red-500 text-white px-4 py-2 rounded">Recession</button>
+                <button id="boom" class="bg-green-500 text-white px-4 py-2 rounded">Boom</button>
+                <button id="crisis" class="bg-yellow-500 text-white px-4 py-2 rounded">Financial Crisis</button>
+            </div>
+        </section>
+
+        <!-- Education Section -->
+        <section class="bg-white shadow-md rounded-lg p-4">
+            <h2 class="text-xl font-semibold mb-4">Learn More</h2>
+            <ul class="list-disc pl-5">
+                <li><a href="https://www.investopedia.com/terms/f/fiscalpolicy.asp" class="text-blue-500">Fiscal Policy - Investopedia</a></li>
+                <li><a href="https://www.investopedia.com/terms/m/monetarypolicy.asp" class="text-blue-500">Monetary Policy - Investopedia</a></li>
+                <li><a href="https://www.investopedia.com/terms/l/law-of-supply-demand.asp" class="text-blue-500">Supply and Demand - Investopedia</a></li>
+            </ul>
+        </section>
+
     </div>
 
+    <!-- JavaScript -->
     <script>
-        const ROWS = 20;
-        const COLS = 10;
-        const board = document.getElementById('board');
-        const scoreDisplay = document.getElementById('score');
-        const linesDisplay = document.getElementById('lines');
-        const gameOverOverlay = document.getElementById('game-over-overlay');
-        const finalScoreDisplay = document.getElementById('final-score');
-        const restartButton = document.getElementById('restart');
-        const pauseButton = document.getElementById('pause');
-        let grid = [];
-        let score = 0;
-        let linesCleared = 0;
-        let currentTetrimino;
-        let interval;
-        let isPaused = false;
-
-        // Initialize the game board
-        function initializeBoard() {
-            grid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
-            board.innerHTML = '';
-            for (let r = 0; r < ROWS; r++) {
-                for (let c = 0; c < COLS; c++) {
-                    const cell = document.createElement('div');
-                    cell.classList.add('cell');
-                    board.appendChild(cell);
+        // Initialize GDP Chart
+        const gdpCtx = document.getElementById('gdpChart').getContext('2d');
+        const gdpChart = new Chart(gdpCtx, {
+            type: 'line',
+            data: {
+                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                datasets: [{
+                    label: 'GDP',
+                    data: [1000, 1000, 1000, 1000],
+                    borderColor: 'blue',
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    x: { beginAtZero: true },
+                    y: { beginAtZero: true }
                 }
             }
-        }
+        });
 
-        // Define Tetrimino shapes
-        const TETROMINOS = {
-            I: [[1, 1, 1, 1]],
-            O: [[1, 1], [1, 1]],
-            T: [[0, 1, 0], [1, 1, 1]],
-            S: [[0, 1, 1], [1, 1, 0]],
-            Z: [[1, 1, 0], [0, 1, 1]],
-            J: [[1, 0, 0], [1, 1, 1]],
-            L: [[0, 0, 1], [1, 1, 1]]
-        };
-
-        // Tetrimino colors
-        const COLORS = {
-            I: '#00bcd4',
-            O: '#ffeb3b',
-            T: '#9c27b0',
-            S: '#4caf50',
-            Z: '#f44336',
-            J: '#2196f3',
-            L: '#ff9800'
-        };
-
-        // Create a new Tetrimino
-        function createTetrimino() {
-            const keys = Object.keys(TETROMINOS);
-            const key = keys[Math.floor(Math.random() * keys.length)];
-            const shape = TETROMINOS[key];
-            currentTetrimino = {
-                shape,
-                color: COLORS[key],
-                x: Math.floor(COLS / 2) - Math.floor(shape[0].length / 2),
-                y: 0
-            };
-        }
-
-        // Draw the Tetrimino on the board
-        function drawTetrimino() {
-            clearBoard();
-            currentTetrimino.shape.forEach((row, r) => {
-                row.forEach((value, c) => {
-                    if (value) {
-                        const x = currentTetrimino.x + c;
-                        const y = currentTetrimino.y + r;
-                        if (x >= 0 && x < COLS && y >= 0 && y < ROWS) {
-                            const index = y * COLS + x;
-                            board.children[index].style.backgroundColor = currentTetrimino.color;
-                        }
-                    }
-                });
-            });
-        }
-
-        // Clear the board and redraw all filled cells
-        function clearBoard() {
-            grid.forEach((row, r) => {
-                row.forEach((value, c) => {
-                    if (value) {
-                        const index = r * COLS + c;
-                        board.children[index].style.backgroundColor = COLORS[Object.keys(COLORS).find(key => TETROMINOS[key].some(row => row.includes(value)))];
-                    } else {
-                        board.children[r * COLS + c].style.backgroundColor = '#333';
-                    }
-                });
-            });
-        }
-
-        // Update the game state
-        function update() {
-            if (isPaused) return;
-
-            currentTetrimino.y++;
-            if (checkCollision()) {
-                currentTetrimino.y--;
-                mergeTetrimino();
-                clearLines();
-                createTetrimino();
-                if (checkCollision()) {
-                    gameOver();
-                    return;
+        // Initialize Inflation Rate Chart
+        const inflationCtx = document.getElementById('inflationChart').getContext('2d');
+        const inflationChart = new Chart(inflationCtx, {
+            type: 'line',
+            data: {
+                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                datasets: [{
+                    label: 'Inflation Rate',
+                    data: [2.5, 2.5, 2.5, 2.5], // Initial inflation rate values
+                    borderColor: 'red',
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    x: { beginAtZero: true },
+                    y: { beginAtZero: true }
                 }
             }
-            drawTetrimino();
-        }
+        });
 
-        // Merge Tetrimino into the grid
-        function mergeTetrimino() {
-            currentTetrimino.shape.forEach((row, r) => {
-                row.forEach((value, c) => {
-                    if (value) {
-                        grid[currentTetrimino.y + r][currentTetrimino.x + c] = value;
-                    }
-                });
-            });
-        }
+        // Define initial parameter values
+        let baseGDP = 1000;
+        let baseInflation = 2.5;
+        let baseGovSpending = 50;
+        let baseInterestRate = 5;
+        let baseMoneySupply = 50;
+        let baseTaxRate = 20;
 
-        // Check if Tetrimino collides with the walls or other pieces
-        function checkCollision() {
-            return currentTetrimino.shape.some((row, r) => {
-                return row.some((value, c) => {
-                    const x = currentTetrimino.x + c;
-                    const y = currentTetrimino.y + r;
-                    return value && (x < 0 || x >= COLS || y >= ROWS || grid[y][x]);
-                });
-            });
-        }
+        // Event listeners for scenario buttons
+        document.getElementById('recession').addEventListener('click', () => setScenario('recession'));
+        document.getElementById('boom').addEventListener('click', () => setScenario('boom'));
+        document.getElementById('crisis').addEventListener('click', () => setScenario('crisis'));
 
-        // Clear completed lines
-        function clearLines() {
-            let linesToClear = [];
-            for (let r = 0; r < ROWS; r++) {
-                if (grid[r].every(cell => cell)) {
-                    linesToClear.push(r);
-                }
+        // Event listeners for sliders
+        document.getElementById('taxRate').addEventListener('input', updateIndicators);
+        document.getElementById('govSpending').addEventListener('input', updateIndicators);
+        document.getElementById('interestRate').addEventListener('input', updateIndicators);
+        document.getElementById('moneySupply').addEventListener('input', updateIndicators);
+
+        function setScenario(scenario) {
+            switch (scenario) {
+                case 'recession':
+                    baseGDP = 800;
+                    baseInflation = 4.0;
+                    baseGovSpending = 60;
+                    baseInterestRate = 7;
+                    baseMoneySupply = 40;
+                    baseTaxRate = 25;
+                    break;
+                case 'boom':
+                    baseGDP = 1200;
+                    baseInflation = 1.5;
+                    baseGovSpending = 40;
+                    baseInterestRate = 3;
+                    baseMoneySupply = 60;
+                    baseTaxRate = 15;
+                    break;
+                case 'crisis':
+                    baseGDP = 600;
+                    baseInflation = 6.0;
+                    baseGovSpending = 80;
+                    baseInterestRate = 8;
+                    baseMoneySupply = 30;
+                    baseTaxRate = 30;
+                    break;
+                default:
+                    baseGDP = 1000;
+                    baseInflation = 2.5;
+                    baseGovSpending = 50;
+                    baseInterestRate = 5;
+                    baseMoneySupply = 50;
+                    baseTaxRate = 20;
+                    break;
             }
-            linesToClear.forEach(r => {
-                grid.splice(r, 1);
-                grid.unshift(Array(COLS).fill(0));
-                score += 100;
-                linesCleared += 1;
-            });
-            updateScore();
+            updateIndicators();
         }
 
-        // Update score display
-        function updateScore() {
-            scoreDisplay.textContent = score;
-            linesDisplay.textContent = linesCleared;
+        function updateIndicators() {
+            // Fetch the slider values
+            const taxRate = document.getElementById('taxRate').value;
+            const govSpending = document.getElementById('govSpending').value;
+            const interestRate = document.getElementById('interestRate').value;
+            const moneySupply = document.getElementById('moneySupply').value;
+
+            // GDP Calculation
+            const consumption = 500 - 5 * interestRate - 4 * taxRate; // Adjusted for tax rate
+            const investment = 200 - 10 * interestRate - 2 * taxRate; // Adjusted for tax rate
+            const gdp = (baseGDP + parseFloat(govSpending) + consumption + investment).toFixed(2);
+
+            // Inflation Calculation
+            const inflation = (baseInflation + (moneySupply - 50) * 0.05 - (interestRate * 0.1) + (taxRate * 0.02)).toFixed(2);
+
+            // Update indicators
+            document.getElementById('gdp').textContent = gdp;
+            document.getElementById('inflation').textContent = inflation;
+            document.getElementById('unemployment').textContent = (5 - (govSpending - 50) * 0.1).toFixed(2);
+            document.getElementById('publicDebt').textContent = (500 + (govSpending - 50) * 5).toFixed(2);
+
+            // Update GDP Chart data based on slider values
+            const gdpData = [baseGDP, gdp, gdp, gdp];
+            gdpChart.data.datasets[0].data = gdpData;
+
+            // Update Inflation Rate Chart data based on slider values
+            const inflationData = [baseInflation, inflation, inflation, inflation];
+            inflationChart.data.datasets[0].data = inflationData;
+
+            gdpChart.update();
+            inflationChart.update();
+
+            // Update feedback
+            document.getElementById('feedback').textContent = `Scenario: ${document.querySelector('button.bg-gray-800') ? document.querySelector('button.bg-gray-800').innerText : 'None'}.\nYour decisions have been applied. Check the indicators and graphs to see the results.`;
         }
 
-        // Handle game over
-        function gameOver() {
-            clearInterval(interval);
-            interval = null;
-            finalScoreDisplay.textContent = score;
-            gameOverOverlay.classList.add('visible');
-        }
-
-        // Handle key controls
-        document.addEventListener('keydown', e => {
-            if (e.code === 'ArrowLeft') {
-                currentTetrimino.x--;
-                if (checkCollision()) currentTetrimino.x++;
-            } else if (e.code === 'ArrowRight') {
-                currentTetrimino.x++;
-                if (checkCollision()) currentTetrimino.x--;
-            } else if (e.code === 'ArrowDown') {
-                update();
-            } else if (e.code === 'Space') {
-                rotateTetrimino();
-            }
-            drawTetrimino();
-        });
-
-        // Rotate the Tetrimino
-        function rotateTetrimino() {
-            const shape = currentTetrimino.shape;
-            const rotated = shape[0].map((_, i) => shape.map(row => row[i]).reverse());
-            const original = currentTetrimino.shape;
-            currentTetrimino.shape = rotated;
-            if (checkCollision()) currentTetrimino.shape = original;
-        }
-
-        // Start, pause, and reset game functions
-        document.getElementById('start').addEventListener('click', () => {
-            if (interval) return;
-            initializeBoard(); // Ensure the board is initialized
-            createTetrimino();
-            drawTetrimino();
-            interval = setInterval(update, 500);
-        });
-
-        pauseButton.addEventListener('click', () => {
-            if (interval) {
-                clearInterval(interval);
-                interval = null;
-                isPaused = true;
-                pauseButton.textContent = 'Resume';
-            } else {
-                interval = setInterval(update, 500);
-                isPaused = false;
-                pauseButton.textContent = 'Pause';
-            }
-        });
-
-        document.getElementById('reset').addEventListener('click', () => {
-            clearInterval(interval);
-            interval = null;
-            score = 0;
-            linesCleared = 0;
-            updateScore();
-            initializeBoard();
-            createTetrimino();
-            drawTetrimino();
-            pauseButton.textContent = 'Pause'; // Reset button text
-        });
-
-        restartButton.addEventListener('click', () => {
-            gameOverOverlay.classList.remove('visible');
-            score = 0;
-            linesCleared = 0;
-            updateScore();
-            initializeBoard();
-            createTetrimino();
-            drawTetrimino();
-            interval = setInterval(update, 500);
-            pauseButton.textContent = 'Pause'; // Reset button text
-        });
-
-        // Initialize the game board on load
-        initializeBoard();
+        // Initial update
+        updateIndicators();
     </script>
+
 </body>
 </html>

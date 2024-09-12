@@ -258,6 +258,20 @@ I got this projected food and nutrition situation of Nigeria data from Cadre Har
 - Try to pin point the insecure states on a map
 - The design should be visually appealing
 
+
+I want to create an interactive economic policymaker simulator to manage a virtual economy, make critical decisions, and see their impact on various economic indicators.
+
+The App should have the following requirements
+- There should be a Real-time display of key economic indicators such as GDP, inflation rate, unemployment rate, and public debt.
+- There should be interactive sliders and buttons for adjusting fiscal policies such as tax rates, government spending, and monetary policies such as interest rates, money supply.
+- Implement and simulate various economic scenarios, such as a recession, boom, or financial crisis.
+- Provide a detailed feedback on the outcomes of your decisions, including visual graphs and reports showing changes in economic indicators. Review the consequences of different scenarios and policies, including potential benefits and risks.
+- For education purpose detail books and tutorials on key economic concepts such as supply and demand, fiscal policy, and monetary policy. Use real links to these materials and not dummy links
+- It should use html/css/js only. chart libraries, tailwind CSS, and other useful libraries can be used.
+
+**NOTE:** Plan out the code before starting to write it, and Unless otherwise specified, generate code in a single block of html/css/js.
+
+
 * Unless otherwise specified, generate code in a single block of html/css/js.
 * Plan out the code before starting to write it.
 

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Economic Policymaker Simulator</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Additional custom styles can be added here if needed */
+    </style>
+</head>
+<body class="bg-gray-100 p-4">
+
+<div class="container mx-auto">
+    <h1 class="text-3xl font-bold mb-4">Economic Policymaker Simulator</h1>
+
+    <!-- Economic Indicators -->
+    <div id="indicators" class="grid grid-cols-2 gap-4 mb-4">
+        <div class="bg-white p-4 rounded shadow">GDP: $<span id="gdp">0</span></div>
+        <div class="bg-white p-4 rounded shadow">Inflation: <span id="inflation">0</span>%</div>
+        <div class="bg-white p-4 rounded shadow">Unemployment: <span id="unemployment">0</span>%</div>
+        <div class="bg-white p-4 rounded shadow">Public Debt: $<span id="debt">0</span></div>
+    </div>
+
+    <!-- Policy Controls -->
+    <div id="controls" class="mb-4">
+        <h2 class="text-xl mb-2">Policy Adjustments</h2>
+        <label class="block mb-2">
+            Tax Rate: <input type="range" min="0" max="100" value="20" id="taxRate" class="w-full"> <span id="taxRateDisplay">20%</span>
+        </label>
+        <label class="block mb-2">
+            Government Spending: <input type="range" min="0" max="1000" value="500" id="spending" class="w-full"> $<span id="spendingDisplay">500</span>B
+        </label>
+        <!-- Add more controls similarly -->
+    </div>
+
+    <!-- Scenario Simulation -->
+    <div id="scenarios">
+        <button onclick="simulateScenario('recession')" class="bg-blue-500 text-white p-2 rounded">Simulate Recession</button>
+        <!-- Add more scenario buttons -->
+    </div>
+
+    <!-- Feedback and Graphs -->
+    <div id="feedback" class="mt-4">
+        <canvas id="economicChart" width="400" height="200"></canvas>
+    </div>
+
+    <!-- Educational Resources -->
+    <div id="education" class="mt-4">
+        <h2 class="text-xl">Learn More</h2>
+        <a href="https://www.khanacademy.org/economics-finance-domain" target="_blank" class="block text-blue-600">Khan Academy: Economics and Finance</a>
+        <!-- Add real educational links here -->
+    </div>
+</div>
+
+<script>
+    // JavaScript for simulation logic, Chart.js integration, etc., would go here
+    function updateIndicators() {
+        // Logic to update GDP, inflation, etc., based on current settings
+    }
+
+    function simulateScenario(type) {
+        // Logic to simulate different economic scenarios
+    }
+
+    // Initialize chart
+    var ctx = document.getElementById('economicChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {/* initial data */},
+        options: {/* chart options */}
+    });
+
+    // Event listeners for sliders to update display and recalculate indicators
+    document.getElementById('taxRate').addEventListener('input', function(e) {
+        document.getElementById('taxRateDisplay').textContent = e.target.value + '%';
+        updateIndicators();
+    });
+    // Add similar listeners for other inputs
+</script>
+
+</body>
+</html>

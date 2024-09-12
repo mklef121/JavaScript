@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Economic Policymaker Simulator</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+<style>
+    canvas { max-width: 100%; height: auto; }
+</style>
+</head>
+<body class="bg-gray-100 p-4">
+<div class="container mx-auto">
+    <h1 class="text-3xl font-bold mb-4">Economic Policymaker Simulator</h1>
+    
+    <!-- Policy Controls -->
+    <div class="mb-4 bg-white p-4 rounded shadow">
+        <h2 class="text-xl mb-2">Policy Controls</h2>
+        <label>Tax Rate: <input type="range" id="taxRate" min="0" max="100" value="20" class="slider"> <span id="taxRateValue"></span>%</label>
+        <label>Government Spending: <input type="range" id="govSpending" min="0" max="100" value="50" class="slider"> <span id="govSpendingValue"></span></label>
+        <label>Interest Rate: <input type="range" id="interestRate" min="0" max="20" value="5" step="0.1" class="slider"> <span id="interestRateValue"></span>%</label>
+        <label>Money Supply: <input type="range" id="moneySupply" min="0" max="100" value="50" class="slider"> <span id="moneySupplyValue"></span></label>
+        <button onclick="applyPolicies()" class="mt-2 bg-blue-500 text-white p-2 rounded">Apply Policies</button>
+    </div>
+
+    <!-- Economic Indicators -->
+    <div class="grid grid-cols-2 gap-4">
+        <canvas id="gdpChart"></canvas>
+        <canvas id="inflationChart"></canvas>
+        <canvas id="unemploymentChart"></canvas>
+        <canvas id="debtChart"></canvas>
+    </div>
+
+    <!-- Educational Resources -->
+    <div class="mt-4 bg-white p-4 rounded shadow">
+        <h2 class="text-xl mb-2">Learn More</h2>
+        <ul>
+            <li><a href="https://www.khanacademy.org/economics-finance-domain">Khan Academy: Economics</a></li>
+            <li><a href="https://openstax.org/details/books/principles-economics-2e">OpenStax: Principles of Economics</a></li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    const ctxGDP = document.getElementById('gdpChart').getContext('2d');
+    const ctxInflation = document.getElementById('inflationChart').getContext('2d');
+    const ctxUnemployment = document.getElementById('unemploymentChart').getContext('2d');
+    const ctxDebt = document.getElementById('debtChart').getContext('2d');
+
+    let gdpChart = new Chart(ctxGDP, {type: 'line', data: {labels: [], datasets: [{label: 'GDP', data: []}]}});
+    let inflationChart = new Chart(ctxInflation, {type: 'line', data: {labels: [], datasets: [{label: 'Inflation', data: []}]}});
+    let unemploymentChart = new Chart(ctxUnemployment, {type: 'line', data: {labels: [], datasets: [{label: 'Unemployment', data: []}]}});
+    let debtChart = new Chart(ctxDebt, {type: 'line', data: {labels: [], datasets: [{label: 'Public Debt', data: []}]}});
+
+    function applyPolicies() {
+        // Simplified economic model simulation
+        let taxRate = document.getElementById('taxRate').value;
+        let govSpending = document.getElementById('govSpending').value;
+        let interestRate = document.getElementById('interestRate').value;
+        let moneySupply = document.getElementById('moneySupply').value;
+
+        // Here you would implement actual economic logic, this is just for demonstration
+        let time = new Date().toLocaleTimeString();
+        gdpChart.data.labels.push(time);
+        gdpChart.data.datasets[0].data.push(Math.random() * 100 + parseInt(taxRate)); // Dummy GDP growth based on tax
+        gdpChart.update();
+
+        // Similar updates for other charts...
+
+        // Update slider values display
+        document.getElementById('taxRateValue').textContent = taxRate;
+        // ... update others similarly
+    }
+
+    // Initial call to set up
+    applyPolicies();
+</script>
+</body>
+</html>

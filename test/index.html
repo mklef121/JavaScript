@@ -1,304 +1,494 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Enhanced Weather App</title>
-    <link href='https://fonts.googleapis.com/css?family=Poppins:400,600&display=swap' rel='stylesheet'>
-    <link href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" rel="stylesheet"/>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interactive Economics Course: Supply and Demand</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body {
-            background: #2C3E50;
-            font-family: 'Poppins', sans-serif;
-            color: #FFF;
-            scroll-behavior: smooth;
-        }
-
-        .container {
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        form {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        input {
-            font-size: 1.2rem;
-            padding: 10px;
-            width: 60%;
-            border: none;
-            border-radius: 5px;
-        }
-
-        button {
-            padding: 10px;
-            font-size: 1.2rem;
-            background-color: #f39c12;
-            border: none;
-            color: white;
-            cursor: pointer;
-            border-radius: 5px;
-            margin-left: 10px;
-            transition: background 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #e67e22;
-        }
-
-        .cities {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            grid-gap: 20px;
-        }
-
-        .city {
-            background-color: #34495e;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            position: relative;
-            transition: transform 0.3s ease, background-color 0.3s;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .city:hover {
-            transform: scale(1.05);
-        }
-
-        .city h2 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-        }
-
-        .city-temp {
-            font-size: 3.5rem;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-        .weather-icon {
-            width: 100px;
-            height: 100px;
-            margin-bottom: 15px;
-        }
-
-        .weather-details {
-            margin-top: 10px;
-            padding: 15px;
-            text-align: left;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-        }
-
-        .weather-details p {
-            margin: 5px 0;
-            font-size: 0.9rem;
-        }
-
-        /* Modal styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: #34495e;
-            padding: 20px;
-            border-radius: 10px;
-            color: white;
-            max-width: 600px;
-            width: 90%;
-            text-align: center;
-        }
-
-        .modal-content .city-name {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-
-        .close-modal {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 2rem;
-            color: white;
-            cursor: pointer;
-        }
-
-        .map-container {
-            height: 300px;
-            margin-top: 20px;
-            border-radius: 10px;
-        }
+      :root {
+        --bg-color: #f3f4f6;
+        --text-color: #1f2937;
+        --card-bg: #ffffff;
+        --card-border: #e5e7eb;
+      }
+      .dark-mode {
+        --bg-color: #111827;
+        --text-color: #f3f4f6;
+        --card-bg: #1f2937;
+        --card-border: #374151;
+      }
+      body {
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        transition: background-color 0.3s, color 0.3s;
+      }
+      .card {
+        background-color: var(--card-bg);
+        border: 1px solid var(--card-border);
+        transition: background-color 0.3s, border-color 0.3s;
+      }
+      .chart-container {
+        background-color: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 0.5rem;
+        padding: 1rem;
+        transition: background-color 0.3s, border-color 0.3s;
+      }
     </style>
-</head>
-<body>
-<div class="container">
-    <h1> Weather App</h1>
-    <form>
-        <input id="city-input" placeholder="Enter city name..." type="text">
-        <button type="submit">Submit</button>
-    </form>
-    <ul class="cities"></ul>
-</div>
+  </head>
+  <body class="transition-colors duration-200">
+    <div class="container mx-auto px-4 py-8">
+      <h1 class="text-3xl font-bold mb-6">
+        Interactive Economics Course: Supply and Demand
+      </h1>
 
-<!-- Modal for weather details -->
-<div class="modal" id="weather-modal">
-    <div class="modal-content">
-        <span class="close-modal" id="close-modal">&times;</span>
-        <div class="city-name" id="modal-city-name"></div>
-        <div class="map-container" id="map"></div>
-        <div class="weather-details" id="modal-weather-details"></div>
-    </div>
-</div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Graph Section -->
+        <div class="card p-6 rounded-lg shadow-md">
+          <h2 class="text-xl font-semibold mb-4">Supply and Demand Graph</h2>
+          <div class="chart-container">
+            <canvas id="supplyDemandChart"></canvas>
+          </div>
+          <div class="mt-4">
+            <p>Equilibrium Price: $<span id="equilibriumPrice"></span></p>
+            <p>
+              Equilibrium Quantity: <span id="equilibriumQuantity"></span> units
+            </p>
+            <p>Consumer Surplus: $<span id="consumerSurplus"></span></p>
+            <p>Producer Surplus: $<span id="producerSurplus"></span></p>
+          </div>
+        </div>
 
-<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-<script>
-  const apiKey = 'YOUR_API_KEY';
-  const form = document.querySelector('form');
-  const input = document.querySelector('#city-input');
-  const list = document.querySelector('.cities');
-  const modal = document.querySelector('#weather-modal');
-  const closeModalBtn = document.querySelector('#close-modal');
-  let map;
-
-  // Get weather for closest city using geolocation
-  window.onload = async function() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(async (position) => {
-        const { latitude, longitude } = position.coords;
-        const weatherData = await getWeatherDataByCoords(latitude, longitude);
-        if (weatherData) {
-          renderWeatherCard(weatherData);
-        }
-      }, async () => {
-        // Fallback to London if geolocation fails
-        const londonWeather = await getWeatherData('London');
-        if (londonWeather) {
-          renderWeatherCard(londonWeather);
-        }
-      });
-    } else {
-      // Fallback to London if geolocation is not supported
-      const londonWeather = await getWeatherData('London');
-      if (londonWeather) {
-        renderWeatherCard(londonWeather);
-      }
-    }
-  };
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const city = input.value;
-    if (city) {
-      const weatherData = await getWeatherData(city);
-      if (weatherData) {
-        renderWeatherCard(weatherData);
-        input.value = '';
-      }
-    }
-  });
-
-  closeModalBtn.addEventListener('click', () => {
-    modal.style.display = 'none';
-  });
-
-  async function getWeatherData(city) {
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
-    try {
-      const response = await fetch(url);
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error fetching weather data', error);
-      return null;
-    }
-  }
-
-  async function getWeatherDataByCoords(lat, lon) {
-    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
-    try {
-      const response = await fetch(url);
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error fetching weather data by coordinates', error);
-      return null;
-    }
-  }
-
-  function renderWeatherCard(data) {
-    const { name, sys, main, weather, wind, coord } = data;
-    const cityElement = document.createElement('div');
-    cityElement.classList.add('city');
-
-    const temp = Math.round(main.temp);
-    const bgColor = temp > 25 ? '#e67e22' : temp < 10 ? '#3498db' : '#2ecc71';
-    cityElement.style.backgroundColor = bgColor;
-
-    cityElement.innerHTML = `
-            <h2>${name}, ${sys.country}</h2><small> Click to see map</small>
-            <div class="city-temp">${temp}°C</div>
-            <img class="weather-icon" src="https://openweathermap.org/img/wn/${weather[0].icon}@2x.png" alt="${weather[0].description}">
-            <p class="weather-description">${weather[0].description}</p>
-            <div class="weather-details">
-                <p><strong>Humidity:</strong> ${main.humidity}%</p>
-                <p><strong>Wind Speed:</strong> ${wind.speed} m/s</p>
-                <p><strong>Pressure:</strong> ${main.pressure} hPa</p>
-                <p><strong>Feels Like:</strong> ${Math.round(main.feels_like)}°C</p>
-                <p><strong>Sunrise:</strong> ${formatTime(sys.sunrise)}</p>
-                <p><strong>Sunset:</strong> ${formatTime(sys.sunset)}</p>
+        <!-- Controls Section -->
+        <div class="card p-6 rounded-lg shadow-md">
+          <h2 class="text-xl font-semibold mb-4">Adjust Market Variables</h2>
+          <div class="space-y-4">
+            <div>
+              <label for="productionCost" class="block mb-2"
+                >Production Cost:</label
+              >
+              <input
+                type="range"
+                id="productionCost"
+                min="0"
+                max="100"
+                value="50"
+                class="w-full"
+              />
             </div>
-        `;
+            <div>
+              <label for="consumerPreference" class="block mb-2"
+                >Consumer Preference:</label
+              >
+              <input
+                type="range"
+                id="consumerPreference"
+                min="0"
+                max="100"
+                value="50"
+                class="w-full"
+              />
+            </div>
+            <div>
+              <label for="incomeLevel" class="block mb-2">Income Level:</label>
+              <input
+                type="range"
+                id="incomeLevel"
+                min="0"
+                max="100"
+                value="50"
+                class="w-full"
+              />
+            </div>
+          </div>
 
-    cityElement.addEventListener('click', () => {
-      showModal(data);
-    });
+          <h3 class="text-lg font-semibold mt-6 mb-2">
+            Government Interventions
+          </h3>
+          <div class="space-y-4">
+            <div>
+              <label for="priceCeiling" class="block mb-2"
+                >Price Ceiling:</label
+              >
+              <input
+                type="range"
+                id="priceCeiling"
+                min="0"
+                max="100"
+                value="100"
+                class="w-full"
+              />
+            </div>
+            <div>
+              <label for="priceFloor" class="block mb-2">Price Floor:</label>
+              <input
+                type="range"
+                id="priceFloor"
+                min="0"
+                max="100"
+                value="0"
+                class="w-full"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
 
-    list.appendChild(cityElement);
-  }
+      <!-- Supply and Demand Learning Cards -->
+      <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div id="supplyCard" class="card p-6 rounded-lg shadow-md">
+          <h3 class="text-xl font-semibold mb-2">Supply Curve</h3>
+          <p>
+            The supply curve shows the quantity of a good that producers are
+            willing to sell at different prices.
+          </p>
+          <p class="mt-2">
+            <strong>Key Concept:</strong> As price increases, quantity supplied
+            typically increases.
+          </p>
+        </div>
+        <div id="demandCard" class="card p-6 rounded-lg shadow-md">
+          <h3 class="text-xl font-semibold mb-2">Demand Curve</h3>
+          <p>
+            The demand curve represents the quantity of a good that consumers
+            are willing to buy at various prices.
+          </p>
+          <p class="mt-2">
+            <strong>Key Concept:</strong> As price increases, quantity demanded
+            typically decreases.
+          </p>
+        </div>
+        <div id="equilibriumCard" class="card p-6 rounded-lg shadow-md">
+          <h3 class="text-xl font-semibold mb-2">Market Equilibrium</h3>
+          <p>
+            Market equilibrium occurs where the supply and demand curves
+            intersect. At this point, the quantity supplied equals the quantity
+            demanded.
+          </p>
+          <p class="mt-2">
+            <strong>Key Concept:</strong> At equilibrium, there is no tendency
+            for price to change.
+          </p>
+        </div>
+      </div>
 
-  function showModal(data) {
-    const { name, coord } = data;
-    document.querySelector('#modal-city-name').textContent = name;
-    modal.style.display = 'flex';
+      <!-- Elasticity Tool -->
+      <div class="mt-8 card p-6 rounded-lg shadow-md">
+        <h2 class="text-xl font-semibold mb-4">
+          Price Elasticity Visualization
+        </h2>
+        <div class="chart-container">
+          <canvas id="elasticityChart"></canvas>
+        </div>
+        <div class="mt-4">
+          <label for="priceChange" class="block mb-2">Price Change:</label>
+          <input
+            type="range"
+            id="priceChange"
+            min="-50"
+            max="50"
+            value="0"
+            class="w-full"
+          />
+        </div>
+      </div>
 
-    if (!map) {
-      map = L.map('map').setView([coord.lat, coord.lon], 10);
-    } else {
-      map.setView([coord.lat, coord.lon], 10);
-    }
+      <!-- Elasticity Learning Card -->
+      <div class="mt-4">
+        <div id="elasticityCard" class="card p-6 rounded-lg shadow-md">
+          <h3 class="text-xl font-semibold mb-2">Price Elasticity of Demand</h3>
+          <p>
+            Price elasticity of demand measures how sensitive the quantity
+            demanded is to a change in price.
+          </p>
+          <p class="mt-2">
+            <strong>Formula:</strong> (% Change in Quantity Demanded) / (%
+            Change in Price)
+          </p>
+        </div>
+      </div>
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-  }
+      <!-- Dark Mode Toggle -->
+      <div class="mt-8 text-right">
+        <button
+          id="darkModeToggle"
+          class="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition-colors duration-200"
+        >
+          Toggle Dark Mode
+        </button>
+      </div>
+    </div>
 
-  function formatTime(unixTimestamp) {
-    const date = new Date(unixTimestamp * 1000);
-    const hours = date.getHours();
-    const minutes = '0' + date.getMinutes();
-    return `${hours}:${minutes.substr(-2)}`;
-  }
-</script>
+    <script>
+      let supplyDemandChart, elasticityChart;
+      let darkMode = false;
 
-</body>
+      function initCharts() {
+        const supplyDemandCtx = document
+          .getElementById("supplyDemandChart")
+          .getContext("2d");
+        supplyDemandChart = new Chart(supplyDemandCtx, {
+          type: "line",
+          data: {
+            labels: [0, 20, 40, 60, 80, 100],
+            datasets: [
+              {
+                label: "Supply",
+                data: [0, 20, 40, 60, 80, 100],
+                borderColor: "rgb(75, 192, 192)",
+                tension: 0.1,
+              },
+              {
+                label: "Demand",
+                data: [100, 80, 60, 40, 20, 0],
+                borderColor: "rgb(255, 99, 132)",
+                tension: 0.1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                title: { display: true, text: "Price ($)" },
+                min: 0,
+                max: 100,
+              },
+              x: {
+                title: { display: true, text: "Quantity" },
+                min: 0,
+                max: 100,
+              },
+            },
+          },
+        });
+
+        const elasticityCtx = document
+          .getElementById("elasticityChart")
+          .getContext("2d");
+        elasticityChart = new Chart(elasticityCtx, {
+          type: "line",
+          data: {
+            labels: [0, 20, 40, 60, 80, 100],
+            datasets: [
+              {
+                label: "Elastic",
+                data: [100, 80, 60, 40, 20, 0],
+                borderColor: "rgb(75, 192, 192)",
+                tension: 0.1,
+              },
+              {
+                label: "Inelastic",
+                data: [100, 95, 90, 85, 80, 75],
+                borderColor: "rgb(255, 99, 132)",
+                tension: 0.1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                title: { display: true, text: "Price ($)" },
+                min: 0,
+                max: 100,
+              },
+              x: {
+                title: { display: true, text: "Quantity" },
+                min: 0,
+                max: 100,
+              },
+            },
+          },
+        });
+      }
+
+      function updateSupplyDemand() {
+        const productionCost = parseInt(
+          document.getElementById("productionCost").value
+        );
+        const consumerPreference = parseInt(
+          document.getElementById("consumerPreference").value
+        );
+        const incomeLevel = parseInt(
+          document.getElementById("incomeLevel").value
+        );
+        const priceCeiling = parseInt(
+          document.getElementById("priceCeiling").value
+        );
+        const priceFloor = parseInt(
+          document.getElementById("priceFloor").value
+        );
+
+        // Update supply curve (affected by production cost)
+        const supplySlope = 1 + productionCost / 100;
+        const supplyData = [0, 20, 40, 60, 80, 100].map((x) =>
+          Math.min(100, x * supplySlope)
+        );
+
+        // Update demand curve (affected by consumer preference and income level)
+        const demandIntercept = 100 + consumerPreference / 2 + incomeLevel / 2;
+        const demandData = [0, 20, 40, 60, 80, 100].map((x) =>
+          Math.max(0, demandIntercept - x)
+        );
+
+        supplyDemandChart.data.datasets[0].data = supplyData;
+        supplyDemandChart.data.datasets[1].data = demandData;
+
+        // Apply price ceiling and floor
+        if (priceCeiling < 100) {
+          supplyDemandChart.options.scales.y.max = priceCeiling;
+        } else {
+          supplyDemandChart.options.scales.y.max = 100;
+        }
+        if (priceFloor > 0) {
+          supplyDemandChart.options.scales.y.min = priceFloor;
+        } else {
+          supplyDemandChart.options.scales.y.min = 0;
+        }
+
+        supplyDemandChart.update();
+
+        updateMarketIndicators(
+          supplyData,
+          demandData,
+          priceCeiling,
+          priceFloor
+        );
+      }
+
+      function updateMarketIndicators(
+        supplyData,
+        demandData,
+        priceCeiling,
+        priceFloor
+      ) {
+        // Find intersection point (equilibrium)
+        let equilibriumPrice, equilibriumQuantity;
+        for (let i = 0; i < supplyData.length; i++) {
+          if (Math.abs(supplyData[i] - demandData[i]) < 5) {
+            equilibriumPrice = supplyData[i];
+            equilibriumQuantity = i * 20;
+            break;
+          }
+        }
+
+        // If no intersection found, set default values
+        if (equilibriumPrice === undefined) {
+          equilibriumPrice = 50;
+          equilibriumQuantity = 50;
+        }
+
+        // Apply price controls
+        if (priceCeiling < equilibriumPrice) {
+          equilibriumPrice = priceCeiling;
+        }
+        if (priceFloor > equilibriumPrice) {
+          equilibriumPrice = priceFloor;
+        }
+
+        // Recalculate quantity based on price controls
+        equilibriumQuantity = Math.min(
+          supplyData.findIndex((p) => p >= equilibriumPrice) * 20,
+          demandData.findIndex((p) => p <= equilibriumPrice) * 20
+        );
+
+        // Calculate surpluses
+        const consumerSurplus =
+          equilibriumQuantity > 0
+            ? ((demandData[0] - equilibriumPrice) * equilibriumQuantity) / 2
+            : 0;
+        const producerSurplus =
+          equilibriumQuantity > 0
+            ? (equilibriumPrice * equilibriumQuantity) / 2
+            : 0;
+
+        document.getElementById("equilibriumPrice").textContent =
+          equilibriumPrice.toFixed(2);
+        document.getElementById("equilibriumQuantity").textContent =
+          equilibriumQuantity.toFixed(0);
+        document.getElementById("consumerSurplus").textContent =
+          consumerSurplus.toFixed(2);
+        document.getElementById("producerSurplus").textContent =
+          producerSurplus.toFixed(2);
+      }
+
+      function updateElasticity() {
+        const priceChange = parseInt(
+          document.getElementById("priceChange").value
+        );
+        const elasticData = [100, 80, 60, 40, 20, 0].map((y) =>
+          Math.max(0, y + priceChange)
+        );
+        const inelasticData = [100, 95, 90, 85, 80, 75].map((y) =>
+          Math.max(0, y + priceChange / 2)
+        );
+
+        elasticityChart.data.datasets[0].data = elasticData;
+        elasticityChart.data.datasets[1].data = inelasticData;
+        elasticityChart.update();
+      }
+
+      function toggleDarkMode() {
+        darkMode = !darkMode;
+        document.body.classList.toggle("dark-mode");
+        updateChartColors();
+      }
+
+      function updateChartColors() {
+        const textColor = darkMode ? "#f3f4f6" : "#1f2937";
+        const gridColor = darkMode ? "#374151" : "#e5e7eb";
+
+        [supplyDemandChart, elasticityChart].forEach((chart) => {
+          chart.options.scales.x.grid.color = gridColor;
+          chart.options.scales.y.grid.color = gridColor;
+          chart.options.scales.x.ticks.color = textColor;
+          chart.options.scales.y.ticks.color = textColor;
+          chart.options.scales.x.title.color = textColor;
+          chart.options.scales.y.title.color = textColor;
+          chart.update();
+        });
+      }
+
+      function showLearningCards() {
+        document.querySelectorAll(".learning-card").forEach((card) => {
+          card.style.display = "block";
+        });
+      }
+
+      document.querySelectorAll('input[type="range"]').forEach((slider) => {
+        slider.addEventListener("input", (event) => {
+          const sliderId = event.target.id;
+          if (
+            [
+              "productionCost",
+              "consumerPreference",
+              "incomeLevel",
+              "priceCeiling",
+              "priceFloor",
+            ].includes(sliderId)
+          ) {
+            updateSupplyDemand();
+          } else if (sliderId === "priceChange") {
+            updateElasticity();
+          }
+        });
+      });
+
+      document
+        .getElementById("darkModeToggle")
+        .addEventListener("click", toggleDarkMode);
+
+      function init() {
+        initCharts();
+        updateSupplyDemand();
+        updateElasticity();
+        showLearningCards();
+      }
+
+      document.addEventListener("DOMContentLoaded", init);
+    </script>
+  </body>
 </html>

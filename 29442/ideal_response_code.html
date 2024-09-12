@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Economic Policymaker Simulator</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+        }
+        .chart-grid {
+            display: flex;
+            flex-direction: row;
+            gap: 1rem;
+        }
+        .chart-grid > div {
+            flex: 1;
+        }
+        @media (max-width: 768px) {
+            .chart-grid {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Header -->
+    <header class="bg-blue-800 text-white p-4 text-center">
+        <h1 class="text-2xl font-bold">Economic Policymaker Simulator</h1>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container mx-auto p-4">
+
+        <!-- Control Panel -->
+        <section class="bg-white shadow-md rounded-lg p-4 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Control Panel</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Fiscal Policy Controls -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-2">Fiscal Policy</h3>
+                    <label class="block mb-2">Tax Rate:
+                        <input type="range" id="taxRate" min="0" max="50" value="20" class="w-full">
+                    </label>
+                    <label class="block mb-2">Government Spending:
+                        <input type="range" id="govSpending" min="0" max="100" value="50" class="w-full">
+                    </label>
+                </div>
+                <!-- Monetary Policy Controls -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-2">Monetary Policy</h3>
+                    <label class="block mb-2">Interest Rate:
+                        <input type="range" id="interestRate" min="0" max="10" value="5" class="w-full">
+                    </label>
+                    <label class="block mb-2">Money Supply:
+                        <input type="range" id="moneySupply" min="0" max="100" value="50" class="w-full">
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Economic Indicators -->
+        <section class="bg-white shadow-md rounded-lg p-4 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Economic Indicators</h2>
+            <div id="indicators" class="text-lg">
+                <p>GDP: $<span id="gdp">1000</span> Billion</p>
+                <p>Inflation Rate: <span id="inflation">2.5</span>%</p>
+                <p>Unemployment Rate: <span id="unemployment">5.0</span>%</p>
+                <p>Public Debt: $<span id="publicDebt">500</span> Billion</p>
+            </div>
+        </section>
+
+        <!-- Graphs -->
+        <section class="bg-white shadow-md rounded-lg p-4 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Economic Trends</h2>
+            <div class="chart-grid">
+                <!-- GDP Chart -->
+                <div class="chart-container">
+                    <canvas id="gdpChart"></canvas>
+                </div>
+                <!-- Inflation Rate Chart -->
+                <div class="chart-container">
+                    <canvas id="inflationChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scenario Controls -->
+        <section class="bg-white shadow-md rounded-lg p-4 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Select Scenario</h2>
+            <div class="flex gap-4">
+                <button id="recession" class="bg-red-500 text-white px-4 py-2 rounded">Recession</button>
+                <button id="boom" class="bg-green-500 text-white px-4 py-2 rounded">Boom</button>
+                <button id="crisis" class="bg-yellow-500 text-white px-4 py-2 rounded">Financial Crisis</button>
+            </div>
+        </section>
+
+        <!-- Education Section -->
+        <section class="bg-white shadow-md rounded-lg p-4">
+            <h2 class="text-xl font-semibold mb-4">Learn More</h2>
+            <ul class="list-disc pl-5">
+                <li><a href="https://www.investopedia.com/terms/f/fiscalpolicy.asp" class="text-blue-500">Fiscal Policy - Investopedia</a></li>
+                <li><a href="https://www.investopedia.com/terms/m/monetarypolicy.asp" class="text-blue-500">Monetary Policy - Investopedia</a></li>
+                <li><a href="https://www.investopedia.com/terms/l/law-of-supply-demand.asp" class="text-blue-500">Supply and Demand - Investopedia</a></li>
+            </ul>
+        </section>
+
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Initialize GDP Chart
+        const gdpCtx = document.getElementById('gdpChart').getContext('2d');
+        const gdpChart = new Chart(gdpCtx, {
+            type: 'line',
+            data: {
+                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                datasets: [{
+                    label: 'GDP',
+                    data: [1000, 1000, 1000, 1000],
+                    borderColor: 'blue',
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    x: { beginAtZero: true },
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        // Initialize Inflation Rate Chart
+        const inflationCtx = document.getElementById('inflationChart').getContext('2d');
+        const inflationChart = new Chart(inflationCtx, {
+            type: 'line',
+            data: {
+                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                datasets: [{
+                    label: 'Inflation Rate',
+                    data: [2.5, 2.5, 2.5, 2.5], // Initial inflation rate values
+                    borderColor: 'red',
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    x: { beginAtZero: true },
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        // Define initial parameter values
+        let baseGDP = 1000;
+        let baseInflation = 2.5;
+        let baseGovSpending = 50;
+        let baseInterestRate = 5;
+        let baseMoneySupply = 50;
+        let baseTaxRate = 20;
+
+        // Event listeners for scenario buttons
+        document.getElementById('recession').addEventListener('click', () => setScenario('recession'));
+        document.getElementById('boom').addEventListener('click', () => setScenario('boom'));
+        document.getElementById('crisis').addEventListener('click', () => setScenario('crisis'));
+
+        // Event listeners for sliders
+        document.getElementById('taxRate').addEventListener('input', updateIndicators);
+        document.getElementById('govSpending').addEventListener('input', updateIndicators);
+        document.getElementById('interestRate').addEventListener('input', updateIndicators);
+        document.getElementById('moneySupply').addEventListener('input', updateIndicators);
+
+        function setScenario(scenario) {
+            switch (scenario) {
+                case 'recession':
+                    baseGDP = 800;
+                    baseInflation = 4.0;
+                    baseGovSpending = 60;
+                    baseInterestRate = 7;
+                    baseMoneySupply = 40;
+                    baseTaxRate = 25;
+                    break;
+                case 'boom':
+                    baseGDP = 1200;
+                    baseInflation = 1.5;
+                    baseGovSpending = 40;
+                    baseInterestRate = 3;
+                    baseMoneySupply = 60;
+                    baseTaxRate = 15;
+                    break;
+                case 'crisis':
+                    baseGDP = 600;
+                    baseInflation = 6.0;
+                    baseGovSpending = 80;
+                    baseInterestRate = 8;
+                    baseMoneySupply = 30;
+                    baseTaxRate = 30;
+                    break;
+                default:
+                    baseGDP = 1000;
+                    baseInflation = 2.5;
+                    baseGovSpending = 50;
+                    baseInterestRate = 5;
+                    baseMoneySupply = 50;
+                    baseTaxRate = 20;
+                    break;
+            }
+            updateIndicators();
+        }
+
+        function updateIndicators() {
+            // Fetch the slider values
+            const taxRate = document.getElementById('taxRate').value;
+            const govSpending = document.getElementById('govSpending').value;
+            const interestRate = document.getElementById('interestRate').value;
+            const moneySupply = document.getElementById('moneySupply').value;
+
+            // GDP Calculation
+            const consumption = 500 - 5 * interestRate - 4 * taxRate; // Adjusted for tax rate
+            const investment = 200 - 10 * interestRate - 2 * taxRate; // Adjusted for tax rate
+            const gdp = (baseGDP + parseFloat(govSpending) + consumption + investment).toFixed(2);
+
+            // Inflation Calculation
+            const inflation = (baseInflation + (moneySupply - 50) * 0.05 - (interestRate * 0.1) + (taxRate * 0.02)).toFixed(2);
+
+            // Update indicators
+            document.getElementById('gdp').textContent = gdp;
+            document.getElementById('inflation').textContent = inflation;
+            document.getElementById('unemployment').textContent = (5 - (govSpending - 50) * 0.1).toFixed(2);
+            document.getElementById('publicDebt').textContent = (500 + (govSpending - 50) * 5).toFixed(2);
+
+            // Update GDP Chart data based on slider values
+            const gdpData = [baseGDP, gdp, gdp, gdp];
+            gdpChart.data.datasets[0].data = gdpData;
+
+            // Update Inflation Rate Chart data based on slider values
+            const inflationData = [baseInflation, inflation, inflation, inflation];
+            inflationChart.data.datasets[0].data = inflationData;
+
+            gdpChart.update();
+            inflationChart.update();
+
+            // Update feedback
+            document.getElementById('feedback').textContent = `Scenario: ${document.querySelector('button.bg-gray-800') ? document.querySelector('button.bg-gray-800').innerText : 'None'}.\nYour decisions have been applied. Check the indicators and graphs to see the results.`;
+        }
+
+        // Initial update
+        updateIndicators();
+    </script>
+
+</body>
+</html>
