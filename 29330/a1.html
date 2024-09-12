@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nigeria Food Security Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <style>
+        body { font-family: 'Arial', sans-serif; background: #f4f4f4; margin: 0; padding: 0; }
+        .container { max-width: 1200px; margin: auto; padding: 20px; }
+        #map { width: 100%; height: 400px; background: white; }
+        .chart-container { background: white; margin: 20px 0; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Nigeria Food Security Overview</h1>
+        <div id="map"></div>
+        <div class="chart-container">
+            <h2>Projected Increase in Food Insecurity</h2>
+            <div id="foodInsecurityChart"></div>
+        </div>
+        <div class="chart-container">
+            <h2>Food Insecurity by Region</h2>
+            <div id="regionChart"></div>
+        </div>
+        <div class="chart-container">
+            <h2>Cassava Production Growth</h2>
+            <div id="cassavaProductionChart"></div>
+        </div>
+    </div>
+
+    <script>
+    // Map setup (using simple SVG for demonstration)
+    document.getElementById('map').innerHTML = '<svg width="100%" height="400" viewBox="0 0 600 400" style="border: 1px solid #ccc;"></svg>';
+
+    // Simulated map with highlighted states
+    const svg = d3.select("#map svg");
+    // Here you would typically load or draw a map of Nigeria and highlight states
+
+    // Food Insecurity Chart
+    var options = {
+        series: [{
+            name: 'People in Millions',
+            data: [18.6, 26.5]
+        }],
+        chart: {
+            type: 'bar',
+            height: 350,
+            animations: {
+                enabled: true,
+                easing: 'easeinout',
+                speed: 800,
+                animateGradually: {
+                    enabled: true,
+                    delay: 150
+                },
+                dynamicAnimation: {
+                    enabled: true,
+                    speed: 350
+                }
+            },
+        },
+        plotOptions: {
+            bar: {
+                horizontal: false,
+            }
+        },
+        xaxis: {
+            categories: ['Oct-Dec 2023', 'Projected 2024'],
+        },
+        title: {
+            text: 'Number of Food Insecure People (in millions)',
+            align: 'center'
+        }
+    };
+
+    var chart = new ApexCharts(document.querySelector("#foodInsecurityChart"), options);
+    chart.render();
+
+    // Regional Distribution of Food Insecurity
+    var regionOptions = {
+        series: [3.3, 2.1, 1.1, 22], // Example numbers, should be updated with real data
+        labels: ['BAY States', 'Northwest', 'North-central', 'Other'],
+        chart: {
+            type: 'donut',
+            animations: {
+                enabled: true,
+                easing: 'easeinout',
+                speed: 800
+            },
+        },
+        title: {
+            text: 'Distribution of Food Insecurity by Region',
+            align: 'center'
+        }
+    };
+
+    var regionChart = new ApexCharts(document.querySelector("#regionChart"), regionOptions);
+    regionChart.render();
+
+    // Cassava Production Chart
+    var cassavaOptions = {
+        series: [{
+            name: 'Production in Million Metric Tons',
+            data: [50, 52, 54.2, 56.5, 58.9, 61.121] // Example data, should be updated with accurate yearly data
+        }],
+        chart: {
+            type: 'line',
+            height: 350,
+            animations: {
+                enabled: true,
+                easing: 'linear',
+                dynamicAnimation: {
+                    speed: 1000
+                }
+            },
+        },
+        stroke: {
+            curve: 'smooth'
+        },
+        title: {
+            text: 'Cassava Production Growth',
+            align: 'center'
+        },
+        xaxis: {
+            categories: ['2016', '2017', '2018', '2019', '2020', '2021'],
+            title: {
+                text: 'Year'
+            }
+        },
+        yaxis: {
+            title: {
+                text: 'Production (Million Metric Tons)'
+            }
+        }
+    };
+
+    var cassavaChart = new ApexCharts(document.querySelector("#cassavaProductionChart"), cassavaOptions);
+    cassavaChart.render();
+    </script>
+</body>
+</html>
