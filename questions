@@ -201,6 +201,64 @@ Features:
 - The game should be visually appealing with realistic keys
 
 
+
+Develop a Tetris game using HTML for structure, CSS for styling, and JavaScript for game logic. The game should be visually appealing and fully functional with a user-friendly interface.
+
+**Features to Include:**
+
+- Create a 10x20 grid for the Tetris game board using HTML and CSS.
+    - Use CSS Grid or Flexbox to style and position the grid cells.
+    - Implement the seven classic Tetrimino shapes (I, O, T, S, Z, J, L).
+    - Display each Tetrimino in different colors for easy identification.
+- Use keyboard controls for moving and rotating the Tetriminos:
+     - Arrow keys for moving left, right, and down.
+     - Spacebar for rotating the Tetrimino.
+     - Detect when a Tetrimino collides with the walls of the game board or other Tetriminos.
+- Detect and clear complete lines when they are filled.
+     - Implement a scoring system that updates the score based on the number of lines cleared.
+     - Update the score dynamically as the player clears lines.
+     - Show the current score and the number of lines cleared on the screen.
+- End the game when new Tetriminos cannot be placed on the board.
+    - Display a "Game Over" message and the final score.
+- Ensure the game is playable on various screen sizes and devices.
+    - Use media queries to adjust the size of the game board and controls for different devices.
+- Implement a button to start or restart the game.
+    - Add a pause button to pause the game and resume it later.
+
+
+The Cadre Harmonisé, an initiative focused on food and nutrition analysis, conducts studies
+biannually (in March and October) across 26 states and the Federal Capital Territory (FCT). With the Government's leadership and the United Nations (UN) system's support, the latest projection for 2024 shows that  Nigeria is expected to see about 26.5 million people grappling with high levels of food
+insecurity, as disclosed by the Government of Nigeria and its partners, this indicates a sharp rise from the  18.6 million people currently vulnerable to food insecurity from October to December 2023.
+
+Several factors are driving this trend, including ongoing conflicts, climate change impacts, escalating inflation, and rising costs of both food and essential non-food commodities (in part due to the devaluation of the naira and the discontinuation of the fuel subsidy). Persistent violence in the north-eastern states of Borno, Adamawa, and Yobe (BAY) hinders food availability and access.
+Additionally, armed banditry and kidnappings in northwest and north-central states, including
+Katsina, Sokoto, Kaduna, Benue, and Niger, exacerbate the prevailing economic struggles.
+
+Of the 18.6 million people who experience food insecurity today, 3.3 million live in the northeastern states of the BAY region. This number might rise to 26.5 million nationwide by the height of the 2024 lean season ( and to 4.4 million in the BAY states) if immediate action is not taken.
+The Office for the Coordination of Humanitarian Affairs (OCHA) reported that floods in October 2023 in Adamawa impacted around 8,500 households, leading to mass displacements, particularly among women, children, and the elderly. 
+Such extreme weather patterns, linked to the El Niño phenomenon, are further undermining food security.
+
+There is an additional data below to the already provided prompt. Use it to add extra infographics to the page.
+
+There is some good news anyway, Nigeria is the world’s largest cassava producer, at an estimated 61.121 million metric tons in 2021. Production has been growing at an average of 4% per year over the last 10 years. The Average Annual Demand 36.0 million metric tonnes and an estimated 30 million farmers are involved in the cultivation of cassava in Nigeria. Seventy percent of Africa’s output is harvested in the countries of Nigeria, Congo, and Tanzania while Nigeria’s production accounts for approximately 42.25% of this. A total of 51 varieties have been acknowledged by National Root Crop Research Institute (NRCRI) Umudike report in 2021 as improved Cassava has become available in Nigeria. Notable among the varieties are: TMS 30572, NR8082, TME 419, Yellow root, TMS 90257, UMUCASS 47 (game changer); UMUCASS 48(obasanjo-2); UMUCASS 49;(hope) UMUCASS 50 (baba-70); and UMUCASS 51 (poundable). These varieties are adapted to different ecological zones, and have high root field resistance to pests and diseases. Most of the varieties will mature between 9-15 months on the fields.
+The cassava industry is endowed with huge potentials which present great opportunities for small medium enterprises (SMEs) to maximize. Large producers, food and industrial sectors are growing rapidly, market share across the country is large with very lucrative domestic market returns and a large domestic import substitution market. Investors can take advantage of the rising demand for cassava and its products for engaging in the activities to their advantage. Such opportunities in cassava value chain investments include: 
+(i) Production of Cassava planting materials (seed industry); 
+(ii) Industrial processing for starch; 
+(iii) Production of High-Quality Cassava Flour (HQCF); 
+(iv) Fabrication and distribution of Cassava processing equipment; 
+(v) Food grade starch; 
+(vi) Production of ethanol; 
+(vii) Packaged traditional foods; 
+(viii) Pharmaceutical starch; 
+(ix) Production of biofuel, and 
+(x) Chips for export.
+
+I got this projected food and nutrition situation of Nigeria data from Cadre Harmonisé, Generate some great graphics in HTML and JavaScript that can help me understand the information here.
+
+- use apexcharts library and add animations to the charts
+- Try to pin point the insecure states on a map
+- The design should be visually appealing
+
 * Unless otherwise specified, generate code in a single block of html/css/js.
 * Plan out the code before starting to write it.
 
