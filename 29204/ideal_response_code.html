@@ -75,6 +75,8 @@
             padding: 0 20px;
             /* Add padding to make sure the content does not hit screen edges */
             box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
         }
 
         .card {
@@ -165,10 +167,7 @@
 
         #game-over {
             font-size: 2em;
-            position: fixed;
             bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
             display: none;
             padding: 20px;
             border-radius: 15px;
@@ -178,13 +177,17 @@
             color: #fff;
             /* White text for better readability */
             text-align: center;
-            max-width: 90%;
+            /* max-width: 80%; */
         }
 
         #game-over {
             background: rgba(244, 67, 54, 0.8);
         }
 
+        .game-over-cover{
+            display: flex;
+            justify-content: center;
+        }
 
         /* Responsive Styling */
         @media (max-width: 800px) {
@@ -359,7 +362,7 @@
         <div class="controls">
             <button id="start">Start Game</button>
         </div>
-        <div id="game-over" class="card">Game Over!</div>
+        <div class="game-over-cover"><div id="game-over" class="card">Game Over!</div></div>
         <div id="celebration" class="card">
             <div id="confetti-container"></div>
             <div>Congratulations, you won!</div>
