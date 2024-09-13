@@ -271,6 +271,8 @@ The App should have the following requirements
 
 **NOTE:** Plan out the code before starting to write it, and Unless otherwise specified, generate code in a single block of html/css/js.
 
+I need help with creating a risk management widget for a financial technology company that provides POS payment, card payment and bank transfer for it's customers. it should provide a Dashboard view displaying a high-level summary of current risk statuses across POS, card payments, and bank transfers. I also want real-time alerts for any detected anomalies or high-risk activities with actionable insights, this alert can use a toastr package. It should have a live transaction Feed/stream of ongoing transactions with risk indicators highlighting potential issues. I need  risk scores Assigned to transactions and payment methods based on predefined criteria and historical data. I need it to show a risk heat Maps which is a visual representation of risk levels across different regions, transaction types, or time periods. I need also to have very good fonts, like Poppins and the app should be very good in UI and responsive.
+
 
 * Unless otherwise specified, generate code in a single block of html/css/js.
 * Plan out the code before starting to write it.

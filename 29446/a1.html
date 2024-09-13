@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Risk Management Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<style>
+  body { font-family: 'Poppins', sans-serif; background: #f4f4f4; margin: 0; padding: 0; }
+  .container { display: flex; flex-direction: column; height: 100vh; }
+  .dashboard, .transaction-feed { padding: 20px; }
+  .dashboard { flex: 1; display: flex; justify-content: space-around; }
+  .risk-section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+  .transaction-feed { flex: 2; overflow-y: auto; background: #fff; }
+  .alert { position: fixed; top: 10px; right: 10px; }
+  .risk-heatmap { width: 100%; height: 300px; margin-top: 20px; }
+  .transaction-item { padding: 10px; margin: 5px 0; border-left: 5px solid; }
+  .low-risk { border-color: green; }
+  .medium-risk { border-color: yellow; }
+  .high-risk { border-color: red; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="dashboard">
+    <div class="risk-section" id="pos-risk">POS Risk: <span></span></div>
+    <div class="risk-section" id="card-risk">Card Risk: <span></span></div>
+    <div class="risk-section" id="transfer-risk">Transfer Risk: <span></span></div>
+    <canvas id="risk-heatmap" class="risk-heatmap"></canvas>
+  </div>
+  <div class="transaction-feed" id="transaction-feed"></div>
+</div>
+<div class="alert" id="alert-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', (event) => {
+    const ctx = document.getElementById('risk-heatmap').getContext('2d');
+    const heatmap = new Chart(ctx, {
+        type: 'bubble',
+        data: {
+            datasets: [{
+                label: 'Risk Heatmap',
+                data: [], // Data points will be added dynamically
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                x: {
+                    type: 'linear',
+                    position: 'bottom',
+                    title: {
+                        display: true,
+                        text: 'Transaction Type'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Risk Level'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+
+    function updateRiskStatus(type, riskLevel) {
+        document.getElementById(`${type}-risk`).querySelector('span').textContent = riskLevel;
+        document.getElementById(`${type}-risk`).style.borderLeftColor = 
+            riskLevel === 'Low' ? 'green' : riskLevel === 'Medium' ? 'yellow' : 'red';
+    }
+
+    function addTransaction(transaction) {
+        const feed = document.getElementById('transaction-feed');
+        const div = document.createElement('div');
+        div.className = `transaction-item ${transaction.risk.toLowerCase()}-risk`;
+        div.textContent = `Transaction ID: ${transaction.id}, Amount: $${transaction.amount}, Risk: ${transaction.risk}`;
+        feed.insertBefore(div, feed.firstChild);
+    }
+
+    function showAlert(message) {
+        Toastify({
+            text: message,
+            duration: 5000,
+            newWindow: true,
+            close: true,
+            gravity: "top",
+            position: "right",
+            backgroundColor: "linear-gradient(to right, #ff416c, #ff4b2b)",
+            stopOnFocus: true,
+        }).showToast();
+    }
+
+    // Simulate real-time data - replace with WebSocket or Fetch API in production
+    setInterval(() => {
+        // Update risk statuses
+        updateRiskStatus('pos', ['Low', 'Medium', 'High'][Math.floor(Math.random() * 3)]);
+        updateRiskStatus('card', ['Low', 'Medium', 'High'][Math.floor(Math.random() * 3)]);
+        updateRiskStatus('transfer', ['Low', 'Medium', 'High'][Math.floor(Math.random() * 3)]);
+
+        // Add transaction
+        addTransaction({
+            id: Math.floor(Math.random() * 1000),
+            amount: Math.random() * 1000,
+            risk: ['Low', 'Medium', 'High'][Math.floor(Math.random() * 3)]
+        });
+
+        // Update heatmap - this would be based on actual data
+        heatmap.data.datasets[0].data.push({
+            x: Math.random() * 10,
+            y: Math.random() * 10,
+            r: Math.random() * 10 + 5 // radius of bubble
+        });
+        heatmap.update();
+
+        // Alert for high risk
+        if (Math.random() > 0.95) { // 5% chance of an alert
+            showAlert("High risk activity detected!");
+        }
+    }, 3000);
+});
+</script>
+</body>
+</html>

@@ -1,494 +1,491 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Interactive Economics Course: Supply and Demand</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Risk Management Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist@2.24.0/plotly.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/heatmap.js@2.0.5/build/heatmap.min.js"></script>
     <style>
-      :root {
-        --bg-color: #f3f4f6;
-        --text-color: #1f2937;
-        --card-bg: #ffffff;
-        --card-border: #e5e7eb;
-      }
-      .dark-mode {
-        --bg-color: #111827;
-        --text-color: #f3f4f6;
-        --card-bg: #1f2937;
-        --card-border: #374151;
-      }
-      body {
-        background-color: var(--bg-color);
-        color: var(--text-color);
-        transition: background-color 0.3s, color 0.3s;
-      }
-      .card {
-        background-color: var(--card-bg);
-        border: 1px solid var(--card-border);
-        transition: background-color 0.3s, border-color 0.3s;
-      }
-      .chart-container {
-        background-color: var(--card-bg);
-        border: 1px solid var(--card-border);
-        border-radius: 0.5rem;
-        padding: 1rem;
-        transition: background-color 0.3s, border-color 0.3s;
-      }
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f9;
+            color: #333;
+        }
+
+        .container {
+            width: 95%;
+            margin: 20px auto;
+        }
+
+        .dashboard,
+        .alerts,
+        .feed,
+        .heatmap,
+        .risk-indicators,
+        .charts {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .dashboard .card {
+            padding: 20px;
+            margin: 10px 0;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .dashboard .card h3 {
+            margin: 0 0 10px 0;
+        }
+
+        .dashboard .card .value {
+            font-size: 2em;
+            font-weight: 600;
+        }
+
+        .dashboard .card .description {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .dashboard .card .infographic {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 3em;
+        }
+
+        .dashboard .card.high-risk .value {
+            color: red;
+        }
+
+        .dashboard .card.medium-risk .value {
+            color: orange;
+        }
+
+        .dashboard .card.low-risk .value {
+            color: green;
+        }
+
+        .risk-indicators {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .risk-indicators .indicator {
+            flex: 1;
+            margin: 10px;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            position: relative;
+        }
+
+        .risk-indicators .indicator h4 {
+            margin: 0;
+            font-size: 1.2em;
+        }
+
+        .risk-indicators .indicator .info {
+            margin-top: 10px;
+        }
+
+        .risk-indicators .indicator .info span {
+            display: block;
+            font-size: 0.9em;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        .table {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #fff;
+        }
+
+        .table-header,
+        .table-row {
+            display: flex;
+            width: 100%;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .table-header {
+            background-color: #f4f4f4;
+            font-weight: 600;
+        }
+
+        .table-cell {
+            flex: 1;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .high-risk {
+            color: red;
+        }
+
+        .medium-risk {
+            color: orange;
+        }
+
+        .low-risk {
+            color: green;
+        }
+
+        .table-body {
+            max-height: 300px;
+            /* Fixed height for scrolling */
+            overflow-y: auto;
+            /* Enable vertical scroll */
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 100%;
+            }
+        }
     </style>
-  </head>
-  <body class="transition-colors duration-200">
-    <div class="container mx-auto px-4 py-8">
-      <h1 class="text-3xl font-bold mb-6">
-        Interactive Economics Course: Supply and Demand
-      </h1>
+</head>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <!-- Graph Section -->
-        <div class="card p-6 rounded-lg shadow-md">
-          <h2 class="text-xl font-semibold mb-4">Supply and Demand Graph</h2>
-          <div class="chart-container">
-            <canvas id="supplyDemandChart"></canvas>
-          </div>
-          <div class="mt-4">
-            <p>Equilibrium Price: $<span id="equilibriumPrice"></span></p>
-            <p>
-              Equilibrium Quantity: <span id="equilibriumQuantity"></span> units
-            </p>
-            <p>Consumer Surplus: $<span id="consumerSurplus"></span></p>
-            <p>Producer Surplus: $<span id="producerSurplus"></span></p>
-          </div>
-        </div>
-
-        <!-- Controls Section -->
-        <div class="card p-6 rounded-lg shadow-md">
-          <h2 class="text-xl font-semibold mb-4">Adjust Market Variables</h2>
-          <div class="space-y-4">
-            <div>
-              <label for="productionCost" class="block mb-2"
-                >Production Cost:</label
-              >
-              <input
-                type="range"
-                id="productionCost"
-                min="0"
-                max="100"
-                value="50"
-                class="w-full"
-              />
+<body>
+    <div class="container">
+        <div class="dashboard">
+            <div class="card high-risk" id="posCard">
+                <div class="infographic">💳</div>
+                <h3>POS Payments</h3>
+                <div class="value" id="posRisk">Loading...</div>
+                <div class="description" id="posDesc">Evaluating current risk level...</div>
             </div>
-            <div>
-              <label for="consumerPreference" class="block mb-2"
-                >Consumer Preference:</label
-              >
-              <input
-                type="range"
-                id="consumerPreference"
-                min="0"
-                max="100"
-                value="50"
-                class="w-full"
-              />
+            <div class="card medium-risk" id="cardCard">
+                <div class="infographic">💳</div>
+                <h3>Card Payments</h3>
+                <div class="value" id="cardRisk">Loading...</div>
+                <div class="description" id="cardDesc">Evaluating current risk level...</div>
             </div>
-            <div>
-              <label for="incomeLevel" class="block mb-2">Income Level:</label>
-              <input
-                type="range"
-                id="incomeLevel"
-                min="0"
-                max="100"
-                value="50"
-                class="w-full"
-              />
+            <div class="card low-risk" id="bankCard">
+                <div class="infographic">🏦</div>
+                <h3>Bank Transfers</h3>
+                <div class="value" id="bankRisk">Loading...</div>
+                <div class="description" id="bankDesc">Evaluating current risk level...</div>
             </div>
-          </div>
+        </div>
 
-          <h3 class="text-lg font-semibold mt-6 mb-2">
-            Government Interventions
-          </h3>
-          <div class="space-y-4">
-            <div>
-              <label for="priceCeiling" class="block mb-2"
-                >Price Ceiling:</label
-              >
-              <input
-                type="range"
-                id="priceCeiling"
-                min="0"
-                max="100"
-                value="100"
-                class="w-full"
-              />
+        <div class="risk-indicators">
+            <div class="indicator" id="posIndicators">
+                <h4>POS Payment Risks</h4>
+                <div class="info">
+                    <span>Fraudulent Transactions: 15%</span>
+                    <span>Unauthorized Access: 10%</span>
+                    <span>Technical Failures: 5%</span>
+                </div>
             </div>
-            <div>
-              <label for="priceFloor" class="block mb-2">Price Floor:</label>
-              <input
-                type="range"
-                id="priceFloor"
-                min="0"
-                max="100"
-                value="0"
-                class="w-full"
-              />
+            <div class="indicator" id="cardIndicators">
+                <h4>Card Payment Risks</h4>
+                <div class="info">
+                    <span>Stolen Card Data: 25%</span>
+                    <span>Phishing Attacks: 20%</span>
+                    <span>Chargebacks: 15%</span>
+                </div>
             </div>
-          </div>
+            <div class="indicator" id="bankIndicators">
+                <h4>Bank Transfer Risks</h4>
+                <div class="info">
+                    <span>Wire Transfer Fraud: 10%</span>
+                    <span>Account Takeovers: 8%</span>
+                    <span>Incorrect Transfer Amounts: 5%</span>
+                </div>
+            </div>
         </div>
-      </div>
 
-      <!-- Supply and Demand Learning Cards -->
-      <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div id="supplyCard" class="card p-6 rounded-lg shadow-md">
-          <h3 class="text-xl font-semibold mb-2">Supply Curve</h3>
-          <p>
-            The supply curve shows the quantity of a good that producers are
-            willing to sell at different prices.
-          </p>
-          <p class="mt-2">
-            <strong>Key Concept:</strong> As price increases, quantity supplied
-            typically increases.
-          </p>
+        <div class="charts">
+            <h3>Transaction Frequency and Risk Indicators</h3>
+            <div id="transactionFrequencyChart"></div>
+            <div id="riskCauseChart"></div>
         </div>
-        <div id="demandCard" class="card p-6 rounded-lg shadow-md">
-          <h3 class="text-xl font-semibold mb-2">Demand Curve</h3>
-          <p>
-            The demand curve represents the quantity of a good that consumers
-            are willing to buy at various prices.
-          </p>
-          <p class="mt-2">
-            <strong>Key Concept:</strong> As price increases, quantity demanded
-            typically decreases.
-          </p>
-        </div>
-        <div id="equilibriumCard" class="card p-6 rounded-lg shadow-md">
-          <h3 class="text-xl font-semibold mb-2">Market Equilibrium</h3>
-          <p>
-            Market equilibrium occurs where the supply and demand curves
-            intersect. At this point, the quantity supplied equals the quantity
-            demanded.
-          </p>
-          <p class="mt-2">
-            <strong>Key Concept:</strong> At equilibrium, there is no tendency
-            for price to change.
-          </p>
-        </div>
-      </div>
 
-      <!-- Elasticity Tool -->
-      <div class="mt-8 card p-6 rounded-lg shadow-md">
-        <h2 class="text-xl font-semibold mb-4">
-          Price Elasticity Visualization
-        </h2>
-        <div class="chart-container">
-          <canvas id="elasticityChart"></canvas>
+        <div class="alerts">
+            <h3>Real-time Alerts</h3>
+            <div id="alertsFeed"></div>
         </div>
-        <div class="mt-4">
-          <label for="priceChange" class="block mb-2">Price Change:</label>
-          <input
-            type="range"
-            id="priceChange"
-            min="-50"
-            max="50"
-            value="0"
-            class="w-full"
-          />
-        </div>
-      </div>
 
-      <!-- Elasticity Learning Card -->
-      <div class="mt-4">
-        <div id="elasticityCard" class="card p-6 rounded-lg shadow-md">
-          <h3 class="text-xl font-semibold mb-2">Price Elasticity of Demand</h3>
-          <p>
-            Price elasticity of demand measures how sensitive the quantity
-            demanded is to a change in price.
-          </p>
-          <p class="mt-2">
-            <strong>Formula:</strong> (% Change in Quantity Demanded) / (%
-            Change in Price)
-          </p>
+        <div class="feed">
+            <h3>Live Transaction Feed</h3>
+            <div class="table-wrapper">
+                <div class="table">
+                    <div class="table-header">
+                        <div class="table-cell">ID</div>
+                        <div class="table-cell">Type</div>
+                        <div class="table-cell">Amount</div>
+                        <div class="table-cell">Risk</div>
+                        <div class="table-cell">Reason</div>
+                    </div>
+                    <div class="table-body" id="transactionFeed">
+                        <!-- Transaction rows will be inserted here dynamically -->
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
 
-      <!-- Dark Mode Toggle -->
-      <div class="mt-8 text-right">
-        <button
-          id="darkModeToggle"
-          class="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition-colors duration-200"
-        >
-          Toggle Dark Mode
-        </button>
-      </div>
+        <div class="heatmap">
+            <h3>Risk Heatmap</h3>
+            <div id="riskHeatmap"></div>
+        </div>
     </div>
 
     <script>
-      let supplyDemandChart, elasticityChart;
-      let darkMode = false;
+        // Mock data
+        const riskData = {
+            pos: 35,
+            card: 70,
+            bank: 50
+        };
 
-      function initCharts() {
-        const supplyDemandCtx = document
-          .getElementById("supplyDemandChart")
-          .getContext("2d");
-        supplyDemandChart = new Chart(supplyDemandCtx, {
-          type: "line",
-          data: {
-            labels: [0, 20, 40, 60, 80, 100],
-            datasets: [
-              {
-                label: "Supply",
-                data: [0, 20, 40, 60, 80, 100],
-                borderColor: "rgb(75, 192, 192)",
-                tension: 0.1,
-              },
-              {
-                label: "Demand",
-                data: [100, 80, 60, 40, 20, 0],
-                borderColor: "rgb(255, 99, 132)",
-                tension: 0.1,
-              },
+        const transactionTypes = ['POS', 'Card', 'Bank'];
+        const riskLevels = ['High', 'Medium', 'Low'];
+        const riskIndicators = {
+            pos: [
+                { type: 'Fraudulent Transactions', percentage: 15 },
+                { type: 'Unauthorized Access', percentage: 10 },
+                { type: 'Technical Failures', percentage: 5 }
             ],
-          },
-          options: {
-            responsive: true,
-            scales: {
-              y: {
-                title: { display: true, text: "Price ($)" },
-                min: 0,
-                max: 100,
-              },
-              x: {
-                title: { display: true, text: "Quantity" },
-                min: 0,
-                max: 100,
-              },
-            },
-          },
-        });
-
-        const elasticityCtx = document
-          .getElementById("elasticityChart")
-          .getContext("2d");
-        elasticityChart = new Chart(elasticityCtx, {
-          type: "line",
-          data: {
-            labels: [0, 20, 40, 60, 80, 100],
-            datasets: [
-              {
-                label: "Elastic",
-                data: [100, 80, 60, 40, 20, 0],
-                borderColor: "rgb(75, 192, 192)",
-                tension: 0.1,
-              },
-              {
-                label: "Inelastic",
-                data: [100, 95, 90, 85, 80, 75],
-                borderColor: "rgb(255, 99, 132)",
-                tension: 0.1,
-              },
+            card: [
+                { type: 'Stolen Card Data', percentage: 25 },
+                { type: 'Phishing Attacks', percentage: 20 },
+                { type: 'Chargebacks', percentage: 15 }
             ],
-          },
-          options: {
-            responsive: true,
-            scales: {
-              y: {
-                title: { display: true, text: "Price ($)" },
-                min: 0,
-                max: 100,
-              },
-              x: {
-                title: { display: true, text: "Quantity" },
-                min: 0,
-                max: 100,
-              },
-            },
-          },
-        });
-      }
+            bank: [
+                { type: 'Wire Transfer Fraud', percentage: 10 },
+                { type: 'Account Takeovers', percentage: 8 },
+                { type: 'Incorrect Transfer Amounts', percentage: 5 }
+            ]
+        };
 
-      function updateSupplyDemand() {
-        const productionCost = parseInt(
-          document.getElementById("productionCost").value
-        );
-        const consumerPreference = parseInt(
-          document.getElementById("consumerPreference").value
-        );
-        const incomeLevel = parseInt(
-          document.getElementById("incomeLevel").value
-        );
-        const priceCeiling = parseInt(
-          document.getElementById("priceCeiling").value
-        );
-        const priceFloor = parseInt(
-          document.getElementById("priceFloor").value
-        );
+        const transactionFrequencies = {
+            pos: [120, 150, 180, 210, 240],
+            card: [80, 100, 120, 140, 160],
+            bank: [60, 80, 100, 120, 140]
+        };
 
-        // Update supply curve (affected by production cost)
-        const supplySlope = 1 + productionCost / 100;
-        const supplyData = [0, 20, 40, 60, 80, 100].map((x) =>
-          Math.min(100, x * supplySlope)
-        );
-
-        // Update demand curve (affected by consumer preference and income level)
-        const demandIntercept = 100 + consumerPreference / 2 + incomeLevel / 2;
-        const demandData = [0, 20, 40, 60, 80, 100].map((x) =>
-          Math.max(0, demandIntercept - x)
-        );
-
-        supplyDemandChart.data.datasets[0].data = supplyData;
-        supplyDemandChart.data.datasets[1].data = demandData;
-
-        // Apply price ceiling and floor
-        if (priceCeiling < 100) {
-          supplyDemandChart.options.scales.y.max = priceCeiling;
-        } else {
-          supplyDemandChart.options.scales.y.max = 100;
-        }
-        if (priceFloor > 0) {
-          supplyDemandChart.options.scales.y.min = priceFloor;
-        } else {
-          supplyDemandChart.options.scales.y.min = 0;
+        function getRiskDescription(riskPercentage) {
+            if (riskPercentage > 60) return 'High Risk: Immediate attention required. Significant issues detected.';
+            if (riskPercentage > 40) return 'Medium Risk: Monitor closely and address potential issues.';
+            return 'Low Risk: No immediate action needed, but keep an eye on trends.';
         }
 
-        supplyDemandChart.update();
-
-        updateMarketIndicators(
-          supplyData,
-          demandData,
-          priceCeiling,
-          priceFloor
-        );
-      }
-
-      function updateMarketIndicators(
-        supplyData,
-        demandData,
-        priceCeiling,
-        priceFloor
-      ) {
-        // Find intersection point (equilibrium)
-        let equilibriumPrice, equilibriumQuantity;
-        for (let i = 0; i < supplyData.length; i++) {
-          if (Math.abs(supplyData[i] - demandData[i]) < 5) {
-            equilibriumPrice = supplyData[i];
-            equilibriumQuantity = i * 20;
-            break;
-          }
+        function getRiskClass(riskPercentage) {
+            if (riskPercentage > 60) return 'high-risk';
+            if (riskPercentage > 40) return 'medium-risk';
+            return 'low-risk';
         }
 
-        // If no intersection found, set default values
-        if (equilibriumPrice === undefined) {
-          equilibriumPrice = 50;
-          equilibriumQuantity = 50;
+        function getRiskClassFromText(riskName) {
+            if (riskName == "High") return 'high-risk';
+            if (riskName == "Medium") return 'medium-risk';
+            return 'low-risk';
         }
 
-        // Apply price controls
-        if (priceCeiling < equilibriumPrice) {
-          equilibriumPrice = priceCeiling;
+        function getRiskReason(risk) {
+            const reasons = {
+                'High': [
+                    'Wire transfer fraud detected',
+                    'Suspicious large transaction',
+                    'Multiple failed payment attempts'
+                ],
+                'Medium': [
+                    'Unusual spending pattern detected',
+                    'Possible unauthorized access',
+                    'Inconsistent transaction details'
+                ],
+                'Low': [
+                    'Normal transaction activity',
+                    'Routine payment processing',
+                    'No significant anomalies detected'
+                ]
+            };
+            return reasons[risk][Math.floor(Math.random() * reasons[risk].length)];
         }
-        if (priceFloor > equilibriumPrice) {
-          equilibriumPrice = priceFloor;
+
+        function updateDashboard() {
+            document.getElementById('posRisk').innerText = `${riskData.pos}% Risk`;
+            document.getElementById('cardRisk').innerText = `${riskData.card}% Risk`;
+            document.getElementById('bankRisk').innerText = `${riskData.bank}% Risk`;
+
+            document.getElementById('posDesc').innerText = getRiskDescription(riskData.pos);
+            document.getElementById('cardDesc').innerText = getRiskDescription(riskData.card);
+            document.getElementById('bankDesc').innerText = getRiskDescription(riskData.bank);
+
+            document.getElementById('posCard').className = `card ${getRiskClass(riskData.pos)}`;
+            document.getElementById('cardCard').className = `card ${getRiskClass(riskData.card)}`;
+            document.getElementById('bankCard').className = `card ${getRiskClass(riskData.bank)}`;
+
+            updateRiskIndicators();
         }
 
-        // Recalculate quantity based on price controls
-        equilibriumQuantity = Math.min(
-          supplyData.findIndex((p) => p >= equilibriumPrice) * 20,
-          demandData.findIndex((p) => p <= equilibriumPrice) * 20
-        );
+        function updateRiskIndicators() {
+            const posIndicatorsDiv = document.getElementById('posIndicators');
+            const cardIndicatorsDiv = document.getElementById('cardIndicators');
+            const bankIndicatorsDiv = document.getElementById('bankIndicators');
 
-        // Calculate surpluses
-        const consumerSurplus =
-          equilibriumQuantity > 0
-            ? ((demandData[0] - equilibriumPrice) * equilibriumQuantity) / 2
-            : 0;
-        const producerSurplus =
-          equilibriumQuantity > 0
-            ? (equilibriumPrice * equilibriumQuantity) / 2
-            : 0;
+            posIndicatorsDiv.querySelector('.info').innerHTML = riskIndicators.pos.map(indicator =>
+                `<span>${indicator.type}: ${indicator.percentage}%</span>`).join('<br/>');
 
-        document.getElementById("equilibriumPrice").textContent =
-          equilibriumPrice.toFixed(2);
-        document.getElementById("equilibriumQuantity").textContent =
-          equilibriumQuantity.toFixed(0);
-        document.getElementById("consumerSurplus").textContent =
-          consumerSurplus.toFixed(2);
-        document.getElementById("producerSurplus").textContent =
-          producerSurplus.toFixed(2);
-      }
+            cardIndicatorsDiv.querySelector('.info').innerHTML = riskIndicators.card.map(indicator =>
+                `<span>${indicator.type}: ${indicator.percentage}%</span>`).join('<br/>');
 
-      function updateElasticity() {
-        const priceChange = parseInt(
-          document.getElementById("priceChange").value
-        );
-        const elasticData = [100, 80, 60, 40, 20, 0].map((y) =>
-          Math.max(0, y + priceChange)
-        );
-        const inelasticData = [100, 95, 90, 85, 80, 75].map((y) =>
-          Math.max(0, y + priceChange / 2)
-        );
+            bankIndicatorsDiv.querySelector('.info').innerHTML = riskIndicators.bank.map(indicator =>
+                `<span>${indicator.type}: ${indicator.percentage}%</span>`).join('<br/>');
+        }
 
-        elasticityChart.data.datasets[0].data = elasticData;
-        elasticityChart.data.datasets[1].data = inelasticData;
-        elasticityChart.update();
-      }
+        function showToast(message, type) {
+            Toastify({
+                text: message,
+                backgroundColor: type === 'error' ? '#e74c3c' : '#2ecc71',
+                duration: 5000,
+                gravity: 'top',
+                position: 'right',
+                stopOnFocus: true,
+                className: type,
+                close: true
+            }).showToast();
+        }
 
-      function toggleDarkMode() {
-        darkMode = !darkMode;
-        document.body.classList.toggle("dark-mode");
-        updateChartColors();
-      }
+        function getRandomTransaction() {
+            const risk = riskLevels[Math.floor(Math.random() * riskLevels.length)];
+            return {
+                id: Math.floor(Math.random() * 10000),
+                type: transactionTypes[Math.floor(Math.random() * transactionTypes.length)],
+                amount: `$${(Math.random() * 500).toFixed(2)}`,
+                risk: risk,
+                reason: getRiskReason(risk)
+            };
+        }
 
-      function updateChartColors() {
-        const textColor = darkMode ? "#f3f4f6" : "#1f2937";
-        const gridColor = darkMode ? "#374151" : "#e5e7eb";
+        function addTransactionToFeed(transaction) {
+            const feedContainer = document.getElementById('transactionFeed');
+            const row = document.createElement('div');
+            row.className = 'table-row';
+            row.innerHTML = `
+                <div class="table-cell">${transaction.id}</div>
+                <div class="table-cell">${transaction.type}</div>
+                <div class="table-cell">${transaction.amount}</div>
+                <div class="table-cell ${getRiskClassFromText(transaction.risk)}">${transaction.risk}</div>
+                <div class="table-cell">${transaction.reason}</div>
+            `;
+            feedContainer.appendChild(row);
 
-        [supplyDemandChart, elasticityChart].forEach((chart) => {
-          chart.options.scales.x.grid.color = gridColor;
-          chart.options.scales.y.grid.color = gridColor;
-          chart.options.scales.x.ticks.color = textColor;
-          chart.options.scales.y.ticks.color = textColor;
-          chart.options.scales.x.title.color = textColor;
-          chart.options.scales.y.title.color = textColor;
-          chart.update();
-        });
-      }
+            // Scroll to the bottom of the feed
+            feedContainer.scrollTop = feedContainer.scrollHeight;
 
-      function showLearningCards() {
-        document.querySelectorAll(".learning-card").forEach((card) => {
-          card.style.display = "block";
-        });
-      }
+            // Show a toast for high severity transactions
+            if (transaction.risk === 'High') {
+                showToast(`High Risk Transaction: ${transaction.type} - ${transaction.reason} (Time: ${formatTime()})`, 'error');
+            }
+        }
 
-      document.querySelectorAll('input[type="range"]').forEach((slider) => {
-        slider.addEventListener("input", (event) => {
-          const sliderId = event.target.id;
-          if (
-            [
-              "productionCost",
-              "consumerPreference",
-              "incomeLevel",
-              "priceCeiling",
-              "priceFloor",
-            ].includes(sliderId)
-          ) {
-            updateSupplyDemand();
-          } else if (sliderId === "priceChange") {
-            updateElasticity();
-          }
-        });
-      });
+        function formatTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            return `${hours}:${minutes}:${seconds}`;
+        }
+        function simulateLiveFeed() {
+            setInterval(() => {
+                const transaction = getRandomTransaction();
+                addTransactionToFeed(transaction);
+            }, 3000); // New transaction every 2 seconds
+        }
 
-      document
-        .getElementById("darkModeToggle")
-        .addEventListener("click", toggleDarkMode);
+        function renderCharts() {
+            const frequencyTrace = {
+                x: ['POS', 'Card', 'Bank'],
+                y: [
+                    transactionFrequencies.pos.reduce((a, b) => a + b, 0) / transactionFrequencies.pos.length,
+                    transactionFrequencies.card.reduce((a, b) => a + b, 0) / transactionFrequencies.card.length,
+                    transactionFrequencies.bank.reduce((a, b) => a + b, 0) / transactionFrequencies.bank.length
+                ],
+                type: 'bar',
+                name: 'Average Frequency',
+                marker: { color: ['#1f77b4', '#ff7f0e', '#2ca02c'] }
+            };
 
-      function init() {
-        initCharts();
-        updateSupplyDemand();
-        updateElasticity();
-        showLearningCards();
-      }
+            const causeData = Object.keys(riskIndicators).map(key => ({
+                x: riskIndicators[key].map(ind => ind.type),
+                y: riskIndicators[key].map(ind => ind.percentage),
+                type: 'bar',
+                name: key.charAt(0).toUpperCase() + key.slice(1) + ' Risks',
+                marker: { color: key === 'pos' ? '#1f77b4' : (key === 'card' ? '#ff7f0e' : '#2ca02c') }
+            }));
 
-      document.addEventListener("DOMContentLoaded", init);
+            const layout1 = {
+                title: 'Average Transaction Frequency',
+                xaxis: { title: 'Payment Channel' },
+                yaxis: { title: 'Average Frequency' }
+            };
+
+            const layout2 = {
+                title: 'Risk Indicators Causes',
+                xaxis: { title: 'Risk Type' },
+                yaxis: { title: 'Percentage' }
+            };
+
+            Plotly.newPlot('transactionFrequencyChart', [frequencyTrace], layout1);
+            Plotly.newPlot('riskCauseChart', causeData, layout2);
+        }
+
+        function renderHeatmap() {
+            const data = [
+                {
+                    x: ['POS', 'Card', 'Bank'], y: ['High', 'Medium', 'Low'], z: [
+                        [60, 30, 10],
+                        [70, 20, 10],
+                        [50, 30, 20]
+                    ], type: 'heatmap', colorscale: 'Viridis'
+                }
+            ];
+
+            const layout = {
+                title: 'Risk Heatmap',
+                xaxis: { title: 'Payment Channel' },
+                yaxis: { title: 'Risk Level' }
+            };
+
+            Plotly.newPlot('riskHeatmap', data, layout);
+        }
+
+        // Initialize everything
+        updateDashboard();
+        simulateLiveFeed();
+        renderCharts();
+        renderHeatmap();
     </script>
-  </body>
+</body>
+
 </html>
