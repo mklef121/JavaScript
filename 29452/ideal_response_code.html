@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nigerian Agriculture Sector Analysis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        header {
+            background: #333;
+            color: #fff;
+            padding: 1.5em 0;
+            text-align: center;
+        }
+        .container {
+            width: 90%;
+            margin: auto;
+            overflow: hidden;
+        }
+        .section {
+            background: #fff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #36A2EB;
+            padding-bottom: 10px;
+        }
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .timeline-item {
+            position: relative;
+            padding: 20px 0;
+            border-left: 4px solid #36A2EB;
+        }
+        .timeline-item::before {
+            content: "";
+            position: absolute;
+            left: -8px;
+            width: 16px;
+            height: 16px;
+            background: #36A2EB;
+            border-radius: 50%;
+            top: 0;
+        }
+        .timeline-content {
+            margin-left: 40px;
+        }
+        .animated-chart {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .chart-card {
+            flex: 1 1 100%;
+            margin: 10px 0;
+            background: #fff;
+            padding: 20px;
+            padding-bottom: 60px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+        .chart-card h3 {
+            margin-top: 0;
+        }
+        .chart-container {
+            position: relative;
+            margin-bottom: 30px;
+            align-self: center;
+            width: 100%;
+        }
+        .summary {
+            font-size: 1.1em;
+            color: #555;
+            margin-bottom: 15px;
+        }
+        @media (max-width: 900px) {
+            .chart-card {
+                height: 450px;
+                padding-bottom: 60px;
+            }
+        }
+        @media (max-width: 600px) {
+            .chart-card {
+                height: 250px;
+                padding-bottom: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Nigerian Agriculture Sector Analysis</h1>
+    </header>
+
+    <div class="container">
+        <!-- Timeline Section -->
+        <div class="section">
+            <h2>Key Historical Data</h2>
+            <p class="summary">Nigeria's agricultural sector's contribution to GDP has been relatively stable, ranging from 24.45% in 2016 to 25.70% in 2020. Despite the oil sector's dominance, agriculture remains crucial, employing over one-third of the population.</p>
+            <ul class="timeline">
+                <li class="timeline-item">
+                    <div class="timeline-content">
+                        <h3>2016</h3>
+                        <p><strong>Contribution to GDP:</strong> 24.45%</p>
+                    </div>
+                </li>
+                <li class="timeline-item">
+                    <div class="timeline-content">
+                        <h3>2020</h3>
+                        <p><strong>Contribution to GDP:</strong> 25.70%</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="section">
+            <h2>Production vs. Demand</h2>
+            <p class="summary">Production levels for key crops are falling short of national demands. For example, rice production was 86.5 million metric tons in 2020 against a demand of 117 million metric tons, while maize production fell to 18 million metric tons from a demand of 23 million metric tons.</p>
+            <div class="animated-chart">
+                <div class="chart-card">
+                    <h3>Rice Production vs. Demand</h3>
+                    <canvas id="riceChart" class="chart-container"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Maize Production vs. Demand</h3>
+                    <canvas id="maizeChart" class="chart-container"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Wheat Production vs. Demand</h3>
+                    <canvas id="wheatChart" class="chart-container"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Cassava Production Overview</h3>
+                    <canvas id="cassavaChart" class="chart-container"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cassava Timeline and Chart Section -->
+        <div class="section">
+            <h2>Cassava Production Growth</h2>
+            <p class="summary">Cassava production in Nigeria has been growing at an average rate of 4% per year over the last decade. In 2021, Nigeria produced 61.121 million metric tons of cassava. The following timeline and filled line chart illustrate this growth trend.</p>
+            <div class="animated-chart">
+                <div class="chart-card">
+                    <h3>Cassava Production Trend</h3>
+                    <canvas id="cassavaLineChart" class="chart-container"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Section -->
+        <div class="section">
+            <h2>Key Statistics</h2>
+            <p class="summary">Food insecurity affects 38.6% of Nigeria’s population, while 28.7% face nutrition insecurity, and 50.6% lack access to cooking fuel. Malnutrition is significant, with 6.5% of children under five being underweight and 35.3% suffering from stunting.</p>
+            <div class="animated-chart">
+                <div class="chart-card">
+                    <h3>Food Insecurity</h3>
+                    <canvas id="foodInsecurityChart" class="chart-container"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Malnutrition Rates</h3>
+                    <canvas id="malnutritionChart" class="chart-container"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fisheries and Aquaculture Section -->
+        <div class="section">
+            <h2>Fisheries and Aquaculture</h2>
+            <p class="summary">Fisheries and aquaculture play a significant role in Nigeria's food supply and employment. Recent investments in aquaculture have led to increased fish production, yet there are still issues related to overfishing and habitat degradation that need to be addressed.</p>
+            <div class="animated-chart">
+                <div class="chart-card">
+                    <h3>Fish Production vs. Demand</h3>
+                    <canvas id="fishChart" class="chart-container"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Data for Charts
+        const riceData = {
+            labels: ['Production', 'Demand'],
+            datasets: [{
+                label: 'Rice (Million Metric Tons)',
+                data: [86.5, 117],
+                backgroundColor: ['#36A2EB', '#FF6384'],
+                borderColor: ['#36A2EB', '#FF6384'],
+                borderWidth: 1
+            }]
+        };
+        
+        const maizeData = {
+            labels: ['Production', 'Demand'],
+            datasets: [{
+                label: 'Maize (Million Metric Tons)',
+                data: [18, 23],
+                backgroundColor: ['#FFCE56', '#FF6384'],
+                borderColor: ['#FFCE56', '#FF6384'],
+                borderWidth: 1
+            }]
+        };
+        
+        const wheatData = {
+            labels: ['Production', 'Demand'],
+            datasets: [{
+                label: 'Wheat (Million Metric Tons)',
+                data: [0.071, 5.78], // corrected data
+                backgroundColor: ['#4BC0C0', '#FF6384'],
+                borderColor: ['#4BC0C0', '#FF6384'],
+                borderWidth: 1
+            }]
+        };
+        
+        const cassavaData = {
+            labels: ['Production (2021)', 'Annual Demand'],
+            datasets: [{
+                label: 'Cassava Production Overview (Million Metric Tons)',
+                data: [61.121, 36],
+                backgroundColor: ['#FF9F40', '#FF6384'],
+                borderColor: ['#FF9F40', '#FF6384'],
+                borderWidth: 1
+            }]
+        };
+
+        const foodInsecurityData = {
+            labels: ['Food Insecurity', 'Nutrition Insecurity', 'Cooking Fuel Access'],
+            datasets: [{
+                label: 'Population Affected (%)',
+                data: [38.6, 28.7, 50.6],
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                borderColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                borderWidth: 1
+            }]
+        };
+
+        const malnutritionData = {
+            labels: ['Underweight (%)', 'Stunting (%)'],
+            datasets: [{
+                label: 'Malnutrition Rates (%)',
+                data: [6.5, 35.3],
+                backgroundColor: ['#FFCE56', '#FF6384'],
+                borderColor: ['#FFCE56', '#FF6384'],
+                borderWidth: 1
+            }]
+        };
+
+        const livestockData = {
+            labels: ['Cattle', 'Sheep', 'Goats', 'Poultry'],
+            datasets: [{
+                label: 'Livestock Production (Million Heads)',
+                data: [15, 8, 12, 150],
+                backgroundColor: ['#FF9F40', '#36A2EB', '#FFCE56', '#4BC0C0'],
+                borderColor: ['#FF9F40', '#36A2EB', '#FFCE56', '#4BC0C0'],
+                borderWidth: 1
+            }]
+        };
+
+        const fishData = {
+            labels: ['Production', 'Demand'],
+            datasets: [{
+                label: 'Fish (Million Metric Tons)',
+                data: [1.2, 3.0],
+                backgroundColor: ['#FF6384', '#36A2EB'],
+                borderColor: ['#FF6384', '#36A2EB'],
+                borderWidth: 1
+            }]
+        };
+
+        // Cassava Production Data
+        const cassavaYears = Array.from({length: 10}, (_, i) => 2021 - i).reverse();
+        const cassavaProduction = cassavaYears.map((year, index) => {
+            const baseProduction = 61.121; // 2021 production
+            const growthRate = 0.04; // 4% growth per year
+            return baseProduction / Math.pow(1 + growthRate, 10 - index);
+        });
+
+        // Create Charts
+        new Chart(document.getElementById('riceChart').getContext('2d'), {
+            type: 'bar',
+            data: riceData,
+            options: {
+                responsive: true,
+                animation: {
+                    duration: 2000, // Animation duration on load
+                    easing: 'easeOutBounce' // Animation easing
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.raw + ' Million Metric Tons';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('maizeChart').getContext('2d'), {
+            type: 'bar',
+            data: maizeData,
+            options: {
+                responsive: true,
+                animation: {
+                    duration: 2000, // Animation duration on load
+                    easing: 'easeOutBounce' // Animation easing
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.raw + ' Million Metric Tons';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('wheatChart').getContext('2d'), {
+            type: 'bar',
+            data: wheatData,
+            options: {
+                responsive: true,
+                animation: {
+                    duration: 2000, // Animation duration on load
+                    easing: 'easeOutBounce' // Animation easing
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.raw + ' Million Metric Tons';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('cassavaChart').getContext('2d'), {
+            type: 'doughnut',
+            data: cassavaData,
+            options: {
+                responsive: true,
+                animation: {
+                    duration: 2000, // Animation duration on load
+                    easing: 'easeOutBounce' // Animation easing
+                }
+            }
+        });
+
+        new Chart(document.getElementById('foodInsecurityChart').getContext('2d'), {
+            type: 'doughnut',
+            data: foodInsecurityData,
+            options: {
+                responsive: true,
+                animation: {
+                    duration: 2000, // Animation duration on load
+                    easing: 'easeOutBounce' // Animation easing
+                }
+            }
+        });
+
+        new Chart(document.getElementById('malnutritionChart').getContext('2d'), {
+            type: 'bar',
+            data: malnutritionData,
+            options: {
+                responsive: true,
+                animation: {
+                    duration: 2000, // Animation duration on load
+                    easing: 'easeOutBounce' // Animation easing
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('cassavaLineChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: cassavaYears,
+                datasets: [{
+                    label: 'Cassava Production Trend (Million Metric Tons)',
+                    data: cassavaProduction,
+                    fill: true,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                animation: {
+                    duration: 2000, // Animation duration on load
+                    easing: 'easeOutBounce' // Animation easing
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.raw.toFixed(2) + ' Million Metric Tons';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Production (Million Metric Tons)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Year'
+                        }
+                    }
+                }
+            }
+        });
+
+
+        new Chart(document.getElementById('fishChart').getContext('2d'), {
+            type: 'bar',
+            data: fishData,
+            options: {
+                responsive: true,
+                animation: {
+                    duration: 2000, // Animation duration on load
+                    easing: 'easeOutBounce' // Animation easing
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.raw + ' Million Metric Tons';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
