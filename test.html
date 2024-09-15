@@ -3,255 +3,322 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Economic Policymaker Simulator</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Real Estate Asset Management Widget</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        .chart-container {
-            position: relative;
-            height: 400px;
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f4f8;
+        }
+        .container {
+            width: 95%;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+        }
+        .property-search, .todo-list {
+            margin-bottom: 30px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .property-search h2, .todo-list h2 {
+            margin-top: 0;
+            font-size: 22px;
+            font-weight: 600;
+        }
+        .property-search .filter label, .todo-list label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        .property-search .filter input[type="range"], .todo-list input[type="text"], .todo-list input[type="date"], .todo-list input[type="time"], .todo-list textarea {
             width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
         }
-        .chart-grid {
+        .todo-list input[type="text"], .todo-list input[type="email"], .todo-list textarea {
+            padding: 10px;
+        }
+        .property-search .filter button, .todo-list button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .property-search .filter button:hover, .todo-list button:hover {
+            background-color: #0056b3;
+        }
+        .todo-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .todo-list li {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            padding: 15px;
             display: flex;
-            flex-direction: row;
-            gap: 1rem;
+            flex-direction: column;
+            position: relative;
+            transition: background-color 0.3s, transform 0.3s;
         }
-        .chart-grid > div {
-            flex: 1;
+        .todo-list li:hover {
+            background-color: #f1f1f1;
+            transform: scale(1.02);
         }
-        @media (max-width: 768px) {
-            .chart-grid {
-                flex-direction: column;
-            }
+        .todo-list .task-detail {
+            margin-bottom: 10px;
+        }
+        .todo-list .remove {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 12px;
+            cursor: pointer;
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            transition: background-color 0.3s;
+        }
+        .todo-list .remove:hover {
+            background-color: #c82333;
+        }
+        .todo-list .completed {
+            background-color: #e9fbe9;
+            text-decoration: line-through;
+            border-color: #28a745;
+        }
+        .todo-list .completed .remove {
+            background-color: #28a745;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .form-group input[type="date"], .form-group input[type="time"] {
+            padding: 8px;
         }
     </style>
 </head>
-<body class="bg-gray-100">
+<body>
+    <div class="container">
+        <!-- Property Search -->
+        <div class="section property-search card">
+            <h2>Property Search</h2>
+            <div class="filter">
+                <label for="minPrice">Minimum Price</label>
+                <input type="range" id="minPrice" min="0" max="1000000" step="10000" value="0">
+                <span id="minPriceValue">$0</span>
+            </div>
+            <div class="filter">
+                <label for="maxPrice">Maximum Price</label>
+                <input type="range" id="maxPrice" min="0" max="1000000" step="10000" value="1000000">
+                <span id="maxPriceValue">$1,000,000</span>
+            </div>
+            <div class="filter">
+                <label for="minSize">Minimum Size (sq ft)</label>
+                <input type="range" id="minSize" min="0" max="10000" step="100" value="0">
+                <span id="minSizeValue">0 sq ft</span>
+            </div>
+            <div class="filter">
+                <label for="maxSize">Maximum Size (sq ft)</label>
+                <input type="range" id="maxSize" min="0" max="10000" step="100" value="10000">
+                <span id="maxSizeValue">10,000 sq ft</span>
+            </div>
+            <div class="filter">
+                <label for="searchLocation">Location</label>
+                <input type="text" id="searchLocation" placeholder="Enter location">
+            </div>
+            <button onclick="filterProperties()">Apply Filters</button>
+        </div>
 
-    <!-- Header -->
-    <header class="bg-blue-800 text-white p-4 text-center">
-        <h1 class="text-2xl font-bold">Economic Policymaker Simulator</h1>
-    </header>
-
-    <!-- Main Container -->
-    <div class="container mx-auto p-4">
-
-        <!-- Control Panel -->
-        <section class="bg-white shadow-md rounded-lg p-4 mb-6">
-            <h2 class="text-xl font-semibold mb-4">Control Panel</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Fiscal Policy Controls -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-2">Fiscal Policy</h3>
-                    <label class="block mb-2">Tax Rate:
-                        <input type="range" id="taxRate" min="0" max="50" value="20" class="w-full">
-                    </label>
-                    <label class="block mb-2">Government Spending:
-                        <input type="range" id="govSpending" min="0" max="100" value="50" class="w-full">
-                    </label>
+        <!-- Property Overview -->
+        <div class="section property-overview card">
+            <h2>Current Properties</h2>
+            <div id="propertyList">
+                <div class="property-card" data-price="550000" data-size="3000" data-location="Downtown">
+                    <img src="https://via.placeholder.com/600x400" alt="Property 1">
+                    <div class="details">
+                        <h4>Modern Family Home</h4>
+                        <p>Location: Downtown</p>
+                        <p>Price: $550,000</p>
+                        <p>Size: 3,000 sq ft</p>
+                        <a href="#" class="e-tour">Schedule an E-Tour</a>
+                    </div>
                 </div>
-                <!-- Monetary Policy Controls -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-2">Monetary Policy</h3>
-                    <label class="block mb-2">Interest Rate:
-                        <input type="range" id="interestRate" min="0" max="10" value="5" class="w-full">
-                    </label>
-                    <label class="block mb-2">Money Supply:
-                        <input type="range" id="moneySupply" min="0" max="100" value="50" class="w-full">
-                    </label>
+                <div class="property-card" data-price="1200000" data-size="1800" data-location="Uptown">
+                    <img src="https://via.placeholder.com/600x400" alt="Property 2">
+                    <div class="details">
+                        <h4>Luxury Condo</h4>
+                        <p>Location: Uptown</p>
+                        <p>Price: $1,200,000</p>
+                        <p>Size: 1,800 sq ft</p>
+                        <a href="#" class="e-tour">Schedule an E-Tour</a>
+                    </div>
+                </div>
+                <div class="property-card" data-price="350000" data-size="2000" data-location="Suburbs">
+                    <img src="https://via.placeholder.com/600x400" alt="Property 3">
+                    <div class="details">
+                        <h4>Charming Cottage</h4>
+                        <p>Location: Suburbs</p>
+                        <p>Price: $350,000</p>
+                        <p>Size: 2,000 sq ft</p>
+                        <a href="#" class="e-tour">Schedule an E-Tour</a>
+                    </div>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <!-- Economic Indicators -->
-        <section class="bg-white shadow-md rounded-lg p-4 mb-6">
-            <h2 class="text-xl font-semibold mb-4">Economic Indicators</h2>
-            <div id="indicators" class="text-lg">
-                <p>GDP: $<span id="gdp">1000</span> Billion</p>
-                <p>Inflation Rate: <span id="inflation">2.5</span>%</p>
-                <p>Unemployment Rate: <span id="unemployment">5.0</span>%</p>
-                <p>Public Debt: $<span id="publicDebt">500</span> Billion</p>
+        <!-- To-Do List -->
+        <div class="section todo-list card">
+            <h2>To-Do List</h2>
+            <div class="form-group">
+                <label for="taskType">Task Type</label>
+                <select id="taskType">
+                    <option value="Inspection">Inspection</option>
+                    <option value="Lease Renewal">Lease Renewal</option>
+                    <option value="Maintenance">Maintenance</option>
+                </select>
             </div>
-        </section>
-
-        <!-- Graphs -->
-        <section class="bg-white shadow-md rounded-lg p-4 mb-6">
-            <h2 class="text-xl font-semibold mb-4">Economic Trends</h2>
-            <div class="chart-grid">
-                <!-- GDP Chart -->
-                <div class="chart-container">
-                    <canvas id="gdpChart"></canvas>
-                </div>
-                <!-- Inflation Rate Chart -->
-                <div class="chart-container">
-                    <canvas id="inflationChart"></canvas>
-                </div>
+            <div class="form-group">
+                <label for="taskDate">Date</label>
+                <input type="date" id="taskDate">
             </div>
-        </section>
-
-        <!-- Scenario Controls -->
-        <section class="bg-white shadow-md rounded-lg p-4 mb-6">
-            <h2 class="text-xl font-semibold mb-4">Select Scenario</h2>
-            <div class="flex gap-4">
-                <button id="recession" class="bg-red-500 text-white px-4 py-2 rounded">Recession</button>
-                <button id="boom" class="bg-green-500 text-white px-4 py-2 rounded">Boom</button>
-                <button id="crisis" class="bg-yellow-500 text-white px-4 py-2 rounded">Financial Crisis</button>
+            <div class="form-group">
+                <label for="taskTime">Time</label>
+                <input type="time" id="taskTime">
             </div>
-        </section>
-
-        <!-- Education Section -->
-        <section class="bg-white shadow-md rounded-lg p-4">
-            <h2 class="text-xl font-semibold mb-4">Learn More</h2>
-            <ul class="list-disc pl-5">
-                <li><a href="https://www.investopedia.com/terms/f/fiscalpolicy.asp" class="text-blue-500">Fiscal Policy - Investopedia</a></li>
-                <li><a href="https://www.investopedia.com/terms/m/monetarypolicy.asp" class="text-blue-500">Monetary Policy - Investopedia</a></li>
-                <li><a href="https://www.investopedia.com/terms/l/law-of-supply-demand.asp" class="text-blue-500">Supply and Demand - Investopedia</a></li>
+            <div class="form-group">
+                <label for="taskContact">Contact</label>
+                <input type="text" id="taskContact" placeholder="Contact Name">
+            </div>
+            <div class="form-group">
+                <label for="taskEmail">Email</label>
+                <input type="email" id="taskEmail" placeholder="Contact Email">
+            </div>
+            <div class="form-group">
+                <label for="taskNotes">Notes</label>
+                <textarea id="taskNotes" rows="4" placeholder="Enter any additional notes"></textarea>
+            </div>
+            <button onclick="addTask()">Add Task</button>
+            <ul id="todoList">
+                <!-- Task items will be dynamically added here -->
             </ul>
-        </section>
-
+        </div>
     </div>
-
-    <!-- JavaScript -->
     <script>
-        // Initialize GDP Chart
-        const gdpCtx = document.getElementById('gdpChart').getContext('2d');
-        const gdpChart = new Chart(gdpCtx, {
-            type: 'line',
-            data: {
-                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
-                datasets: [{
-                    label: 'GDP',
-                    data: [1000, 1000, 1000, 1000],
-                    borderColor: 'blue',
-                    fill: false
-                }]
-            },
-            options: {
-                scales: {
-                    x: { beginAtZero: true },
-                    y: { beginAtZero: true }
+        // Function to filter properties based on search criteria
+        function filterProperties() {
+            var minPrice = parseInt(document.getElementById('minPrice').value);
+            var maxPrice = parseInt(document.getElementById('maxPrice').value);
+            var minSize = parseInt(document.getElementById('minSize').value);
+            var maxSize = parseInt(document.getElementById('maxSize').value);
+            var location = document.getElementById('searchLocation').value.toLowerCase();
+
+            var properties = document.querySelectorAll('.property-card');
+
+            properties.forEach(function (property) {
+                var price = parseInt(property.getAttribute('data-price'));
+                var size = parseInt(property.getAttribute('data-size'));
+                var propertyLocation = property.getAttribute('data-location').toLowerCase();
+
+                if (price >= minPrice && price <= maxPrice &&
+                    size >= minSize && size <= maxSize &&
+                    propertyLocation.includes(location)) {
+                    property.style.display = 'block';
+                } else {
+                    property.style.display = 'none';
                 }
-            }
-        });
-
-        // Initialize Inflation Rate Chart
-        const inflationCtx = document.getElementById('inflationChart').getContext('2d');
-        const inflationChart = new Chart(inflationCtx, {
-            type: 'line',
-            data: {
-                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
-                datasets: [{
-                    label: 'Inflation Rate',
-                    data: [2.5, 2.5, 2.5, 2.5], // Initial inflation rate values
-                    borderColor: 'red',
-                    fill: false
-                }]
-            },
-            options: {
-                scales: {
-                    x: { beginAtZero: true },
-                    y: { beginAtZero: true }
-                }
-            }
-        });
-
-        // Define initial parameter values
-        let baseGDP = 1000;
-        let baseInflation = 2.5;
-        let baseGovSpending = 50;
-        let baseInterestRate = 5;
-        let baseMoneySupply = 50;
-        let baseTaxRate = 20;
-
-        // Event listeners for scenario buttons
-        document.getElementById('recession').addEventListener('click', () => setScenario('recession'));
-        document.getElementById('boom').addEventListener('click', () => setScenario('boom'));
-        document.getElementById('crisis').addEventListener('click', () => setScenario('crisis'));
-
-        // Event listeners for sliders
-        document.getElementById('taxRate').addEventListener('input', updateIndicators);
-        document.getElementById('govSpending').addEventListener('input', updateIndicators);
-        document.getElementById('interestRate').addEventListener('input', updateIndicators);
-        document.getElementById('moneySupply').addEventListener('input', updateIndicators);
-
-        function setScenario(scenario) {
-            switch (scenario) {
-                case 'recession':
-                    baseGDP = 800;
-                    baseInflation = 4.0;
-                    baseGovSpending = 60;
-                    baseInterestRate = 7;
-                    baseMoneySupply = 40;
-                    baseTaxRate = 25;
-                    break;
-                case 'boom':
-                    baseGDP = 1200;
-                    baseInflation = 1.5;
-                    baseGovSpending = 40;
-                    baseInterestRate = 3;
-                    baseMoneySupply = 60;
-                    baseTaxRate = 15;
-                    break;
-                case 'crisis':
-                    baseGDP = 600;
-                    baseInflation = 6.0;
-                    baseGovSpending = 80;
-                    baseInterestRate = 8;
-                    baseMoneySupply = 30;
-                    baseTaxRate = 30;
-                    break;
-                default:
-                    baseGDP = 1000;
-                    baseInflation = 2.5;
-                    baseGovSpending = 50;
-                    baseInterestRate = 5;
-                    baseMoneySupply = 50;
-                    baseTaxRate = 20;
-                    break;
-            }
-            updateIndicators();
+            });
         }
 
-        function updateIndicators() {
-            // Fetch the slider values
-            const taxRate = document.getElementById('taxRate').value;
-            const govSpending = document.getElementById('govSpending').value;
-            const interestRate = document.getElementById('interestRate').value;
-            const moneySupply = document.getElementById('moneySupply').value;
-
-            // GDP Calculation
-            const consumption = 500 - 5 * interestRate - 4 * taxRate; // Adjusted for tax rate
-            const investment = 200 - 10 * interestRate - 2 * taxRate; // Adjusted for tax rate
-            const gdp = (baseGDP + parseFloat(govSpending) + consumption + investment).toFixed(2);
-
-            // Inflation Calculation
-            const inflation = (baseInflation + (moneySupply - 50) * 0.05 - (interestRate * 0.1) + (taxRate * 0.02)).toFixed(2);
-
-            // Update indicators
-            document.getElementById('gdp').textContent = gdp;
-            document.getElementById('inflation').textContent = inflation;
-            document.getElementById('unemployment').textContent = (5 - (govSpending - 50) * 0.1).toFixed(2);
-            document.getElementById('publicDebt').textContent = (500 + (govSpending - 50) * 5).toFixed(2);
-
-            // Update GDP Chart data based on slider values
-            const gdpData = [baseGDP, gdp, gdp, gdp];
-            gdpChart.data.datasets[0].data = gdpData;
-
-            // Update Inflation Rate Chart data based on slider values
-            const inflationData = [baseInflation, inflation, inflation, inflation];
-            inflationChart.data.datasets[0].data = inflationData;
-
-            gdpChart.update();
-            inflationChart.update();
-
-            // Update feedback
-            document.getElementById('feedback').textContent = `Scenario: ${document.querySelector('button.bg-gray-800') ? document.querySelector('button.bg-gray-800').innerText : 'None'}.\nYour decisions have been applied. Check the indicators and graphs to see the results.`;
+        // Function to update slider values
+        function updateSliderValue() {
+            document.getElementById('minPriceValue').textContent = '$' + document.getElementById('minPrice').value.toLocaleString();
+            document.getElementById('maxPriceValue').textContent = '$' + document.getElementById('maxPrice').value.toLocaleString();
+            document.getElementById('minSizeValue').textContent = document.getElementById('minSize').value.toLocaleString() + ' sq ft';
+            document.getElementById('maxSizeValue').textContent = document.getElementById('maxSize').value.toLocaleString() + ' sq ft';
         }
 
-        // Initial update
-        updateIndicators();
+        document.getElementById('minPrice').addEventListener('input', updateSliderValue);
+        document.getElementById('maxPrice').addEventListener('input', updateSliderValue);
+        document.getElementById('minSize').addEventListener('input', updateSliderValue);
+        document.getElementById('maxSize').addEventListener('input', updateSliderValue);
+
+        updateSliderValue(); // Initialize slider values
+
+        // Function to add a task to the list
+        function addTask() {
+            var taskType = document.getElementById('taskType').value;
+            var date = document.getElementById('taskDate').value;
+            var time = document.getElementById('taskTime').value;
+            var contact = document.getElementById('taskContact').value.trim();
+            var email = document.getElementById('taskEmail').value.trim();
+            var notes = document.getElementById('taskNotes').value.trim();
+
+            if (contact !== '' && email !== '') {
+                var li = document.createElement('li');
+                li.className = 'task-item';
+                li.innerHTML = `
+                    <div class="task-detail"><strong>Type:</strong> ${taskType}</div>
+                    <div class="task-detail"><strong>Date:</strong> ${date}</div>
+                    <div class="task-detail"><strong>Time:</strong> ${time}</div>
+                    <div class="task-detail"><strong>Contact:</strong> ${contact}</div>
+                    <div class="task-detail"><strong>Email:</strong> ${email}</div>
+                    <div class="task-detail"><strong>Notes:</strong> ${notes}</div>
+                    <button class="remove" onclick="removeTask(this)">Remove</button>
+                `;
+                li.onclick = function () { this.classList.toggle('completed'); };
+                document.getElementById('todoList').appendChild(li);
+                // Clear fields after adding the task
+                document.getElementById('taskType').value = '';
+                document.getElementById('taskDate').value = '';
+                document.getElementById('taskTime').value = '';
+                document.getElementById('taskContact').value = '';
+                document.getElementById('taskEmail').value = '';
+                document.getElementById('taskNotes').value = '';
+            }
+        }
+
+        // Function to remove a task from the list
+        function removeTask(button) {
+            var li = button.parentElement;
+            li.remove();
+        }
     </script>
-
 </body>
 </html>

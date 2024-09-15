@@ -1,0 +1,14 @@
+/* styles.css */
+body { font-family: 'Arial', sans-serif; background: #f4f4f7; margin: 0; padding: 20px; }
+.widget-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+canvas { max-width: 100%; }
+.task-item { cursor: pointer; padding: 10px 0; border-bottom: 1px solid #eee; }
+.task-item:hover { background: #f9f9f9; }
+.modal { display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); }
+.modal-content { background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; }
+.close { color: #aaa; float: right; font-size: 28px; font-weight: bold; }
+.close:hover, .close:focus { color: black; text-decoration: none; cursor: pointer; }
+.financial-cards div { background: #e9e9e9; margin: 5px; padding: 10px; border-radius: 4px; }
+.property-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+.property-grid img { width: 100px; height: 100px; object-fit: cover; }

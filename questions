@@ -274,6 +274,18 @@ The App should have the following requirements
 I need help with creating a risk management widget for a financial technology company that provides POS payment, card payment and bank transfer for it's customers. it should provide a Dashboard view displaying a high-level summary of current risk statuses across POS, card payments, and bank transfers. I also want real-time alerts for any detected anomalies or high-risk activities with actionable insights, this alert can use a toastr package. It should have a live transaction Feed/stream of ongoing transactions with risk indicators highlighting potential issues. I need  risk scores Assigned to transactions and payment methods based on predefined criteria and historical data. I need it to show a risk heat Maps which is a visual representation of risk levels across different regions, transaction types, or time periods. I need also to have very good fonts, like Poppins and the app should be very good in UI and responsive.
 
 
+
+I need help with creating a real estate asset management widget. It should be very helpful to the user and have a responsive and visually pleasing design. The widget should have the following features
+
+1. Property Overview Dashboard: A dashboard that shows current properties, new listings, properties in contract, and other top real estate metrics. Use charts as much as possible
+2. Tasks todo list: A todo list that manages tasks related to Inspection for property, Lease Renewal for a tenant e.t.c each task item should contain data like date, time, contact, email, notes, and relevant data
+4. Financial Summary: Financials of the real estate portfolio like total tent collected this month, Outstanding Invoices, recent transactions list, and many more. Ensure to represent summaries in card  and use charts to present financial overviews
+5. Market Insights: There should be market trends and summaries, average property value in  different areas, and charts to show this information
+6. Property Overview: Provides a snapshot of current properties, new listings, and properties in contract. Images of the properties should be present and  should allow an e-tour of the properties by clients. Ensure to use working image links
+7. Property Search: Ability to filter properties using sliders representing price and text search
+
+NOTE: Unless otherwise specified, generate code in a single block of html/css/js and use good fonts like Poppins. Plan out the code before starting to write it.
+
 * Unless otherwise specified, generate code in a single block of html/css/js.
 * Plan out the code before starting to write it.
 

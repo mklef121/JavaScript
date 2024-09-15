@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Real Estate Asset Management Widget</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="widget-container">
+    <!-- Property Overview Dashboard -->
+    <section id="dashboard">
+        <canvas id="propertyChart"></canvas>
+    </section>
+
+    <!-- Tasks Todo List -->
+    <section id="tasks">
+        <ul id="taskList"></ul>
+        <!-- Modal for task details -->
+        <div id="taskModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <p id="taskDetails"></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Financial Summary -->
+    <section id="financial">
+        <canvas id="financeChart"></canvas>
+        <div class="financial-cards"></div>
+    </section>
+
+    <!-- Market Insights -->
+    <section id="market">
+        <canvas id="marketTrends"></canvas>
+    </section>
+
+    <!-- Property Overview -->
+    <section id="properties">
+        <div class="property-grid"></div>
+    </section>
+
+    <!-- Property Search -->
+    <section id="search">
+        <input type="text" id="searchInput" placeholder="Search properties...">
+        <input type="range" min="0" max="1000000" value="500000" class="slider" id="priceRange">
+    </section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
