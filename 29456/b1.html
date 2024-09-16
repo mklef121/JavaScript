@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nigerian Geopolitical Map</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { height: 100vh; }
+        .info, .quiz {
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .quiz { display: none; }
+    </style>
+</head>
+<body>
+
+<div id="map"></div>
+<div class="info container mt-3"></div>
+<div class="quiz container mt-3"></div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+
+<script>
+    // Initialize the map
+    var map = L.map('map').setView([9.0820, 8.6753], 6);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+    }).addTo(map);
+
+    // Array of cities with coordinates, geopolitical zone, and quiz questions
+    var cities = [
+        {name: "Lagos", lat: 6.5244, lng: 3.3792, zone: "South West", quiz: ["What is the former capital of Nigeria?", "Lagos"]},
+        {name: "Kano", lat: 12.0022, lng: 8.5920, zone: "North West", quiz: ["Which city has one of the oldest city walls in Africa?", "Kano"]},
+        // Add more cities...
+    ];
+
+    var markers = [];
+    var currentQuiz = [];
+
+    cities.forEach(function(city) {
+        var marker = L.marker([city.lat, city.lng]).addTo(map)
+            .bindPopup(`<b>${city.name}</b><br>Zone: ${city.zone}`)
+            .on('click', function(e) {
+                $('.info').html(`<h4>${city.name}</h4><p>Geopolitical Zone: ${city.zone}</p>`);
+                currentQuiz = city.quiz;
+                showQuiz();
+            });
+        markers.push(marker);
+    });
+
+    function showQuiz() {
+        $('.quiz').html('').show();
+        currentQuiz.forEach((q, index) => {
+            $('.quiz').append(`<p>${q[0]}</p><input type="text" class="form-control answer" data-index="${index}">`);
+        });
+        $('.quiz').append('<button class="btn btn-primary mt-2" onclick="checkAnswers()">Submit Answers</button>');
+    }
+
+    function checkAnswers() {
+        let correct = 0;
+        $('.answer').each(function() {
+            if($(this).val().toLowerCase() === currentQuiz[$(this).data('index')][1].toLowerCase()) {
+                correct++;
+            }
+        });
+        if(correct === currentQuiz.length) {
+            confetti();
+            alert('Congratulations! All answers are correct!');
+        } else {
+            alert('Try again! Not all answers are correct.');
+        }
+    }
+</script>
+
+</body>
+</html>

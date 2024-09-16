@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nigerian Geo-Political Interactive Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { height: 100vh; width: 100%; }
+        .info {
+            padding: 6px 8px;
+            font: 14px/16px Arial, Helvetica, sans-serif;
+            background: white;
+            background: rgba(255,255,255,0.8);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+        }
+        .quiz-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .quiz-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div id="map"></div>
+<div id="quizModal" class="quiz-modal">
+    <div class="quiz-content">
+        <span class="close">&times;</span>
+        <h2 id="quizTitle"></h2>
+        <div id="quizQuestions"></div>
+        <button id="submitQuiz">Submit</button>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
+<script>
+    // Initialize the map
+    var map = L.map('map').setView([9.0820, 8.6753], 6); // Center of Nigeria with zoom level
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Marker data would typically come from a database or JSON file
+    var markers = [
+        {coords: [12.0022, 8.5241], name: 'Kano', zone: 'North West', type: 'city'},
+        {coords: [6.4541, 3.3947], name: 'Lagos', zone: 'South West', type: 'city'},
+        {coords: [9.929974, 7.38752], name: 'Aso Rock', zone: 'North Central', type: 'historical'},
+        // Add more markers here
+    ];
+
+    markers.forEach(marker => {
+        var icon = L.icon({
+            iconUrl: marker.type === 'city' ? 'city-icon.png' : 'historical-icon.png',
+            iconSize: [38, 95], // size of the icon
+        });
+        L.marker(marker.coords, {icon: icon}).addTo(map)
+            .bindPopup(`<b>${marker.name}</b><br>Zone: ${marker.zone}`)
+            .on('click', function(e) {
+                openQuiz(marker.name, marker.zone);
+            });
+    });
+
+    function openQuiz(name, zone) {
+        $('#quizTitle').text(name + ' Quiz');
+        // Here you would dynamically generate quiz questions based on name or zone
+        $('#quizQuestions').html(`
+            <p>What is the capital of ${zone}?</p>
+            <input type="text" id="q1">
+            <!-- More questions would be dynamically added here -->
+        `);
+        $('#quizModal').css('display', 'block');
+    }
+
+    $('.close').on('click', function() {
+        $('#quizModal').css('display', 'none');
+    });
+
+    $('#submitQuiz').on('click', function() {
+        // Quiz validation logic would go here
+        var jsConfetti = new JSConfetti();
+        jsConfetti.addConfetti();
+        alert('Congratulations! All answers are correct!'); // Placeholder for actual quiz logic
+        $('#quizModal').css('display', 'none');
+    });
+</script>
+
+</body>
+</html>

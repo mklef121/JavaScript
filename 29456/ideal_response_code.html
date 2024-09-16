@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nigerian Geo-Political Zones Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        body { font-family: Arial, sans-serif; }
+        #map { height: 80vh; }
+        .popup-content { width: 250px; padding: 10px; }
+        .popup-content h3 { margin: 0; font-size: 18px; }
+        .popup-content p { font-size: 14px; margin: 5px 0; }
+        .popup-content .zone-summary { font-size: 12px; color: #555; }
+        button { 
+            background-color: #007bff; 
+            color: white; 
+            border: none; 
+            padding: 10px 15px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-size: 14px; 
+            margin-top: 10px;
+        }
+        button:hover { background-color: #0056b3; }
+        .quiz-section, .result-section { 
+            display: none; 
+            margin: 10px; 
+            padding: 15px; 
+            border-radius: 8px; 
+            border: 1px solid #ddd; 
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            background-color: #fff;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        .result-section { 
+            background-color: #d4edda; 
+            color: #155724; 
+            font-size: 18px; 
+            text-align: center;
+        }
+        .quiz-card { 
+            background-color: #f9f9f9; 
+            border: 1px solid #ddd; 
+            border-radius: 8px; 
+            padding: 20px; 
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .quiz-option { 
+            margin-bottom: 10px; 
+            padding: 10px; 
+            border: 1px solid #ddd; 
+            border-radius: 4px; 
+        }
+        .quiz-option input { 
+            margin-right: 10px; 
+        }
+        #quiz-question { 
+            font-size: 16px; 
+            margin-bottom: 10px; 
+        }
+        #quiz-options label { 
+            font-size: 14px; 
+        }
+        .toast {
+            visibility: hidden;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #f44336;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            z-index: 1000;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .toast.correct {
+            background-color: #4CAF50; /* Green for correct */
+        }
+        .toast.show {
+            visibility: visible;
+            opacity: 1;
+        }
+        /* Confetti styles */
+        .confetti {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 999;
+        }
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ff0;
+            opacity: 0.9;
+            animation: fall 2s ease-in-out infinite;
+        }
+        @keyframes fall {
+            0% { transform: translateY(-100px) rotate(0deg); }
+            100% { transform: translateY(calc(100vh + 100px)) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div class="quiz-section"></div>
+    <div class="result-section">Congratulations! You've completed the quiz.</div>
+    <div id="toast" class="toast">Incorrect! Try again.</div>
+    <div id="confetti" class="confetti"></div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        const geoZoneSummaries = {
+            'South West': 'The South West zone is known for its commercial activities and rich cultural heritage. Major cities include Lagos, the economic hub, and Ibadan, one of the oldest cities in Nigeria.',
+            'South East': 'The South East zone is renowned for its Igbo culture and bustling markets. Key cities include Enugu, known for coal, and Onitsha, famous for its vibrant markets.',
+            'South South': 'The South South zone is known for its oil-rich resources and significant port cities. Port Harcourt is a major industrial city, while Benin City has a rich cultural history.',
+            'North West': 'The North West zone is known for its historical Islamic cities and significant trade routes. Major cities include Kano, known for its emirate system, and Katsina, with its ancient city walls.',
+            'North East': 'The North East zone is noted for its historical empires and cultural diversity. Maiduguri is known for the Kanem-Bornu Empire, while Gombe has a strong agricultural base.',
+            'North Central': 'The North Central zone is known for its central location and historical significance. Abuja, the capital city, is a key modern infrastructure hub, and Lokoja was the historic capital of Northern Nigeria.'
+        };
+
+        const cityPopups = {
+            'Lagos': 'Lagos is Nigeria\'s largest city and commercial capital. Located in the South West geo-political zone.',
+            'Abuja': 'Abuja is the capital city of Nigeria and known for its modern infrastructure. It is situated in the North Central geo-political zone.',
+            'Ibadan': 'Ibadan is one of the oldest cities in Nigeria, known for its historical significance. It is part of the South West geo-political zone.',
+            'Abeokuta': 'Abeokuta is known for the Olumo Rock and is a significant cultural site in the South West geo-political zone.',
+            'Enugu': 'Enugu is known as the coal city and a major city in the South East geo-political zone.',
+            'Onitsha': 'Onitsha is known for its large and vibrant market in the South East geo-political zone.',
+            'Owerri': 'Owerri is the capital of Imo State, known for its cultural festivals in the South East geo-political zone.',
+            'Port Harcourt': 'Port Harcourt is a major port and industrial city known for its oil industry, located in the South South geo-political zone.',
+            'Uyo': 'Uyo is the capital of Akwa Ibom State and is known for its hospitality and tourism in the South South geo-political zone.',
+            'Benin City': 'Benin City is known for its rich cultural heritage and was the seat of the ancient Benin Empire, situated in the South South geo-political zone.',
+            'Kano': 'Kano is one of the oldest cities in Nigeria and a major center for Islamic culture, located in the North West geo-political zone.',
+            'Katsina': 'Katsina is known for its Hausa-Fulani culture and ancient emirate system, situated in the North West geo-political zone.',
+            'Sokoto': 'Sokoto was the seat of the Sokoto Caliphate and has a strong Islamic cultural heritage, located in the North West geo-political zone.',
+            'Maiduguri': 'Maiduguri is the capital of Borno State and has historical significance due to the Kanem-Bornu Empire, located in the North East geo-political zone.',
+            'Yola': 'Yola is known as the capital of Adamawa State and is a key center for trade in North East Nigeria.',
+            'Gombe': 'Gombe is known for its agricultural significance and diverse cultural heritage, located in the North East geo-political zone.',
+            'Lokoja': 'Lokoja is the confluence of the Niger and Benue Rivers and was once the capital of Northern Nigeria, situated in the North Central geo-political zone.'
+        };
+
+       
+        const quizData = {
+            'Lagos': [
+                { question: 'What is the largest city in Nigeria?', options: ['Lagos', 'Ibadan', 'Abeokuta'], answer: 'Lagos' },
+                { question: 'Which city is known for its bustling economy?', options: ['Lagos', 'Port Harcourt', 'Benin City'], answer: 'Lagos' },
+                { question: 'Which city has the largest population in Nigeria?', options: ['Lagos', 'Kano', 'Enugu'], answer: 'Lagos' },
+                { question: 'Which city is known for its rich cultural diversity?', options: ['Lagos', 'Jos', 'Owerri'], answer: 'Lagos' },
+                { question: 'Which city is a major commercial hub in Nigeria?', options: ['Lagos', 'Abuja', 'Uyo'], answer: 'Lagos' }
+            ],
+            'Ibadan': [
+                { question: 'Which city is known for its historical significance in South West Nigeria?', options: ['Ibadan', 'Abeokuta', 'Lagos'], answer: 'Ibadan' },
+                { question: 'Which city was the capital of Western Region of Nigeria?', options: ['Ibadan', 'Enugu', 'Owerri'], answer: 'Ibadan' },
+                { question: 'Which city has a large university known as the University of Ibadan?', options: ['Ibadan', 'Benin City', 'Port Harcourt'], answer: 'Ibadan' },
+                { question: 'Which city is known for its significant role in the history of Nigerian education?', options: ['Ibadan', 'Lagos', 'Kano'], answer: 'Ibadan' },
+                { question: 'Which city is famous for its Cocoa House?', options: ['Ibadan', 'Jos', 'Enugu'], answer: 'Ibadan' }
+            ],
+            'Abeokuta': [
+                { question: 'Which city is known for its historical Olumo Rock?', options: ['Abeokuta', 'Benin City', 'Jos'], answer: 'Abeokuta' },
+                { question: 'Which city is known for its role in the Egba people’s history?', options: ['Abeokuta', 'Ibadan', 'Port Harcourt'], answer: 'Abeokuta' },
+                { question: 'Which city was founded by the Egba people?', options: ['Abeokuta', 'Kano', 'Lagos'], answer: 'Abeokuta' },
+                { question: 'Which city has a museum dedicated to its local history?', options: ['Abeokuta', 'Enugu', 'Owerri'], answer: 'Abeokuta' },
+                { question: 'Which city’s name means “under the rock” in Yoruba?', options: ['Abeokuta', 'Sokoto', 'Uyo'], answer: 'Abeokuta' }
+            ],
+            'Enugu': [
+                { question: 'Which city is known as the coal city?', options: ['Enugu', 'Maiduguri', 'Yola'], answer: 'Enugu' },
+                { question: 'Which city is a major city in South East Nigeria?', options: ['Enugu', 'Onitsha', 'Uyo'], answer: 'Enugu' },
+                { question: 'Which city is known for its mining history?', options: ['Enugu', 'Ibadan', 'Jos'], answer: 'Enugu' },
+                { question: 'Which city was a major site for coal production during colonial times?', options: ['Enugu', 'Port Harcourt', 'Kano'], answer: 'Enugu' },
+                { question: 'Which city has a university named after it?', options: ['Enugu', 'Lagos', 'Benin City'], answer: 'Enugu' }
+            ],
+            'Onitsha': [
+                { question: 'Which city is known for its large market?', options: ['Onitsha', 'Owerri', 'Uyo'], answer: 'Onitsha' },
+                { question: 'Which city has one of the largest markets in West Africa?', options: ['Onitsha', 'Enugu', 'Port Harcourt'], answer: 'Onitsha' },
+                { question: 'Which city is a major commercial hub in South East Nigeria?', options: ['Onitsha', 'Ibadan', 'Maiduguri'], answer: 'Onitsha' },
+                { question: 'Which city is known for its vibrant trade activities?', options: ['Onitsha', 'Benin City', 'Jos'], answer: 'Onitsha' },
+                { question: 'Which city has a famous international trade fair?', options: ['Onitsha', 'Lagos', 'Abuja'], answer: 'Onitsha' }
+            ],
+            'Owerri': [
+                { question: 'Which city is the capital of Imo State?', options: ['Owerri', 'Uyo', 'Lagos'], answer: 'Owerri' },
+                { question: 'Which city is known for its cultural festivals?', options: ['Owerri', 'Ibadan', 'Jos'], answer: 'Owerri' },
+                { question: 'Which city has a major university named after it?', options: ['Owerri', 'Benin City', 'Yola'], answer: 'Owerri' },
+                { question: 'Which city is known for its hospitality and friendliness?', options: ['Owerri', 'Enugu', 'Port Harcourt'], answer: 'Owerri' },
+                { question: 'Which city is a significant center for traditional Igbo culture?', options: ['Owerri', 'Kano', 'Sokoto'], answer: 'Owerri' }
+            ],
+            'Port Harcourt': [
+                { question: 'Which city is a major port and industrial city?', options: ['Port Harcourt', 'Benin City', 'Jos'], answer: 'Port Harcourt' },
+                { question: 'Which city is known for its oil industry?', options: ['Port Harcourt', 'Enugu', 'Maiduguri'], answer: 'Port Harcourt' },
+                { question: 'Which city is a key player in Nigeria’s petroleum sector?', options: ['Port Harcourt', 'Lagos', 'Abuja'], answer: 'Port Harcourt' },
+                { question: 'Which city has a prominent seaport in Nigeria?', options: ['Port Harcourt', 'Sokoto', 'Owerri'], answer: 'Port Harcourt' },
+                { question: 'Which city is known for its industrial growth?', options: ['Port Harcourt', 'Ibadan', 'Enugu'], answer: 'Port Harcourt' }
+            ],
+            'Uyo': [
+                { question: 'Which city is the capital of Akwa Ibom State?', options: ['Uyo', 'Benin City', 'Abuja'], answer: 'Uyo' },
+                { question: 'Which city is known for its hospitality and tourism?', options: ['Uyo', 'Kano', 'Sokoto'], answer: 'Uyo' },
+                { question: 'Which city is a major center for cultural festivals?', options: ['Uyo', 'Jos', 'Port Harcourt'], answer: 'Uyo' },
+                { question: 'Which city has a significant university called University of Uyo?', options: ['Uyo', 'Maiduguri', 'Benin City'], answer: 'Uyo' },
+                { question: 'Which city is renowned for its beautiful landscapes and tourist attractions?', options: ['Uyo', 'Ibadan', 'Katsina'], answer: 'Uyo' }
+            ],
+            'Benin City': [
+                { question: 'Which city is known for its ancient Benin Kingdom?', options: ['Benin City', 'Lagos', 'Maiduguri'], answer: 'Benin City' },
+                { question: 'Which city is famous for its bronze works?', options: ['Benin City', 'Ibadan', 'Port Harcourt'], answer: 'Benin City' },
+                { question: 'Which city was the seat of the historical Benin Empire?', options: ['Benin City', 'Enugu', 'Jos'], answer: 'Benin City' },
+                { question: 'Which city has a prominent museum dedicated to its history?', options: ['Benin City', 'Owerri', 'Lagos'], answer: 'Benin City' },
+                { question: 'Which city is known for its rich cultural heritage and festivals?', options: ['Benin City', 'Kano', 'Abuja'], answer: 'Benin City' }
+            ],
+            'Kano': [
+                { question: 'Which city is known for its ancient city walls?', options: ['Kano', 'Jos', 'Abuja'], answer: 'Kano' },
+                { question: 'Which city is one of the oldest in Nigeria?', options: ['Kano', 'Katsina', 'Yola'], answer: 'Kano' },
+                { question: 'Which city is known for its historical trade routes?', options: ['Kano', 'Port Harcourt', 'Benin City'], answer: 'Kano' },
+                { question: 'Which city has a prominent Emir’s palace?', options: ['Kano', 'Abuja', 'Uyo'], answer: 'Kano' },
+                { question: 'Which city is a major center for Islamic culture in Northern Nigeria?', options: ['Kano', 'Jos', 'Owerri'], answer: 'Kano' }
+            ],
+            'Katsina': [
+                { question: 'Which city is known for its historic Hausa-Fulani culture?', options: ['Katsina', 'Sokoto', 'Abuja'], answer: 'Katsina' },
+                { question: 'Which city has a historical significance in Northern Nigeria?', options: ['Katsina', 'Benin City', 'Owerri'], answer: 'Katsina' },
+                { question: 'Which city is known for its ancient emirate system?', options: ['Katsina', 'Lagos', 'Jos'], answer: 'Katsina' },
+                { question: 'Which city has a significant role in Nigeria’s historical trade?', options: ['Katsina', 'Enugu', 'Uyo'], answer: 'Katsina' },
+                { question: 'Which city is renowned for its traditional festivals?', options: ['Katsina', 'Port Harcourt', 'Maiduguri'], answer: 'Katsina' }
+            ],
+            'Sokoto': [
+                { question: 'Which city was the seat of the Sokoto Caliphate?', options: ['Sokoto', 'Maiduguri', 'Gombe'], answer: 'Sokoto' },
+                { question: 'Which city is known for its religious significance in Northern Nigeria?', options: ['Sokoto', 'Yola', 'Lagos'], answer: 'Sokoto' },
+                { question: 'Which city is known for its historical Islamic scholarship?', options: ['Sokoto', 'Kano', 'Jos'], answer: 'Sokoto' },
+                { question: 'Which city is a major center for Islamic culture and history?', options: ['Sokoto', 'Enugu', 'Benin City'], answer: 'Sokoto' },
+                { question: 'Which city has a prominent caliphate palace?', options: ['Sokoto', 'Abuja', 'Port Harcourt'], answer: 'Sokoto' }
+            ],
+            'Maiduguri': [
+                { question: 'Which city is the capital of Borno State?', options: ['Maiduguri', 'Yola', 'Gombe'], answer: 'Maiduguri' },
+                { question: 'Which city is known for its significant role in the region’s history?', options: ['Maiduguri', 'Jos', 'Benin City'], answer: 'Maiduguri' },
+                { question: 'Which city has a notable university called the University of Maiduguri?', options: ['Maiduguri', 'Uyo', 'Enugu'], answer: 'Maiduguri' },
+                { question: 'Which city is a major center for commerce and education in North East Nigeria?', options: ['Maiduguri', 'Port Harcourt', 'Sokoto'], answer: 'Maiduguri' },
+                { question: 'Which city has historical significance due to its role in the Kanem-Bornu Empire?', options: ['Maiduguri', 'Owerri', 'Benin City'], answer: 'Maiduguri' }
+            ],
+            'Yola': [
+                { question: 'Which city is known as the capital of Adamawa State?', options: ['Yola', 'Gombe', 'Kano'], answer: 'Yola' },
+                { question: 'Which city is known for its historical significance in North East Nigeria?', options: ['Yola', 'Jos', 'Lagos'], answer: 'Yola' },
+                { question: 'Which city is a key center for trade and commerce in North East Nigeria?', options: ['Yola', 'Maiduguri', 'Benin City'], answer: 'Yola' },
+                { question: 'Which city has a prominent university called Adamawa State University?', options: ['Yola', 'Abuja', 'Uyo'], answer: 'Yola' },
+                { question: 'Which city is known for its role in the region’s agricultural activities?', options: ['Yola', 'Port Harcourt', 'Sokoto'], answer: 'Yola' }
+            ],
+            'Gombe': [
+                { question: 'Which city is known for its historical role in the Gombe Emirate?', options: ['Gombe', 'Enugu', 'Ibadan'], answer: 'Gombe' },
+                { question: 'Which city is a major center for agriculture in North East Nigeria?', options: ['Gombe', 'Kano', 'Lagos'], answer: 'Gombe' },
+                { question: 'Which city has a notable university named the Federal University of Gombe?', options: ['Gombe', 'Jos', 'Benin City'], answer: 'Gombe' },
+                { question: 'Which city is known for its cultural diversity and traditional festivals?', options: ['Gombe', 'Sokoto', 'Maiduguri'], answer: 'Gombe' },
+                { question: 'Which city plays a significant role in regional trade and commerce?', options: ['Gombe', 'Uyo', 'Port Harcourt'], answer: 'Gombe' }
+            ],
+            'Abuja': [
+                { question: 'Which city is the capital city of Nigeria?', options: ['Abuja', 'Lagos', 'Ibadan'], answer: 'Abuja' },
+                { question: 'Which city was chosen as the capital of Nigeria in 1991?', options: ['Abuja', 'Enugu', 'Kano'], answer: 'Abuja' },
+                { question: 'Which city is known for its modern infrastructure and government buildings?', options: ['Abuja', 'Port Harcourt', 'Benin City'], answer: 'Abuja' },
+                { question: 'Which city has the Nigerian Presidential Complex known as Aso Rock?', options: ['Abuja', 'Yola', 'Jos'], answer: 'Abuja' },
+                { question: 'Which city hosts the National Assembly and the Nigerian Supreme Court?', options: ['Abuja', 'Maiduguri', 'Owerri'], answer: 'Abuja' }
+            ],
+            'Jos': [
+                { question: 'Which city is known for its cool climate and tourism?', options: ['Jos', 'Benin City', 'Lagos'], answer: 'Jos' },
+                { question: 'Which city has a notable University known as the University of Jos?', options: ['Jos', 'Enugu', 'Sokoto'], answer: 'Jos' },
+                { question: 'Which city is a popular tourist destination due to its scenic landscapes?', options: ['Jos', 'Ibadan', 'Katsina'], answer: 'Jos' },
+                { question: 'Which city has a historical significance due to its mining activities?', options: ['Jos', 'Uyo', 'Maiduguri'], answer: 'Jos' },
+                { question: 'Which city is known for its diverse ethnic groups and cultures?', options: ['Jos', 'Port Harcourt', 'Yola'], answer: 'Jos' }
+            ],
+            'Lokoja': [
+                { question: 'Which city is known as the confluence of Niger and Benue Rivers?', options: ['Lokoja', 'Abuja', 'Port Harcourt'], answer: 'Lokoja' },
+                { question: 'Which city has historical significance due to its role in early colonial administration?', options: ['Lokoja', 'Maiduguri', 'Enugu'], answer: 'Lokoja' },
+                { question: 'Which city was once the capital of Northern Nigeria?', options: ['Lokoja', 'Yola', 'Kano'], answer: 'Lokoja' },
+                { question: 'Which city has a notable bridge over the Niger River?', options: ['Lokoja', 'Benin City', 'Gombe'], answer: 'Lokoja' },
+                { question: 'Which city is a key center for river transport and trade?', options: ['Lokoja', 'Abuja', 'Jos'], answer: 'Lokoja' }
+            ]
+        };
+
+
+        let currentCity = '';
+        let currentQuestionIndex = 0;
+
+        function showPopup(city) {
+            const marker = markers.find(marker => marker.city === city);
+            const zoneSummary = geoZoneSummaries[marker.zone];
+            const citySummary = cityPopups[city];
+            
+            const popupContent = `
+                <div class="popup-content">
+                    <h3>${city}</h3>
+                    <p>${citySummary}</p>
+                    <div class="zone-summary">${zoneSummary}</div>
+                    <button onclick="startQuiz('${city}')">Take a Quiz</button>
+                </div>
+            `;
+            
+            const popup = L.popup()
+                .setLatLng(marker.coords)
+                .setContent(popupContent)
+                .openOn(map);
+        }
+
+        function startQuiz(city) {
+            currentCity = city;
+            currentQuestionIndex = 0;
+            document.querySelector('.result-section').style.display = 'none';
+            showQuiz(city);
+        }
+
+        function showQuiz(city) {
+            const quiz = quizData[city];
+            const question = quiz[currentQuestionIndex];
+            const optionsHtml = question.options.map((option, index) =>
+                `<div class="quiz-option">
+                    <input type="radio" name="quiz-option" value="${option}" id="option${index}">
+                    <label for="option${index}">${option}</label>
+                </div>`
+            ).join('');
+
+            document.querySelector('.quiz-section').innerHTML = `
+                <div class="quiz-card">
+                    <div id="quiz-question">${question.question}</div>
+                    <div id="quiz-options">${optionsHtml}</div>
+                    <button onclick="submitQuiz()">Submit Answer</button>
+                </div>
+            `;
+            document.querySelector('.quiz-section').style.display = 'block';
+        }
+
+        function submitQuiz() {
+            const selectedOption = document.querySelector('input[name="quiz-option"]:checked');
+            if (selectedOption && selectedOption.value === quizData[currentCity][currentQuestionIndex].answer) {
+                showToast('Correct!', 'correct');
+                nextQuestion();
+            } else {
+                showToast('Incorrect! Try again.', 'incorrect');
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData[currentCity].length) {
+                showQuiz(currentCity);
+            } else {
+                showConfetti();
+                document.querySelector('.quiz-section').style.display = 'none';
+                document.querySelector('.result-section').style.display = 'block';
+            }
+        }
+
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast show ${type}`;
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function showConfetti() {
+            const confettiContainer = document.getElementById('confetti');
+            confettiContainer.innerHTML = '';
+            for (let i = 0; i < 100; i++) {
+                const confettiPiece = document.createElement('div');
+                confettiPiece.className = 'confetti-piece';
+                confettiPiece.style.backgroundColor = getRandomColor();
+                confettiPiece.style.left = `${Math.random() * 100}%`;
+                confettiPiece.style.animationDuration = `${Math.random() * 2 + 1}s`;
+                confettiPiece.style.animationDelay = `${Math.random() * 2}s`;
+                confettiContainer.appendChild(confettiPiece);
+            }
+
+            // remove confetti
+            setTimeout(() => {
+                confettiContainer.innerHTML = '';
+            }, 3000)
+        }
+
+        function getRandomColor() {
+            const colors = ['#ff0', '#f00', '#0f0', '#00f', '#0ff', '#f0f'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        // Create map
+        const map = L.map('map').setView([10, 10], 6);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+        }).addTo(map);
+
+        // Add markers
+        const markers = [
+            { city: 'Lagos', coords: [6.5244, 3.3792], zone: 'South West' },
+            { city: 'Abuja', coords: [9.0579, 7.49508], zone: 'North Central' },
+            { city: 'Ibadan', coords: [7.3775, 3.947], zone: 'South West' },
+            { city: 'Abeokuta', coords: [7.1608, 3.3477], zone: 'South West' },
+            { city: 'Enugu', coords: [6.4433, 7.5139], zone: 'South East' },
+            { city: 'Onitsha', coords: [6.1402, 6.7854], zone: 'South East' },
+            { city: 'Owerri', coords: [5.4853, 7.0379], zone: 'South East' },
+            { city: 'Port Harcourt', coords: [4.8156, 7.0498], zone: 'South South' },
+            { city: 'Uyo', coords: [5.0369, 7.9154], zone: 'South South' },
+            { city: 'Benin City', coords: [6.3394, 5.6206], zone: 'South South' },
+            { city: 'Kano', coords: [12.0022, 8.5919], zone: 'North West' },
+            { city: 'Katsina', coords: [12.9917, 7.6002], zone: 'North West' },
+            { city: 'Sokoto', coords: [13.0074, 5.2423], zone: 'North West' },
+            { city: 'Maiduguri', coords: [11.8471, 13.1575], zone: 'North East' },
+            { city: 'Yola', coords: [9.1855, 12.4976], zone: 'North East' },
+            { city: 'Gombe', coords: [10.2916, 11.1625], zone: 'North East' },
+            { city: 'Lokoja', coords: [7.8207, 6.7387], zone: 'North Central' }
+        ];
+
+        markers.forEach(marker => {
+            L.marker(marker.coords)
+                .addTo(map)
+                .bindPopup(`<div><h4>${marker.city}</h4><button onclick="showPopup('${marker.city}')">More Info</button></div>`);
+        });
+    </script>
+</body>
+</html>
