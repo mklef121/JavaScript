@@ -20,6 +20,29 @@
         .chart-grid > div {
             flex: 1;
         }
+
+        .toast {
+            visibility: hidden;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #f44336;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            z-index: 1000;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .toast.correct {
+            background-color: #4CAF50; /* Green for correct */
+        }
+        .toast.show {
+            visibility: visible;
+            opacity: 1;
+        }
+
         @media (max-width: 768px) {
             .chart-grid {
                 flex-direction: column;
@@ -92,6 +115,8 @@
 
         <!-- Scenario Controls -->
         <section class="bg-white shadow-md rounded-lg p-4 mb-6">
+            <div id="toast" class="toast">Incorrect! Try again.</div>
+
             <h2 class="text-xl font-semibold mb-4">Select Scenario</h2>
             <div class="flex gap-4">
                 <button id="recession" class="bg-red-500 text-white px-4 py-2 rounded">Recession</button>
@@ -210,10 +235,19 @@
                     baseTaxRate = 20;
                     break;
             }
-            updateIndicators();
+            updateIndicators(null,scenario);
         }
 
-        function updateIndicators() {
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast show ${type}`;
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function updateIndicators(event, scenario) {
             // Fetch the slider values
             const taxRate = document.getElementById('taxRate').value;
             const govSpending = document.getElementById('govSpending').value;
@@ -245,8 +279,9 @@
             gdpChart.update();
             inflationChart.update();
 
-            // Update feedback
-            document.getElementById('feedback').textContent = `Scenario: ${document.querySelector('button.bg-gray-800') ? document.querySelector('button.bg-gray-800').innerText : 'None'}.\nYour decisions have been applied. Check the indicators and graphs to see the results.`;
+            if (scenario != undefined) {
+                showToast(`Scenario: ${scenario}. \nYour decisions have been applied. Check the indicators and graphs to see the results.`, "correct")
+            }
         }
 
         // Initial update
