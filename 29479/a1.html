@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Calendar Widget</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fullcalendar/core@5.10.0/main.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@5.10.0/main.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f4f7fa;
+        }
+        .fc-event {
+            cursor: pointer;
+        }
+        .share-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            margin: 2px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="p-5">
+    <div id='calendar' class="bg-white shadow-lg rounded-lg p-4"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@5.10.0/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@5.10.0/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@5.10.0/main.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                plugins: ['dayGrid', 'interaction'],
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,dayGridWeek,dayGridDay'
+                },
+                events: [
+                    // Example events would be fetched or added here
+                ],
+                dateClick: function(info) {
+                    // Logic to add or edit events
+                    alert('Clicked on: ' + info.dateStr);
+                },
+                eventClick: function(info) {
+                    // Here you can add logic for event details or sharing
+                    if (navigator.share) {
+                        navigator.share({
+                            title: info.event.title,
+                            text: 'Check out this event:',
+                            url: window.location.href
+                        }).then(() => console.log('Successful share'))
+                        .catch((error) => console.log('Error sharing', error));
+                    } else {
+                        alert('Event: ' + info.event.title);
+                    }
+                }
+            });
+            calendar.render();
+
+            // If Web Share API is not supported, you might want to add fallback share buttons
+        });
+    </script>
+</body>
+</html>

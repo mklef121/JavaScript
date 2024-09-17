@@ -313,6 +313,8 @@ Design an infographic that summarizes the key points of the Nigerian Agriculture
 Create an comprehensive interactive map of all Nigerian geo-political zones with markers for major cities in these zones, including embedded information and a related quiz.
 Place markers on the map for historical places, geographical features, or significant locations. Information of the city and it's geopolitical zone should be viewable by the user for learning purpose. Also Include an interactive quiz game related to each locations clicked on the map, the user gets congrats confetti when he answers all quiz questions correctly. Provide the ability to Navigate through different areas with zoom and pan controls. Kindly present a visually appealing and responsive design.
 
+I have become quite busy and need help in managing my routing, due to this I want to create a calendar widget that allows me to schedule and view upcoming meetings, events, and tasks. The calendar should provide different views such as daily, weekly, or monthly. The calendar should enable the sharing of any of these daily routines (meetings, events, and tasks) via popular apps like email, WhatsApp, Facebook, and Twitter. Ensure the design is very visually appealing
+
 * Unless otherwise specified, generate code in a single block of html/css/js.
 * Plan out the code before starting to write it.
 

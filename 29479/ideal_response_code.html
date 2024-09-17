@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar Widget</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f4f7;
+        }
+
+        #calendar {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 10px;
+        }
+
+        .btn {
+            margin: 5px;
+            padding: 10px 20px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 250px;
+            height: 100%;
+            background: #ffffff;
+            padding: 20px;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+            border-left: 1px solid #ddd;
+            box-sizing: border-box;
+        }
+
+        .sidebar h2 {
+            margin-top: 0;
+            font-size: 18px;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            color: #333;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+        }
+
+        .form-group input[type="date"],
+        .form-group input[type="time"] {
+            font-family: Arial, sans-serif;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+        }
+
+        button[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 5;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background: #ffffff;
+            margin: 5% auto;
+            padding: 20px;
+            border: none;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .close {
+            color: #333;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #007bff;
+        }
+
+        .tab {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .tab button {
+            background-color: #f1f1f1;
+            border: none;
+            outline: none;
+            padding: 14px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .tab button.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .tab button:hover {
+            background-color: #ddd;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .event-detail-content {
+            padding: 20px;
+            border-radius: 10px;
+            background: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ddd;
+        }
+
+        .event-detail-content h2 {
+            margin-top: 0;
+            font-size: 24px;
+            color: #333;
+            text-align: center;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .event-detail-content p {
+            margin: 10px 0;
+            font-size: 16px;
+            color: #555;
+        }
+
+        .event-detail-content .detail-label {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .event-detail-content .detail-value {
+            font-weight: normal;
+            color: #333;
+        }
+
+        .share-buttons {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .btn-share {
+            display: block;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            color: #fff;
+            text-align: center;
+            font-size: 14px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-share.email {
+            background: #007bff;
+        }
+
+        .btn-share.whatsapp {
+            background: #25D366;
+        }
+
+        .btn-share.facebook {
+            background: #3b5998;
+        }
+
+        .btn-share.twitter {
+            background: #1DA1F2;
+        }
+
+        .btn-share:hover {
+            opacity: 0.9;
+        }
+
+        .header {
+            background-color: #007bff;
+            color: #fff;
+            text-align: center;
+            padding: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        My Personal Calendar
+    </div>
+    <!-- <div class="sidebar">
+        <h2>Actions</h2>
+        <button class="btn" id="prevBtn">Previous</button>
+        <button class="btn" id="nextBtn">Next</button>
+        <button class="btn" id="todayBtn">Today</button>
+    </div> -->
+    <div id="calendar"></div>
+
+    <!-- Modal for Creating Entries -->
+    <div id="entryModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <div class="tab">
+                <button class="tablinks active" id="defaultTab"
+                    onclick="openTab({currentTarget: this}, 'Meeting')">Meeting</button>
+                <button class="tablinks" onclick="openTab({currentTarget: this}, 'Event')">Event</button>
+                <button class="tablinks" onclick="openTab({currentTarget: this}, 'Task')">Task</button>
+            </div>
+
+            <!-- Meeting Form -->
+            <div id="Meeting" class="tab-content active">
+                <h2>Create Meeting</h2>
+                <form id="meetingForm" autocomplete="off">
+                    <div class="form-group">
+                        <label for="meetingTitle">Title</label>
+                        <input type="text" id="meetingTitle" placeholder="Enter meeting title" required
+                            autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="meetingDate">Date</label>
+                        <input type="date" id="meetingDate" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="meetingStart">Start Time</label>
+                        <input type="time" id="meetingStart" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="meetingEnd">End Time</label>
+                        <input type="time" id="meetingEnd" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="meetingDescription">Description</label>
+                        <textarea id="meetingDescription" rows="4" placeholder="Enter meeting description"
+                            autocomplete="off"></textarea>
+                    </div>
+                    <button type="submit" class="btn">Add Meeting</button>
+                </form>
+            </div>
+
+            <!-- Event Form -->
+            <div id="Event" class="tab-content">
+                <h2>Create Event</h2>
+                <form id="eventForm" autocomplete="off">
+                    <div class="form-group">
+                        <label for="eventTitle">Title</label>
+                        <input type="text" id="eventTitle" placeholder="Enter event title" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="eventDate">Date</label>
+                        <input type="date" id="eventDate" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="eventTime">Time</label>
+                        <input type="time" id="eventTime" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="eventDescription">Description</label>
+                        <textarea id="eventDescription" rows="4" placeholder="Enter event description"
+                            autocomplete="off"></textarea>
+                    </div>
+                    <button type="submit" class="btn">Add Event</button>
+                </form>
+            </div>
+
+            <!-- Task Form -->
+            <div id="Task" class="tab-content">
+                <h2>Create Task</h2>
+                <form id="taskForm" autocomplete="off">
+                    <div class="form-group">
+                        <label for="taskTitle">Title</label>
+                        <input type="text" id="taskTitle" placeholder="Enter task title" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="taskDueDate">Due Date</label>
+                        <input type="date" id="taskDueDate" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="taskPriority">Priority</label>
+                        <select id="taskPriority" required autocomplete="off">
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskDescription">Description</label>
+                        <textarea id="taskDescription" rows="4" placeholder="Enter task description"
+                            autocomplete="off"></textarea>
+                    </div>
+                    <button type="submit" class="btn">Add Task</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Details Modal -->
+    <div id="eventDetailModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeEventDetail">&times;</span>
+            <div class="event-detail-content">
+                <h2>Event Details</h2>
+                <p><span class="detail-label">Title:</span> <span id="eventTitleDetail" class="detail-value"></span></p>
+                <p><span class="detail-label">Category:</span> <span id="eventCategoryDetail"
+                        class="detail-value"></span></p>
+                <p><span class="detail-label">Date:</span> <span id="eventDateDetail" class="detail-value"></span></p>
+                <p><span class="detail-label">Time:</span> <span id="eventTimeDetail" class="detail-value"></span></p>
+                <p><span class="detail-label">Description:</span> <span id="eventDescriptionDetail"
+                        class="detail-value"></span></p>
+                <div class="share-buttons">
+                    <a href="#" class="btn-share email" id="shareEmailDetail" target="_blank">Share via Email</a>
+                    <a href="#" class="btn-share whatsapp" id="shareWhatsAppDetail" target="_blank">Share via
+                        WhatsApp</a>
+                    <a href="#" class="btn-share facebook" id="shareFacebookDetail" target="_blank">Share via
+                        Facebook</a>
+                    <a href="#" class="btn-share twitter" id="shareTwitterDetail" target="_blank">Share via Twitter</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+    <script>
+        function openTab(evt, categoryName) {
+            const tabcontent = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = 'none';
+            }
+            const tablinks = document.getElementsByClassName('tablinks');
+            for (let i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(' active', '');
+            }
+            document.getElementById(categoryName).style.display = 'block';
+            if (evt && evt.currentTarget) {
+                evt.currentTarget.className += ' active';
+            }
+        }
+
+        function openModal(category, start, end) {
+            const modal = document.getElementById('entryModal');
+            modal.style.display = 'block';
+            openTab({ currentTarget: document.getElementById('defaultTab') }, category);
+
+            const selectedDate = start ? new Date(start).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
+            const startTime = start ? new Date(start).toISOString().slice(11, 16) : '09:00';
+            const endTime = end ? new Date(end).toISOString().slice(11, 16) : '10:00'; // Default end time is 1 hour later
+            document.getElementById('meetingDate').value = selectedDate;
+            document.getElementById('meetingStart').value = startTime;
+            document.getElementById('meetingEnd').value = endTime;
+            document.getElementById('eventDate').value = selectedDate;
+            document.getElementById('eventTime').value = start ? new Date(start).toISOString().slice(11, 16) : '12:00';
+            document.getElementById('taskDueDate').value = selectedDate;
+        }
+
+
+        function resetForms() {
+            document.getElementById('meetingForm').reset();
+            document.getElementById('eventForm').reset();
+            document.getElementById('taskForm').reset();
+        }
+
+        function closeModal() {
+            resetForms()
+            document.getElementById('entryModal').style.display = 'none';
+        }
+
+        function openEventDetailModal(event) {
+            const detailModal = document.getElementById('eventDetailModal');
+            document.getElementById('eventTitleDetail').innerText = event.title;
+            document.getElementById('eventCategoryDetail').innerText = event.extendedProps.category || 'N/A';
+            document.getElementById('eventDateDetail').innerText = new Date(event.start).toLocaleDateString();
+            document.getElementById('eventTimeDetail').innerText = event.start ? new Date(event.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A';
+            document.getElementById('eventDescriptionDetail').innerText = event.extendedProps.description || 'No description provided';
+
+            // Set up share links with event details
+            const title = encodeURIComponent(event.title);
+            const date = encodeURIComponent(new Date(event.start).toLocaleDateString());
+            const time = encodeURIComponent(event.start ? new Date(event.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A');
+            const description = encodeURIComponent(event.extendedProps.description || 'No description provided');
+
+            document.getElementById('shareEmailDetail').href = `mailto:?subject=Event Details: ${title}&body=${title}%0A${date} ${time}%0A${description}`;
+            document.getElementById('shareWhatsAppDetail').href = `https://api.whatsapp.com/send?text=${title}%0A${date} ${time}%0A${description}`;
+            document.getElementById('shareFacebookDetail').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(title)}&quote=${encodeURIComponent(`${title} on ${date} ${time}: ${description}`)}`;
+            document.getElementById('shareTwitterDetail').href = `https://twitter.com/intent/tweet?text=${title}%0A${date} ${time}%0A${description}`;
+
+            detailModal.style.display = 'block';
+        }
+
+        function closeEventDetailModal() {
+            document.getElementById('eventDetailModal').style.display = 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const calendarEl = document.getElementById('calendar');
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                editable: true,
+                selectable: true,
+                select: function (info) {
+                    openModal('Meeting', info.startStr, info.endStr);
+                },
+                eventClick: function (info) {
+                    openEventDetailModal(info.event);
+                }
+            });
+
+            calendar.render();
+
+            document.getElementById('meetingForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const title = document.getElementById('meetingTitle').value;
+                const date = document.getElementById('meetingDate').value;
+                const startTime = document.getElementById('meetingStart').value;
+                const endTime = document.getElementById('meetingEnd').value;
+                const description = document.getElementById('meetingDescription').value;
+                const start = `${date}T${startTime}`;
+                const end = `${date}T${endTime}`;
+                calendar.addEvent({ title, start, end, extendedProps: { category: 'Meeting', description } });
+                closeModal();
+            });
+
+            document.getElementById('eventForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const title = document.getElementById('eventTitle').value;
+                const date = document.getElementById('eventDate').value;
+                const time = document.getElementById('eventTime').value;
+                const description = document.getElementById('eventDescription').value;
+                const start = `${date}T${time}`;
+                calendar.addEvent({ title, start, extendedProps: { category: 'Event', description } });
+                closeModal();
+            });
+
+            document.getElementById('taskForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const title = document.getElementById('taskTitle').value;
+                const dueDate = document.getElementById('taskDueDate').value;
+                const priority = document.getElementById('taskPriority').value;
+                const description = document.getElementById('taskDescription').value;
+                calendar.addEvent({ title, start: dueDate, extendedProps: { category: 'Task', priority, description } });
+                closeModal();
+            });
+
+            document.getElementById('closeModal').addEventListener('click', closeModal);
+            document.getElementById('closeEventDetail').addEventListener('click', closeEventDetailModal);
+
+            // Close modal when clicking outside of it
+            window.addEventListener('click', function (event) {
+                if (event.target.classList.contains('modal')) {
+                    closeModal();
+                    closeEventDetailModal();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
