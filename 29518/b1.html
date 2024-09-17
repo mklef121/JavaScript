@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Server Monitoring Dashboard</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.16.0/d3.min.js"></script>
+</head>
+<body>
+<div id="app" class="container is-fluid">
+    <div class="columns is-multiline">
+        <!-- Server Uptime -->
+        <div class="column is-one-third">
+            <div class="box">
+                <h2 class="title is-5">Server Uptime</h2>
+                <p>{{ uptime }}</p>
+            </div>
+        </div>
+        <!-- CPU, RAM, Disk Usage -->
+        <div class="column is-one-third" v-for="metric in ['CPU', 'RAM', 'Disk Usage']" :key="metric">
+            <div class="box">
+                <h2 class="title is-5">{{ metric }}</h2>
+                <canvas :id="metric.toLowerCase() + 'Chart'"></canvas>
+            </div>
+        </div>
+        <!-- Logs -->
+        <div class="column is-full">
+            <div class="box">
+                <h2 class="title is-5">Real-Time Logs</h2>
+                <div class="content" style="max-height: 200px; overflow-y: auto;">
+                    <ul>
+                        <li v-for="log in logs" :key="log.id">{{ log.message }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- Additional Metrics like Thread Count, Network Bandwidth etc. would follow similar pattern -->
+    </div>
+</div>
+
+<script>
+new Vue({
+    el: '#app',
+    data: {
+        uptime: 'Calculating...',
+        logs: [],
+        // Other metrics data would be here
+    },
+    methods: {
+        updateMetric(metric, value) {
+            // Logic to update charts or display values
+        },
+        addLog(log) {
+            if (this.logs.length > 50) this.logs.shift(); // Keep only recent logs
+            this.logs.push(log);
+        }
+    },
+    mounted() {
+        // Simulate WebSocket connection for real-time updates
+        const mockSocket = {
+            onmessage: function(event) {
+                const data = JSON.parse(event.data);
+                if (data.type === 'log') this.addLog(data);
+                else if (data.type === 'metric') this.updateMetric(data.name, data.value);
+                else if (data.type === 'uptime') this.uptime = data.value;
+            }.bind(this)
+        };
+        
+        // Mock data generation would replace actual WebSocket calls
+        setInterval(() => {
+            mockSocket.onmessage({
+                data: JSON.stringify({
+                    type: 'log',
+                    message: `Log entry at ${new Date().toLocaleTimeString()}`,
+                    id: Math.random()
+                })
+            });
+            // Similarly mock other metrics
+        }, 1000);
+        
+        // Initialize charts here with Chart.js
+    }
+});
+</script>
+<style>
+/* Add responsive design styles here */
+</style>
+</body>
+</html>

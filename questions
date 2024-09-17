@@ -315,6 +315,28 @@ Place markers on the map for historical places, geographical features, or signif
 
 I have become quite busy and need help in managing my routing, due to this I want to create a calendar widget that allows me to schedule and view upcoming meetings, events, and tasks. The calendar should provide different views such as daily, weekly, or monthly. The calendar should enable the sharing of any of these daily routines (meetings, events, and tasks) via popular apps like email, WhatsApp, Facebook, and Twitter. Ensure the design is very visually appealing
 
+I have applications deployed on a server, These applications write logs to the server and also serve high-traffic HTTP applications. I need you to build a server monitoring widget which will be able to do the following
+
+- Read and display real time logs from applications
+- Show and visualise different real time server metrics like 
+  - Thread count
+  - Disk usage
+  - Network bandwidth
+  - CPU usage
+  - The RAM
+  - Disk I/O
+- Show and visualize real time application-related metrics like 
+  - Requests per second
+  - Peak response time
+  - HTTP server error rate
+  - Database queries
+  - Garbage collection (GC) metrics
+- Server Uptime
+- Show real-time logs from all servers
+
+Ensure that aside from the popular charts use visualizations like flamecharts, call trees e.t.c related to each of these type of activities and make the design visually appealing and responsive across all screens.  The server should be assumed,and their load and logs should be mocked
+
+
 * Unless otherwise specified, generate code in a single block of html/css/js.
 * Plan out the code before starting to write it.
 

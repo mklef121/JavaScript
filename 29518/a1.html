@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Monitoring Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; background: #1a1a1a; color: #e0e0e0; }
+        .container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; padding: 20px; }
+        .widget { background: #2c2c2c; border-radius: 8px; padding: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        canvas { width: 100%; height: auto; }
+        #logDisplay { height: 200px; overflow-y: scroll; background: #000; color: #00FF00; padding: 10px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <!-- Server Metrics Widgets -->
+    <div class="widget"><canvas id="cpuUsage"></canvas></div>
+    <div class="widget"><canvas id="ramUsage"></canvas></div>
+    <!-- Add other widgets similarly -->
+
+    <!-- Flame Chart or other complex visualizations -->
+    <div class="widget" id="flameChart"></div>
+
+    <!-- Logs -->
+    <div class="widget">
+        <h3>Server Logs</h3>
+        <div id="logDisplay"></div>
+    </div>
+</div>
+
+<script>
+    const socket = io();
+
+    // Function to update charts
+    function updateChart(chartId, data, type = 'line') {
+        if (!window[chartId]) {
+            const ctx = document.getElementById(chartId).getContext('2d');
+            window[chartId] = new Chart(ctx, {
+                type: type,
+                data: { datasets: [{ data: [] }] },
+                options: { scales: { y: { beginAtZero: true } } }
+            });
+        }
+        window[chartId].data.datasets[0].data.push(data);
+        if (window[chartId].data.datasets[0].data.length > 20) {
+            window[chartId].data.datasets[0].data.shift();
+        }
+        window[chartId].update();
+    }
+
+    // Mock server data for demonstration
+    socket.on('serverData', function(data) {
+        updateChart('cpuUsage', {x: new Date(), y: data.cpu});
+        // Similar calls for other metrics
+    });
+
+    // Log display
+    socket.on('logUpdate', function(log) {
+        const logDisplay = document.getElementById('logDisplay');
+        logDisplay.innerHTML += log + '\n';
+        logDisplay.scrollTop = logDisplay.scrollHeight;
+    });
+
+    // Setup for D3.js visualizations like flame chart
+    // This would require a more complex setup, not detailed here for brevity
+    function drawFlameChart(data) {
+        // D3.js code for flame chart would go here
+    }
+
+    // Initial call to draw charts
+    drawFlameChart({/* mock data */});
+</script>
+
+</body>
+</html>

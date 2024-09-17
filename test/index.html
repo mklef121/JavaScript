@@ -4,556 +4,606 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendar Widget</title>
+    <title>Server Monitoring Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/d3-flame-graph@4.1.3/dist/d3-flamegraph.css">
     <style>
         body {
             font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f4f4;
             margin: 0;
             padding: 0;
-            background-color: #f0f4f7;
         }
 
-        #calendar {
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 0 10px;
-        }
-
-        .btn {
-            margin: 5px;
-            padding: 10px 20px;
-            color: #fff;
-            background-color: #007bff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn:hover {
-            background-color: #0056b3;
-        }
-
-        .sidebar {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 250px;
-            height: 100%;
-            background: #ffffff;
-            padding: 20px;
-            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
-            border-left: 1px solid #ddd;
-            box-sizing: border-box;
-        }
-
-        .sidebar h2 {
-            margin-top: 0;
-            font-size: 18px;
-            color: #333;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group label {
-            font-size: 16px;
-            color: #333;
-            margin-bottom: 5px;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-            color: #333;
-            box-sizing: border-box;
-            transition: border-color 0.3s ease;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            border-color: #007bff;
-            outline: none;
-        }
-
-        .form-group textarea {
-            resize: vertical;
-        }
-
-        .form-group input[type="date"],
-        .form-group input[type="time"] {
-            font-family: Arial, sans-serif;
-        }
-
-        .form-group textarea {
-            resize: vertical;
-        }
-
-        button[type="submit"] {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-        }
-
-        button[type="submit"]:hover {
-            background-color: #0056b3;
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 5;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
-            padding-top: 60px;
-        }
-
-        .modal-content {
-            background: #ffffff;
-            margin: 5% auto;
-            padding: 20px;
-            border: none;
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
             width: 90%;
-            max-width: 600px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        .close {
-            color: #333;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .close:hover {
-            color: #007bff;
-        }
-
-        .tab {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-        }
-
-        .tab button {
-            background-color: #f1f1f1;
-            border: none;
-            outline: none;
-            padding: 14px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
-
-        .tab button.active {
-            background-color: #007bff;
-            color: #fff;
-        }
-
-        .tab button:hover {
-            background-color: #ddd;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .event-detail-content {
-            padding: 20px;
-            border-radius: 10px;
-            background: #ffffff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border: 1px solid #ddd;
-        }
-
-        .event-detail-content h2 {
-            margin-top: 0;
-            font-size: 24px;
-            color: #333;
-            text-align: center;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-
-        .event-detail-content p {
-            margin: 10px 0;
-            font-size: 16px;
-            color: #555;
-        }
-
-        .event-detail-content .detail-label {
-            font-weight: bold;
-            color: #007bff;
-        }
-
-        .event-detail-content .detail-value {
-            font-weight: normal;
-            color: #333;
-        }
-
-        .share-buttons {
+            max-width: 1200px;
             margin-top: 20px;
-            text-align: center;
         }
 
-        .btn-share {
-            display: block;
-            margin-top: 10px;
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .chart {
+            height: 200px;
+        }
+
+        .logs {
+            height: 400px;
+            overflow-y: scroll;
+            background: #333;
+            color: #fff;
             padding: 10px;
-            border-radius: 5px;
-            color: #fff;
-            text-align: center;
-            font-size: 14px;
-            text-decoration: none;
-            transition: background-color 0.3s ease;
+            border-radius: 8px;
         }
 
-        .btn-share.email {
-            background: #007bff;
+        .flamechart {
+            height: 400px;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
         }
 
-        .btn-share.whatsapp {
-            background: #25D366;
+        .cpu-usage {
+            height: 400px;
         }
 
-        .btn-share.facebook {
-            background: #3b5998;
+        .cpu-usage canvas {
+            height: 100% !important;
         }
 
-        .btn-share.twitter {
-            background: #1DA1F2;
+        .apm {
+            height: 200px;
         }
 
-        .btn-share:hover {
-            opacity: 0.9;
+        .apm canvas {
+            height: 100% !important;
         }
 
-        .header {
-            background-color: #007bff;
-            color: #fff;
-            text-align: center;
-            padding: 15px;
-            font-size: 24px;
-            font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        .sql-queries {
+            height: 300px;
+            overflow-y: scroll;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        .fast {
+            color: green;
+        }
+
+        .slow {
+            color: red;
         }
     </style>
 </head>
 
 <body>
-    <div class="header">
-        My Personal Calendar
-    </div>
-    <!-- <div class="sidebar">
-        <h2>Actions</h2>
-        <button class="btn" id="prevBtn">Previous</button>
-        <button class="btn" id="nextBtn">Next</button>
-        <button class="btn" id="todayBtn">Today</button>
-    </div> -->
-    <div id="calendar"></div>
-
-    <!-- Modal for Creating Entries -->
-    <div id="entryModal" class="modal">
-        <div class="modal-content">
-            <span class="close" id="closeModal">&times;</span>
-            <div class="tab">
-                <button class="tablinks active" id="defaultTab"
-                    onclick="openTab({currentTarget: this}, 'Meeting')">Meeting</button>
-                <button class="tablinks" onclick="openTab({currentTarget: this}, 'Event')">Event</button>
-                <button class="tablinks" onclick="openTab({currentTarget: this}, 'Task')">Task</button>
+    <h1>Server Monitoring Dashboard</h1>
+    <div class="dashboard">
+        <div class="card">
+            <h2>CPU Usage</h2>
+            <canvas id="cpuChart" class="chart"></canvas>
+        </div>
+        <div class="card">
+            <h2>Memory Usage</h2>
+            <canvas id="memoryChart" class="chart"></canvas>
+        </div>
+        <div class="card">
+            <h2>Network Bandwidth</h2>
+            <canvas id="networkChart" class="chart"></canvas>
+        </div>
+        <div class="card">
+            <h2>CPU Utilization per Core</h2>
+            <canvas id="cpuUtilizationChart" class="cpu-usage"></canvas>
+        </div>
+        <div class="card">
+            <h2>Requests per Second</h2>
+            <canvas id="requestsPerSecondChart" class="apm"></canvas>
+        </div>
+        <div class="card">
+            <h2>HTTP Server Error Rate</h2>
+            <canvas id="errorRateChart" class="apm"></canvas>
+        </div>
+        <div class="card">
+            <h2>Database Queries</h2>
+            <canvas id="dbQueriesChart" class="apm"></canvas>
+        </div>
+        <div class="card">
+            <h2>GC Metrics</h2>
+            <canvas id="gcMetricsChart" class="apm"></canvas>
+        </div>
+        <div class="card">
+            <h2>SQL Query Performance</h2>
+            <div class="sql-queries">
+                <table id="sqlQueryTable">
+                    <thead>
+                        <tr>
+                            <th>Query</th>
+                            <th>Execution Time (ms)</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
             </div>
+        </div>
+        <div class="card">
+            <h2>Logs</h2>
+            <div id="logs" class="logs"></div>
+        </div>
+        <div class="card">
+            <h2>Flamechart</h2>
+            <div id="flamechart" class="flamechart"></div>
+        </div>
 
-            <!-- Meeting Form -->
-            <div id="Meeting" class="tab-content active">
-                <h2>Create Meeting</h2>
-                <form id="meetingForm" autocomplete="off">
-                    <div class="form-group">
-                        <label for="meetingTitle">Title</label>
-                        <input type="text" id="meetingTitle" placeholder="Enter meeting title" required
-                            autocomplete="off">
-                    </div>
-                    <div class="form-group">
-                        <label for="meetingDate">Date</label>
-                        <input type="date" id="meetingDate" required autocomplete="off">
-                    </div>
-                    <div class="form-group">
-                        <label for="meetingStart">Start Time</label>
-                        <input type="time" id="meetingStart" required autocomplete="off">
-                    </div>
-                    <div class="form-group">
-                        <label for="meetingEnd">End Time</label>
-                        <input type="time" id="meetingEnd" required autocomplete="off">
-                    </div>
-                    <div class="form-group">
-                        <label for="meetingDescription">Description</label>
-                        <textarea id="meetingDescription" rows="4" placeholder="Enter meeting description"
-                            autocomplete="off"></textarea>
-                    </div>
-                    <button type="submit" class="btn">Add Meeting</button>
-                </form>
-            </div>
-
-            <!-- Event Form -->
-            <div id="Event" class="tab-content">
-                <h2>Create Event</h2>
-                <form id="eventForm" autocomplete="off">
-                    <div class="form-group">
-                        <label for="eventTitle">Title</label>
-                        <input type="text" id="eventTitle" placeholder="Enter event title" required autocomplete="off">
-                    </div>
-                    <div class="form-group">
-                        <label for="eventDate">Date</label>
-                        <input type="date" id="eventDate" required autocomplete="off">
-                    </div>
-                    <div class="form-group">
-                        <label for="eventTime">Time</label>
-                        <input type="time" id="eventTime" required autocomplete="off">
-                    </div>
-                    <div class="form-group">
-                        <label for="eventDescription">Description</label>
-                        <textarea id="eventDescription" rows="4" placeholder="Enter event description"
-                            autocomplete="off"></textarea>
-                    </div>
-                    <button type="submit" class="btn">Add Event</button>
-                </form>
-            </div>
-
-            <!-- Task Form -->
-            <div id="Task" class="tab-content">
-                <h2>Create Task</h2>
-                <form id="taskForm" autocomplete="off">
-                    <div class="form-group">
-                        <label for="taskTitle">Title</label>
-                        <input type="text" id="taskTitle" placeholder="Enter task title" required autocomplete="off">
-                    </div>
-                    <div class="form-group">
-                        <label for="taskDueDate">Due Date</label>
-                        <input type="date" id="taskDueDate" required autocomplete="off">
-                    </div>
-                    <div class="form-group">
-                        <label for="taskPriority">Priority</label>
-                        <select id="taskPriority" required autocomplete="off">
-                            <option value="Low">Low</option>
-                            <option value="Medium">Medium</option>
-                            <option value="High">High</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="taskDescription">Description</label>
-                        <textarea id="taskDescription" rows="4" placeholder="Enter task description"
-                            autocomplete="off"></textarea>
-                    </div>
-                    <button type="submit" class="btn">Add Task</button>
-                </form>
+        <div class="card">
+            <h2>Peak Response Time</h2>
+            <canvas id="peakResponseTimeChart" class="apm"></canvas>
+            <div id="percentilesTable">
+                <h3>Response Time Percentiles</h3>
+                <table class="percentiles-table" id="percentilesTableContent">
+                    <thead>
+                        <tr>
+                            <th>Percentile</th>
+                            <th>Response Time (ms)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 
-    <!-- Event Details Modal -->
-    <div id="eventDetailModal" class="modal">
-        <div class="modal-content">
-            <span class="close" id="closeEventDetail">&times;</span>
-            <div class="event-detail-content">
-                <h2>Event Details</h2>
-                <p><span class="detail-label">Title:</span> <span id="eventTitleDetail" class="detail-value"></span></p>
-                <p><span class="detail-label">Category:</span> <span id="eventCategoryDetail"
-                        class="detail-value"></span></p>
-                <p><span class="detail-label">Date:</span> <span id="eventDateDetail" class="detail-value"></span></p>
-                <p><span class="detail-label">Time:</span> <span id="eventTimeDetail" class="detail-value"></span></p>
-                <p><span class="detail-label">Description:</span> <span id="eventDescriptionDetail"
-                        class="detail-value"></span></p>
-                <div class="share-buttons">
-                    <a href="#" class="btn-share email" id="shareEmailDetail" target="_blank">Share via Email</a>
-                    <a href="#" class="btn-share whatsapp" id="shareWhatsAppDetail" target="_blank">Share via
-                        WhatsApp</a>
-                    <a href="#" class="btn-share facebook" id="shareFacebookDetail" target="_blank">Share via
-                        Facebook</a>
-                    <a href="#" class="btn-share twitter" id="shareTwitterDetail" target="_blank">Share via Twitter</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+    <script src="https://d3js.org/d3.v7.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-flame-graph@4.1.3/dist/d3-flamegraph.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        function openTab(evt, categoryName) {
-            const tabcontent = document.getElementsByClassName('tab-content');
-            for (let i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = 'none';
-            }
-            const tablinks = document.getElementsByClassName('tablinks');
-            for (let i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(' active', '');
-            }
-            document.getElementById(categoryName).style.display = 'block';
-            if (evt && evt.currentTarget) {
-                evt.currentTarget.className += ' active';
-            }
-        }
-
-        function openModal(category, start, end) {
-            const modal = document.getElementById('entryModal');
-            modal.style.display = 'block';
-            openTab({ currentTarget: document.getElementById('defaultTab') }, category);
-
-            const selectedDate = start ? new Date(start).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
-            const startTime = start ? new Date(start).toISOString().slice(11, 16) : '09:00';
-            const endTime = end ? new Date(end).toISOString().slice(11, 16) : '10:00'; // Default end time is 1 hour later
-            document.getElementById('meetingDate').value = selectedDate;
-            document.getElementById('meetingStart').value = startTime;
-            document.getElementById('meetingEnd').value = endTime;
-            document.getElementById('eventDate').value = selectedDate;
-            document.getElementById('eventTime').value = start ? new Date(start).toISOString().slice(11, 16) : '12:00';
-            document.getElementById('taskDueDate').value = selectedDate;
-        }
+        const cpuChartCtx = document.getElementById('cpuChart').getContext('2d');
+        const memoryChartCtx = document.getElementById('memoryChart').getContext('2d');
+        const networkChartCtx = document.getElementById('networkChart').getContext('2d');
+        const cpuUtilizationCtx = document.getElementById('cpuUtilizationChart').getContext('2d');
+        const requestsPerSecondCtx = document.getElementById('requestsPerSecondChart').getContext('2d');
+        const peakResponseTimeCtx = document.getElementById('peakResponseTimeChart').getContext('2d');
+        const errorRateCtx = document.getElementById('errorRateChart').getContext('2d');
+        const dbQueriesCtx = document.getElementById('dbQueriesChart').getContext('2d');
+        const gcMetricsCtx = document.getElementById('gcMetricsChart').getContext('2d');
 
 
-        function resetForms() {
-            document.getElementById('meetingForm').reset();
-            document.getElementById('eventForm').reset();
-            document.getElementById('taskForm').reset();
-        }
-
-        function closeModal() {
-            resetForms()
-            document.getElementById('entryModal').style.display = 'none';
-        }
-
-        function openEventDetailModal(event) {
-            const detailModal = document.getElementById('eventDetailModal');
-            document.getElementById('eventTitleDetail').innerText = event.title;
-            document.getElementById('eventCategoryDetail').innerText = event.extendedProps.category || 'N/A';
-            document.getElementById('eventDateDetail').innerText = new Date(event.start).toLocaleDateString();
-            document.getElementById('eventTimeDetail').innerText = event.start ? new Date(event.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A';
-            document.getElementById('eventDescriptionDetail').innerText = event.extendedProps.description || 'No description provided';
-
-            // Set up share links with event details
-            const title = encodeURIComponent(event.title);
-            const date = encodeURIComponent(new Date(event.start).toLocaleDateString());
-            const time = encodeURIComponent(event.start ? new Date(event.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A');
-            const description = encodeURIComponent(event.extendedProps.description || 'No description provided');
-
-            document.getElementById('shareEmailDetail').href = `mailto:?subject=Event Details: ${title}&body=${title}%0A${date} ${time}%0A${description}`;
-            document.getElementById('shareWhatsAppDetail').href = `https://api.whatsapp.com/send?text=${title}%0A${date} ${time}%0A${description}`;
-            document.getElementById('shareFacebookDetail').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(title)}&quote=${encodeURIComponent(`${title} on ${date} ${time}: ${description}`)}`;
-            document.getElementById('shareTwitterDetail').href = `https://twitter.com/intent/tweet?text=${title}%0A${date} ${time}%0A${description}`;
-
-            detailModal.style.display = 'block';
-        }
-
-        function closeEventDetailModal() {
-            document.getElementById('eventDetailModal').style.display = 'none';
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            const calendarEl = document.getElementById('calendar');
-            const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                },
-                editable: true,
-                selectable: true,
-                select: function (info) {
-                    openModal('Meeting', info.startStr, info.endStr);
-                },
-                eventClick: function (info) {
-                    openEventDetailModal(info.event);
+        const cpuChart = new Chart(cpuChartCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'CPU Usage (%)',
+                    data: [],
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1,
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    x: { display: false },
+                    y: { beginAtZero: true }
                 }
-            });
-
-            calendar.render();
-
-            document.getElementById('meetingForm').addEventListener('submit', function (e) {
-                e.preventDefault();
-                const title = document.getElementById('meetingTitle').value;
-                const date = document.getElementById('meetingDate').value;
-                const startTime = document.getElementById('meetingStart').value;
-                const endTime = document.getElementById('meetingEnd').value;
-                const description = document.getElementById('meetingDescription').value;
-                const start = `${date}T${startTime}`;
-                const end = `${date}T${endTime}`;
-                calendar.addEvent({ title, start, end, extendedProps: { category: 'Meeting', description } });
-                closeModal();
-            });
-
-            document.getElementById('eventForm').addEventListener('submit', function (e) {
-                e.preventDefault();
-                const title = document.getElementById('eventTitle').value;
-                const date = document.getElementById('eventDate').value;
-                const time = document.getElementById('eventTime').value;
-                const description = document.getElementById('eventDescription').value;
-                const start = `${date}T${time}`;
-                calendar.addEvent({ title, start, extendedProps: { category: 'Event', description } });
-                closeModal();
-            });
-
-            document.getElementById('taskForm').addEventListener('submit', function (e) {
-                e.preventDefault();
-                const title = document.getElementById('taskTitle').value;
-                const dueDate = document.getElementById('taskDueDate').value;
-                const priority = document.getElementById('taskPriority').value;
-                const description = document.getElementById('taskDescription').value;
-                calendar.addEvent({ title, start: dueDate, extendedProps: { category: 'Task', priority, description } });
-                closeModal();
-            });
-
-            document.getElementById('closeModal').addEventListener('click', closeModal);
-            document.getElementById('closeEventDetail').addEventListener('click', closeEventDetailModal);
-
-            // Close modal when clicking outside of it
-            window.addEventListener('click', function (event) {
-                if (event.target.classList.contains('modal')) {
-                    closeModal();
-                    closeEventDetailModal();
-                }
-            });
+            }
         });
+
+        const memoryChart = new Chart(memoryChartCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Memory Usage (MB)',
+                    data: [],
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 1,
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    x: { display: false },
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        const networkChart = new Chart(networkChartCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Network Bandwidth (Mbps)',
+                    data: [],
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    borderWidth: 1,
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    x: { display: false },
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        const cpuUtilizationChart = new Chart(cpuUtilizationCtx, {
+            type: 'bar',
+            data: {
+                labels: Array.from({ length: 16 }, (_, i) => `Core ${i + 1}`),
+                datasets: [{
+                    label: 'CPU Utilization (%)',
+                    data: Array(16).fill(0),
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    x: { stacked: true },
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        const requestsPerSecondChart = new Chart(requestsPerSecondCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Requests per Second',
+                    data: [],
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    x: { display: false },
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        const peakResponseTimeChart = new Chart(peakResponseTimeCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'Max Response Time (ms)',
+                        data: [],
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1,
+                        fill: false
+                    },
+                    {
+                        label: '50th Percentile Response Time (ms)',
+                        data: [],
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1,
+                        borderDash: [5, 5],
+                        fill: false
+                    },
+                    {
+                        label: '95th Percentile Response Time (ms)',
+                        data: [],
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 1,
+                        borderDash: [5, 5],
+                        fill: false
+                    },
+                    {
+                        label: '99th Percentile Response Time (ms)',
+                        data: [],
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 1,
+                        borderDash: [5, 5],
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    x: { display: false },
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        const errorRateChart = new Chart(errorRateCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'HTTP Error Rate (%)',
+                    data: [],
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1,
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    x: { display: false },
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        const dbQueriesChart = new Chart(dbQueriesCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Database Queries per Second',
+                    data: [],
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1,
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    x: { display: false },
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        const gcMetricsChart = new Chart(gcMetricsCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'GC Time (ms)',
+                    data: [],
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 1,
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    x: { display: false },
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        function updateCharts() {
+            const now = new Date().toLocaleTimeString();
+            const cpuUsage = Math.random() * 100;
+            const memoryUsage = Math.random() * 16000;
+            const networkBandwidth = Math.random() * 1000;
+
+            if (cpuChart.data.labels.length > 20) {
+                cpuChart.data.labels.shift();
+                cpuChart.data.datasets[0].data.shift();
+            }
+            cpuChart.data.labels.push(now);
+            cpuChart.data.datasets[0].data.push(cpuUsage);
+            cpuChart.update();
+
+            if (memoryChart.data.labels.length > 20) {
+                memoryChart.data.labels.shift();
+                memoryChart.data.datasets[0].data.shift();
+            }
+            memoryChart.data.labels.push(now);
+            memoryChart.data.datasets[0].data.push(memoryUsage);
+            memoryChart.update();
+
+            if (networkChart.data.labels.length > 20) {
+                networkChart.data.labels.shift();
+                networkChart.data.datasets[0].data.shift();
+            }
+            networkChart.data.labels.push(now);
+            networkChart.data.datasets[0].data.push(networkBandwidth);
+            networkChart.update();
+        }
+
+        function updateLogs() {
+            const logs = document.getElementById('logs');
+            const newLog = `Log entry at ${new Date().toLocaleTimeString()}`;
+            logs.innerHTML = `<p>${newLog}</p>` + logs.innerHTML;
+            if (logs.childElementCount > 50) {
+                logs.removeChild(logs.lastChild);
+            }
+        }
+
+        function createFlamechart() {
+            const flamegraphChart = flamegraph()
+                .width(960)
+                .height(400)
+                .transitionDuration(750)
+                .minFrameSize(5)
+                .title("");
+
+            d3.select("#flamechart")
+                .datum(getFlamechartData())
+                .call(flamegraphChart);
+        }
+
+        function getFlamechartData() {
+            return {
+                name: "root",
+                value: 100,
+                children: [
+                    {
+                        name: "functionA",
+                        value: 50,
+                        children: [
+                            { name: "functionB", value: 20 },
+                            { name: "functionC", value: 30 }
+                        ]
+                    },
+                    {
+                        name: "functionD",
+                        value: 50,
+                        children: [
+                            { name: "functionE", value: 20 },
+                            { name: "functionF", value: 30 }
+                        ]
+                    },
+                    {
+                        name: "functionG",
+                        value: 50,
+                        children: [
+                            { name: "functionH", value: 20 },
+                            { name: "functionI", value: 30 }
+                        ]
+                    },
+                    {
+                        name: "functionJ",
+                        value: 50,
+                        children: [
+                            { name: "functionK", value: 20 },
+                            { name: "functionL", value: 30 }
+                        ]
+                    }
+                ]
+            };
+        }
+
+        function updateCpuUtilization() {
+            const cpuUtilizationData = Array.from({ length: 16 }, () => Math.random() * 100);
+            cpuUtilizationChart.data.datasets[0].data = cpuUtilizationData;
+            cpuUtilizationChart.update();
+        }
+
+        function updateApmMetrics() {
+            const now = new Date().toLocaleTimeString();
+            const requestsPerSecond = Math.random() * 100;
+            const peakResponseTime = Math.random() * 500;
+            const p50ResponseTime = Math.random() * 400;
+            const p95ResponseTime = Math.random() * 450;
+            const p99ResponseTime = Math.random() * 490;
+            const errorRate = Math.random() * 10;
+            const dbQueries = Math.random() * 50;
+            const gcMetrics = Math.random() * 100;
+
+            if (requestsPerSecondChart.data.labels.length > 20) {
+                requestsPerSecondChart.data.labels.shift();
+                requestsPerSecondChart.data.datasets[0].data.shift();
+            }
+            requestsPerSecondChart.data.labels.push(now);
+            requestsPerSecondChart.data.datasets[0].data.push(requestsPerSecond);
+            requestsPerSecondChart.update();
+
+            if (peakResponseTimeChart.data.labels.length > 20) {
+                peakResponseTimeChart.data.labels.shift();
+                peakResponseTimeChart.data.datasets.forEach(dataset => dataset.data.shift());
+            }
+            peakResponseTimeChart.data.labels.push(now);
+            peakResponseTimeChart.data.datasets[0].data.push(Math.random() * 500); // Max Response Time
+            peakResponseTimeChart.data.datasets[1].data.push(p50ResponseTime); // 50th Percentile
+            peakResponseTimeChart.data.datasets[2].data.push(p95ResponseTime); // 95th Percentile
+            peakResponseTimeChart.data.datasets[3].data.push(p99ResponseTime); // 99th Percentile
+            peakResponseTimeChart.update();
+
+            if (errorRateChart.data.labels.length > 20) {
+                errorRateChart.data.labels.shift();
+                errorRateChart.data.datasets[0].data.shift();
+            }
+            errorRateChart.data.labels.push(now);
+            errorRateChart.data.datasets[0].data.push(errorRate);
+            errorRateChart.update();
+
+            if (dbQueriesChart.data.labels.length > 20) {
+                dbQueriesChart.data.labels.shift();
+                dbQueriesChart.data.datasets[0].data.shift();
+            }
+            dbQueriesChart.data.labels.push(now);
+            dbQueriesChart.data.datasets[0].data.push(dbQueries);
+            dbQueriesChart.update();
+
+            if (gcMetricsChart.data.labels.length > 20) {
+                gcMetricsChart.data.labels.shift();
+                gcMetricsChart.data.datasets[0].data.shift();
+            }
+            gcMetricsChart.data.labels.push(now);
+            gcMetricsChart.data.datasets[0].data.push(gcMetrics);
+            gcMetricsChart.update();
+        }
+
+        function updateSqlQueryTable() {
+            const tableBody = document.getElementById('sqlQueryTable').getElementsByTagName('tbody')[0];
+            const query = `SELECT * FROM table WHERE id = ${Math.floor(Math.random() * 100)}`;
+            const executionTime = Math.random() * 1000;
+            const status = executionTime > 500 ? 'Slow' : 'Fast';
+            const statusClass = status.toLowerCase();
+
+            const newRow = tableBody.insertRow(0);
+            newRow.innerHTML = `
+                <td>${query}</td>
+                <td>${executionTime.toFixed(2)}</td>
+                <td class="${statusClass}">${status}</td>
+            `;
+
+            if (tableBody.rows.length > 20) {
+                tableBody.deleteRow(-1);
+            }
+        }
+
+        function updatePercentilesTable() {
+            const percentilesTableBody = document.querySelector('#percentilesTableContent tbody');
+            const percentiles = {
+                '50th Percentile': (Math.random() * 400).toFixed(2),
+                '95th Percentile': (Math.random() * 450).toFixed(2),
+                '99th Percentile': (Math.random() * 490).toFixed(2)
+            };
+
+            percentilesTableBody.innerHTML = '';
+            for (const [percentile, time] of Object.entries(percentiles)) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${percentile}</td>
+                    <td>${time}</td>
+                `;
+                percentilesTableBody.appendChild(row);
+            }
+        }
+
+        setInterval(updateCharts, 1000);
+        setInterval(updateLogs, 2000);
+        setInterval(updateCpuUtilization, 1000);
+        const interval = setInterval(updateApmMetrics, 1000);
+
+        // setTimeout(() => {
+        //     clearInterval(interval)
+        // }, 10000)
+        setInterval(updateSqlQueryTable, 2000);
+        setInterval(updatePercentilesTable, 5000);
+        createFlamechart();
     </script>
 </body>
 
