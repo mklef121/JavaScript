@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Home Controller</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .appliance { margin: 10px; padding: 10px; border: 1px solid #ddd; display: inline-block; text-align: center; }
+        .light-controls { background: #f9f9f9; padding: 10px; }
+        #dashboard { display: flex; flex-wrap: wrap; }
+        .room { border: 2px solid #ccc; margin: 10px; padding: 10px; }
+        .slider { width: 100px; }
+    </style>
+</head>
+<body>
+    <div id="dashboard"></div>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    $(document).ready(function() {
+        const appliances = [
+            {name: 'Living Room Light', room: 'Living Room', type: 'light', status: 'on', energy: 0.02, hours: 2, svg: 'lightbulb.svg'},
+            {name: 'TV', room: 'Living Room', type: 'appliance', status: 'off', energy: 0.1, hours: 0, image: 'tv.png'},
+            // Add more appliances here
+        ];
+
+        const ws = new WebSocket('ws://your-websocket-server');
+
+        function updateAppliance(appliance) {
+            let $app = $(`#appliance-${appliance.name.replace(/\s+/g, '')}`);
+            if (!$app.length) {
+                $app = $(`<div class="appliance" id="appliance-${appliance.name.replace(/\s+/g, '')}"></div>`).appendTo($(`#${appliance.room.replace(/\s+/g, '')}`));
+                $app.append(`<h3>${appliance.name}</h3>`);
+                if (appliance.svg) $app.append(`<img src="${appliance.svg}" width="50"/>`);
+                else if (appliance.image) $app.append(`<img src="${appliance.image}" width="50"/>`);
+            }
+            $app.append(`<p>Status: ${appliance.status}</p>`);
+            $app.append(`<p>Energy Used: ${appliance.energy} kWh</p>`);
+            $app.append(`<p>Hours Running: ${appliance.hours}</p>`);
+            if (appliance.type === 'light') {
+                $app.append(`<div class="light-controls">
+                    <input type="range" min="0" max="100" value="100" class="slider" id="brightness-${appliance.name.replace(/\s+/g, '')}"> Brightness
+                </div>`);
+            }
+            // Toggle button for all appliances
+            $app.append(`<button onclick="toggleAppliance('${appliance.name}')">Toggle</button>`);
+        }
+
+        appliances.forEach(updateAppliance);
+
+        ws.onmessage = function(event) {
+            const updatedAppliance = JSON.parse(event.data);
+            updateAppliance(updatedAppliance);
+        };
+
+        window.toggleAppliance = function(name) {
+            ws.send(JSON.stringify({action: 'toggle', appliance: name}));
+        };
+    });
+    </script>
+</body>
+</html>

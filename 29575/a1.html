@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Home Controller</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.4.5/jscolor.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background: #4CAF50;
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            padding: 20px;
+        }
+        .sidebar {
+            width: 200px;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+        }
+        .main-content {
+            flex-grow: 1;
+            margin-left: 20px;
+        }
+        .appliance, .energy-summary {
+            background: white;
+            margin-bottom: 20px;
+            padding: 20px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+        }
+        .light-control {
+            margin-top: 10px;
+        }
+        .slider {
+            width: 100%;
+            margin-top: 10px;
+        }
+        .color-picker {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Smart Home Controller</h1>
+    </div>
+    <div class="container">
+        <div class="sidebar">
+            <h3>Rooms</h3>
+            <ul id="roomList">
+                <li data-room="living">Living Room</li>
+                <li data-room="kitchen">Kitchen</li>
+            </ul>
+        </div>
+        <div class="main-content">
+            <div id="applianceList" class="appliance">
+                <!-- Appliances will be dynamically added here -->
+            </div>
+            <div class="energy-summary">
+                <h3>Energy Usage</h3>
+                <p>Total Energy Used Today: <span id="totalEnergy">0</span> kWh</p>
+                <p>Energy Saving Tip: Turn off lights when not in use!</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        $(document).ready(function() {
+            const appliances = {
+                living: [
+                    {name: 'Ceiling Light', type: 'light', status: 'on', power: 40, hours: 2, svg: 'lightbulb.svg'},
+                    {name: 'TV', type: 'device', status: 'off', power: 120, hours: 0, svg: 'tv.svg'}
+                ],
+                kitchen: [
+                    {name: 'Fridge', type: 'device', status: 'on', power: 150, hours: 24, svg: 'fridge.svg'}
+                ]
+            };
+
+            function updateAppliances(room) {
+                let list = $('#applianceList');
+                list.empty();
+                appliances[room].forEach(app => {
+                    let applianceHtml = `
+                        <div>
+                            <img src="${app.svg}" alt="${app.name}" width="50">
+                            <h4>${app.name}</h4>
+                            <p>Status: <span style="color: ${app.status === 'on' ? 'green' : 'red'}">${app.status}</span></p>
+                            <p>Energy Used: ${app.power * app.hours / 1000} kWh</p>
+                            ${app.type === 'light' ? 
+                                `<div class="light-control">
+                                    <input type="range" min="0" max="100" value="50" class="slider brightness">
+                                    <input class="jscolor {onFineChange:'updateColor(this)'} color-picker">
+                                </div>` : 
+                                `<button onclick="toggleStatus('${app.name}', '${room}')">${app.status === 'on' ? 'Turn Off' : 'Turn On'}</button>`
+                            }
+                        </div>`;
+                    list.append(applianceHtml);
+                });
+                updateTotalEnergy();
+            }
+
+            function toggleStatus(name, room) {
+                let app = appliances[room].find(a => a.name === name);
+                app.status = app.status === 'on' ? 'off' : 'on';
+                updateAppliances(room);
+            }
+
+            function updateColor(picker) {
+                console.log('Color changed to', picker.toHEXString());
+                // Here you would send this color to your lighting system
+            }
+
+            function updateTotalEnergy() {
+                let total = 0;
+                for(let room in appliances) {
+                    total += appliances[room].reduce((acc, curr) => acc + (curr.power * curr.hours / 1000), 0);
+                }
+                $('#totalEnergy').text(total.toFixed(2));
+            }
+
+            $('#roomList li').on('click', function() {
+                updateAppliances($(this).data('room'));
+            });
+
+            // Initial update
+            updateAppliances('living');
+        });
+    </script>
+</body>
+</html>

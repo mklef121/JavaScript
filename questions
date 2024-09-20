@@ -336,6 +336,9 @@ I have applications deployed on a server, These applications write logs to the s
 
 Ensure that aside from the popular charts use visualizations like flamecharts, call trees e.t.c related to each of these type of activities and make the design visually appealing and responsive across all screens.  The server should be assumed,and their load and logs should be mocked
 
+I just moved to a new home, I want you to develop a smart home Controller app that provides real-time appliance status, provides the ability to adjust the brightness and color of home lights, enables room-based lighting control, provides energy-saving recommendation capabilities, shows all appliances in the home, the number of hours they have been running, the amount of energy they have used and the capability to switch their status.
+Ensure to show the real images of these appliances, you can use SVGs where possible.
+ 
 
 * Unless otherwise specified, generate code in a single block of html/css/js.
 * Plan out the code before starting to write it.
