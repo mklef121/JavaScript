@@ -374,7 +374,7 @@
 
         // Appliance Switches
         document.querySelectorAll('.switch input').forEach(switchElement => {
-            switchElement.addEventListener('change', function () {
+            switchElement.addEventListener('change', function toggleAppliance () {
                 const statusText = this.parentNode.previousElementSibling.querySelector('.status');
                 statusText.textContent = this.checked ? 'On' : 'Off';
             });
