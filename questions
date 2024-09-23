@@ -340,6 +340,18 @@ I just moved to a new home, I want you to develop a smart home Controller app th
 Ensure to show the real images of these appliances, you can use SVGs where possible.
  
 
+Compliance to catch fraud transactions accounts 
+
+I run a savings business which helps users save money, invest it and pay out interests to users. There is an increase in fraudlent transactions and I will like you to build a fraud compliance app that tracks all transactions, run standard fraud check across each transaction and flag those that are fraudlent.
+I need a visually pleasing and responsive design and a very good fonts like Poppins.
+
+
+create a target practice shooting game. The user should be able to use a well designed gun to aim at shooting range, each target that was hit successfully should add a point to the user. each level should last for a period of time, after which the user can confirm of they wan to continue to the next level
+
+
+I have a software project to manage. I will be needing an App to create tasks and assign these tasks to a  team member, also be able to manage this tasks progress by having them in a kanban board and moving them across three columns: Todo, In Progress, Done. I need a report view to see general progress of all tasks in the project. Add Abilityy to create Team mates information too.
+I need a visually pleasing and responsive design and a very good fonts like Poppins.
+
 * Unless otherwise specified, generate code in a single block of html/css/js.
 * Plan out the code before starting to write it.
 

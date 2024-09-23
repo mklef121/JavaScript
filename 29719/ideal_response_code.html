@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Management App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            width: 100%;
+            background-color: #333;
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        main {
+            width: 90%;
+            max-width: 1200px;
+            margin: 2rem auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .form-container,
+        .kanban-board,
+        .report-view {
+            background-color: #fff;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-container form input,
+        .form-container form select,
+        .form-container form button {
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .form-container form button {
+            background-color: #333;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-container form button:hover {
+            background-color: #555;
+        }
+
+        .kanban-board {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .kanban-column {
+            flex: 1;
+            background-color: #e0e0e0;
+            padding: 1rem;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .kanban-column h3 {
+            text-align: center;
+        }
+
+        .task {
+            background-color: #fff;
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            border-radius: 4px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            cursor: grab;
+            transition: transform 0.2s ease;
+        }
+
+        .task:active {
+            transform: scale(1.05);
+        }
+
+        .task .avatar {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            line-height: 30px;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+            position: relative;
+        }
+
+        .task .avatar:hover::after {
+            content: attr(data-fullname);
+            position: absolute;
+            top: 35px;
+            left: 0;
+            background-color: #333;
+            color: #fff;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        .report-view {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .report-summary {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .summary-card {
+            background-color: #fff;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            margin: 0 1rem;
+            text-align: center;
+        }
+
+        .progress-bar {
+            background-color: #e0e0e0;
+            border-radius: 8px;
+            height: 20px;
+            margin: 1rem 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: #4bc0c0;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress:hover::after {
+            content: attr(data-percentage) '%';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            /* top: -25px; */
+            background-color: #333;
+            color: #fff;
+            padding: 0.1rem 0.5rem;
+            border-radius: 4px;
+            white-space: nowrap;
+            z-index: 1;
+            /* Ensure it appears above other elements */
+        }
+
+        .task-filter {
+            margin-bottom: 1rem;
+        }
+
+        .task-filter select {
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 300px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Project Management App</h1>
+    </header>
+    <main>
+        <div class="form-container">
+            <h2>Create Team Member</h2>
+            <form id="member-form">
+                <input type="text" id="member-name" placeholder="Team Member Name" required>
+                <button type="submit">Add Member</button>
+            </form>
+        </div>
+        <div class="form-container">
+            <h2>Create Task</h2>
+            <form id="task-form">
+                <input type="text" id="task-name" placeholder="Task Name" required>
+                <select id="task-member" required>
+                    <option value="" disabled selected>Select Team Member</option>
+                    <!-- Team members will be populated here -->
+                </select>
+                <button type="submit">Add Task</button>
+            </form>
+        </div>
+        <div class="kanban-board">
+            <div class="kanban-column" id="todo">
+                <h3>Todo</h3>
+                <!-- Tasks will be added here -->
+            </div>
+            <div class="kanban-column" id="in-progress">
+                <h3>In Progress</h3>
+                <!-- Tasks will be added here -->
+            </div>
+            <div class="kanban-column" id="done">
+                <h3>Done</h3>
+                <!-- Tasks will be added here -->
+            </div>
+        </div>
+        <div class="report-view">
+            <h2>Task Progress Report</h2>
+            <div class="report-summary">
+                <div class="summary-card">
+                    <h3>Total Tasks</h3>
+                    <p id="total-tasks">0</p>
+                </div>
+                <div class="summary-card">
+                    <h3>Completed Tasks</h3>
+                    <p id="completed-tasks">0</p>
+                </div>
+                <div class="summary-card">
+                    <h3>In Progress Tasks</h3>
+                    <p id="in-progress-tasks">0</p>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress" id="progress-bar"></div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="task-chart"></canvas>
+            </div>
+
+            <div class="task-filter">
+                <label for="filter-status">Filter by status:</label>
+                <select id="filter-status">
+                    <option value="all">All</option>
+                    <option value="todo">Todo</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="done">Done</option>
+                </select>
+            </div>
+            <ul id="report-list">
+                <!-- Report items will be added here -->
+            </ul>
+           
+        </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const taskForm = document.getElementById('task-form');
+            const memberForm = document.getElementById('member-form');
+            const taskMemberSelect = document.getElementById('task-member');
+            const todoColumn = document.getElementById('todo');
+            const inProgressColumn = document.getElementById('in-progress');
+            const doneColumn = document.getElementById('done');
+            const reportList = document.getElementById('report-list');
+            const totalTasksElement = document.getElementById('total-tasks');
+            const completedTasksElement = document.getElementById('completed-tasks');
+            const inProgressTasksElement = document.getElementById('in-progress-tasks');
+            const progressBar = document.getElementById('progress-bar');
+            const filterStatus = document.getElementById('filter-status');
+            const taskChart = document.getElementById('task-chart').getContext('2d');
+
+            let teamMembers = [];
+            let tasks = [];
+            let myChart = null;
+
+            memberForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const memberName = document.getElementById('member-name').value;
+                teamMembers.push(memberName);
+                const option = document.createElement('option');
+                option.value = memberName;
+                option.textContent = memberName;
+                taskMemberSelect.appendChild(option);
+                memberForm.reset();
+            });
+
+            taskForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const taskName = document.getElementById('task-name').value;
+                const taskMember = document.getElementById('task-member').value;
+                const task = { name: taskName, member: taskMember, status: 'todo', date: new Date().toLocaleString() };
+                tasks.push(task);
+                addTaskToColumn(task, todoColumn);
+                taskForm.reset();
+                updateReport();
+            });
+
+            function addTaskToColumn(task, column) {
+                const taskElement = document.createElement('div');
+                taskElement.className = 'task';
+                taskElement.innerHTML = `
+                    <div class="avatar" data-fullname="${task.member}">${getInitials(task.member)}</div>
+                    <div>
+                        <strong>${task.name}</strong><br>
+                        <small>${task.date}</small>
+                    </div>
+                `;
+                taskElement.draggable = true;
+                taskElement.dataset.taskName = task.name;
+                taskElement.dataset.taskMember = task.member;
+                taskElement.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', JSON.stringify(task));
+                });
+                column.appendChild(taskElement);
+            }
+
+            function getInitials(name) {
+                return name.split(' ').map(word => word[0]).join('');
+            }
+
+            function updateReport() {
+                reportList.innerHTML = '';
+                let totalTasks = 0;
+                let completedTasks = 0;
+                let inProgressTasks = 0;
+
+                tasks.forEach(task => {
+                    totalTasks++;
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `
+                        <div class="task-card ${task.status}">
+                            <strong>${task.name}</strong> (${task.member}) - ${task.status}
+                        </div>
+                    `;
+                    reportList.appendChild(listItem);
+
+                    if (task.status === 'done') {
+                        completedTasks++;
+                    } else if (task.status === 'in-progress') {
+                        inProgressTasks++;
+                    }
+                });
+
+                totalTasksElement.textContent = totalTasks;
+                completedTasksElement.textContent = completedTasks;
+                inProgressTasksElement.textContent = inProgressTasks;
+
+                const progressPercentage = (completedTasks / totalTasks) * 100 || 0;
+                progressBar.style.width = `${progressPercentage}%`;
+                progressBar.dataset.percentage = Math.round(progressPercentage); // Set the percentage data attribute
+
+                updateChart();
+            }
+
+            function updateChart() {
+                const statusCounts = tasks.reduce((acc, task) => {
+                    acc[task.status] = (acc[task.status] || 0) + 1;
+                    return acc;
+                }, {});
+
+                const data = {
+                    labels: ['Todo', 'In Progress', 'Done'],
+                    datasets: [{
+                        label: 'Tasks',
+                        data: [statusCounts.todo || 0, statusCounts['in-progress'] || 0, statusCounts.done || 0],
+                        backgroundColor: ['#ff6384', '#36a2eb', '#4bc0c0']
+                    }]
+                };
+
+                if (myChart) {
+                    myChart.destroy();
+                }
+
+                myChart = new Chart(taskChart, {
+                    type: 'bar',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            document.querySelectorAll('.kanban-column').forEach(column => {
+                column.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                });
+                column.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    const taskData = JSON.parse(e.dataTransfer.getData('text/plain'));
+                    const taskIndex = tasks.findIndex(t => t.name === taskData.name && t.member === taskData.member);
+                    tasks[taskIndex].status = column.id;
+                    const taskElement = document.querySelector(`.task[data-task-name="${taskData.name}"][data-task-member="${taskData.member}"]`);
+                    column.appendChild(taskElement);
+                    updateReport();
+                });
+            });
+
+            filterStatus.addEventListener('change', (e) => {
+                const filterValue = e.target.value;
+                reportList.innerHTML = '';
+                tasks.forEach(task => {
+                    if (filterValue === 'all' || task.status === filterValue) {
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `
+                            <div class="task-card ${task.status}">
+                                <strong>${task.name}</strong> (${task.member}) - ${task.status}
+                            </div>
+                        `;
+                        reportList.appendChild(listItem);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

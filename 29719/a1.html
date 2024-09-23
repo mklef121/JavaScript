@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Management App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Project Management</h1>
+        
+        <!-- Team Management -->
+        <section id="team-management">
+            <h2>Team Members</h2>
+            <button onclick="addTeamMember()">Add Member</button>
+            <div id="team-list"></div>
+        </section>
+
+        <!-- Task Creation -->
+        <section id="task-creation">
+            <h2>Create Task</h2>
+            <form id="taskForm">
+                <input type="text" id="taskName" placeholder="Task Name" required>
+                <select id="assignee"></select>
+                <button type="submit">Create Task</button>
+            </form>
+        </section>
+
+        <!-- Kanban Board -->
+        <section id="kanban">
+            <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)"><h3>Todo</h3><div id="todo"></div></div>
+            <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)"><h3>In Progress</h3><div id="inProgress"></div></div>
+            <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)"><h3>Done</h3><div id="done"></div></div>
+        </section>
+
+        <!-- Reporting -->
+        <section id="report">
+            <h2>Project Report</h2>
+            <div id="chartContainer">
+                <canvas id="taskChart"></canvas>
+            </div>
+            <div id="taskSummary"></div>
+        </section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
