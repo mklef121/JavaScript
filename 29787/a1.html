@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rider Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body { font-family: 'Poppins', sans-serif; margin: 0; padding: 0; }
+        .container { display: flex; }
+        .sidebar { width: 250px; background: #333; color: white; }
+        .main-content { flex-grow: 1; padding: 20px; }
+        .rider-avatar { width: 50px; height: 50px; border-radius: 50%; background: #007BFF; color: white; display: flex; justify-content: center; align-items: center; }
+        /* Additional styles for responsiveness and aesthetics */
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="sidebar">
+        <ul>
+            <li>Riders</li>
+            <li>Active Rides</li>
+            <li>Reports</li>
+        </ul>
+    </div>
+    <div class="main-content" id="app">
+        <!-- Content will be dynamically loaded here -->
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const app = document.getElementById('app');
+        // Mock data
+        const riders = [{name: "John Doe", avatar: null, rides: []}, /*...more riders...*/];
+        const activeRides = [{rider: "Jane Doe", currentLocation: [0, 0], destination: [1, 1]}, /*...*/];
+
+        function showRiders() {
+            app.innerHTML = riders.map(rider => `
+                <div onclick="showRiderDetails('${rider.name}')">
+                    <div class="rider-avatar" style="background-color: ${'#'+(Math.random()*0xFFFFFF<<0).toString(16)}">${rider.avatar ? '' : rider.name.charAt(0)}</div>
+                    ${rider.name}
+                </div>
+            `).join('');
+        }
+
+        function showRiderDetails(name) {
+            // Logic to show details, including completed rides and map
+            const rider = riders.find(r => r.name === name);
+            // Use Leaflet to show maps for completed rides
+        }
+
+        function showActiveRides() {
+            // Similar structure with real-time updates for rider positions
+            // Use Leaflet for dynamic map
+        }
+
+        function showReports() {
+            // Display charts and financial summaries
+            // Here you would integrate Chart.js or similar
+        }
+
+        // Initial load
+        showRiders();
+    });
+</script>
+</body>
+</html>

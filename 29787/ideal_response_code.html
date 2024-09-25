@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .rider-list,
+        .report-section,
+        .active-rides {
+            margin-bottom: 20px;
+        }
+
+        .rider {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin: 5px 0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .rider:hover {
+            background-color: #f0f0f0;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #6c63ff;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+        }
+
+        .rides {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ride-card,
+        .active-ride-card {
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            /* width: 100%; */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .ride-card:hover {
+            transform: scale(1.02);
+            background-color: #e7f0ff;
+        }
+
+        .active-ride-card {
+            background: linear-gradient(135deg, #6c63ff, #a9a9ff);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .active-ride-card:hover {
+            transform: scale(1.02);
+            background: linear-gradient(135deg, #4f4fbb, #9090ff);
+        }
+
+        .ride-details {
+            display: none;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        .map {
+            height: 300px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #eaeaea;
+            margin-bottom: 20px;
+        }
+
+        .report {
+            display: flex;
+            flex-direction: column;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f8f8;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .report div {
+            margin: 5px 0;
+        }
+
+        .chart {
+            width: 100%;
+            height: 200px;
+            background-color: #eaeaea;
+            margin-top: 20px;
+        }
+
+        .active-ride-info {
+            margin-top: 10px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .completed-rides {
+            display: none;
+        }
+    </style>
+    <title>Enhanced Rider Management</title>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Delivery Rider Management</h1>
+        <div class="rider-list">
+            <h2>Riders</h2>
+            <div id="riders"></div>
+        </div>
+        <div class="completed-rides">
+            <h2>Completed Rides</h2>
+            <div id="rides" class="rides"></div>
+        </div>
+        <div class="active-rides">
+            <h2>Active Rides</h2>
+            <div id="active-rides" class="rides"></div>
+        </div>
+        <div class="report-section">
+            <h2>Reports</h2>
+            <div id="report-summary" class="report"></div>
+            <canvas id="report-chart" class="chart"></canvas>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        const riders = [
+            { id: 1, name: "Miracle Nwabueze", },
+            { id: 2, name: "Stephen Victoria", },
+        ];
+
+        const completedRidesMockData = [
+            { riderId: 1, pickup: [40.73061, -73.935242], pickupName: "Location A", destination: [40.741061, -73.989699], destinationName: "Location B", time: 25, customer: "Alice", revenue: 15 },
+            { riderId: 2, pickup: [40.749825, -73.987963], pickupName: "Location C", destination: [40.748817, -73.985428], destinationName: "Location D", time: 30, customer: "Bob", revenue: 20 },
+            { riderId: 1, pickup: [40.73061, -73.935242], pickupName: "Location A", destination: [40.7577, -73.9857], destinationName: "Location E", time: 15, customer: "Dave", revenue: 10 },
+            { riderId: 2, pickup: [40.748817, -73.985428], pickupName: "Location D", destination: [40.741061, -73.989699], destinationName: "Location B", time: 10, customer: "Eve", revenue: 25 }
+        ];
+
+        const activeRidesMockData = [
+            { riderId: 1, pickup: [40.73061, -73.935242], pickupName: "Location A", destination: [40.751576, -73.993200], destinationName: "Location F", customer: "Charlie" },
+            { riderId: 2, pickup: [40.749825, -73.987963], pickupName: "Location G", destination: [40.748817, -73.985428], destinationName: "Location H", customer: "Dana" }
+        ];
+
+        // Populate riders
+        const riderList = document.getElementById('riders');
+        riders.forEach(rider => {
+            const riderDiv = document.createElement('div');
+            riderDiv.className = 'rider';
+            riderDiv.innerHTML = `<div class="avatar">${getAvatarFromName(rider.name)}</div>${rider.name}`;
+            riderDiv.onclick = () => showCompletedRides(rider.id);
+            riderList.appendChild(riderDiv);
+        });
+
+        function getAvatarFromName(name) {
+            return name.split(' ').map(word => word[0]).join('');
+        }
+
+        // Show completed rides
+        function showCompletedRides(riderId) {
+            const ridesDiv = document.getElementById('rides');
+            const completedRidesHeader = document.querySelector('.completed-rides h2');
+            const rider = riders.find(r => r.id === riderId);
+
+            completedRidesHeader.textContent = `Completed Rides for ${rider.name}`;
+            ridesDiv.innerHTML = '';
+
+            const completedRides = completedRidesMockData.filter(ride => ride.riderId === riderId);
+            completedRides.forEach(ride => {
+                const rideCard = document.createElement('div');
+                rideCard.className = 'ride-card';
+                rideCard.innerHTML = `
+            <strong>Pickup:</strong> ${ride.pickupName}<br>
+            <strong>Destination:</strong> ${ride.destinationName}
+        `;
+                rideCard.onclick = () => toggleRideDetails(rideCard, ride);
+                ridesDiv.appendChild(rideCard);
+            });
+
+            ridesDiv.style.display = 'flex';
+            document.querySelector('.completed-rides').style.display = 'block';
+        }
+
+
+
+        // Toggle ride details
+        function toggleRideDetails(card, ride) {
+            let detailsDiv = card.querySelector('.ride-details');
+            if (!detailsDiv) {
+                detailsDiv = document.createElement('div');
+                detailsDiv.className = 'ride-details';
+                detailsDiv.innerHTML = `
+                <strong>Pickup Location:</strong> ${ride.pickupName}<br>
+                <strong>Destination:</strong> ${ride.destinationName}<br>
+                <strong>Time Taken:</strong> ${ride.time}<br>
+                <strong>Customer:</strong> ${ride.customer} <br>
+                <strong>Revenue:</strong> $${ride.revenue} <br>
+            `;
+                const mapDiv = document.createElement('div');
+                mapDiv.className = 'map';
+                detailsDiv.appendChild(mapDiv);
+                card.appendChild(detailsDiv);
+
+                initMap(mapDiv, ride);
+                detailsDiv.onclick = (event) => event.stopPropagation(); // Prevent click on details from closing the card
+            }
+            detailsDiv.style.display = detailsDiv.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Initialize map for completed ride
+        function initMap(mapDiv, ride) {
+            const map = L.map(mapDiv).setView(ride.pickup, 13);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+            }).addTo(map);
+            L.marker(ride.pickup).addTo(map).bindPopup('Pickup: ' + ride.pickupName).openPopup();
+            L.marker(ride.destination).addTo(map).bindPopup('Destination: ' + ride.destinationName).openPopup();
+            L.polyline([ride.pickup, ride.destination], { color: 'blue' }).addTo(map);
+
+            setTimeout(() => {
+                map.invalidateSize();
+            }, 100)
+
+        }
+
+        // Populate active rides
+        const activeRidesDiv = document.getElementById('active-rides');
+        activeRidesMockData.forEach(ride => {
+            const activeRideCard = document.createElement('div');
+            activeRideCard.className = 'active-ride-card';
+            activeRideCard.innerHTML = `
+            <h3>${ride.customer}</h3>
+            <p><strong>Pickup:</strong> ${ride.pickupName}</p>
+            <p><strong>Destination:</strong> ${ride.destinationName}</p>
+        `;
+            const rideInfoDiv = document.createElement('div');
+            rideInfoDiv.className = 'active-ride-info';
+            rideInfoDiv.style.display = 'none';
+            activeRideCard.appendChild(rideInfoDiv);
+            rideInfoDiv.onclick = (event) => event.stopPropagation();
+
+            activeRideCard.onclick = () => {
+                rideInfoDiv.style.display = rideInfoDiv.style.display === 'block' ? 'none' : 'block';
+                if (rideInfoDiv.style.display === 'block') {
+                    showActiveRideDetails(ride, rideInfoDiv);
+                }
+            };
+            activeRidesDiv.appendChild(activeRideCard);
+        });
+
+        // Show active ride details
+        function showActiveRideDetails(ride, infoDiv) {
+            const rider = riders.find(r => r.id === ride.riderId);
+            infoDiv.innerHTML = `
+            <strong>Rider:</strong> ${rider.name}<br>
+            <strong>Customer:</strong> ${ride.customer}<br>
+            <strong>Pickup:</strong> ${ride.pickupName}<br>
+            <strong>Destination:</strong> ${ride.destinationName}<br>
+        `;
+            initActiveRideMap(ride, infoDiv);
+        }
+
+        // Initialize map for active ride
+        function initActiveRideMap(ride, infoDiv) {
+            const mapDiv = document.createElement('div');
+            mapDiv.className = 'map';
+            infoDiv.appendChild(mapDiv);
+
+            const map = L.map(mapDiv).setView(ride.pickup, 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+            }).addTo(map);
+
+            // Rider moving image
+            const riderIcon = L.icon({
+                iconUrl: 'https://i.ibb.co/BVXN1vY/motorbike-new.png',
+                iconSize: [38, 38],
+                iconAnchor: [19, 38]
+            });
+
+            const movingMarker = L.marker(ride.pickup, { icon: riderIcon }).addTo(map);
+            L.marker(ride.destination).addTo(map).bindPopup('Destination: ' + ride.destinationName).openPopup();
+            L.polyline([ride.pickup, ride.destination], { color: 'red' }).addTo(map);
+
+            // Simulate the rider moving
+            let currentLatLng = [...ride.pickup];
+            const interval = setInterval(() => {
+                if (currentLatLng[0] < ride.destination[0]) {
+                    currentLatLng[0] += 0.0001;
+                    movingMarker.setLatLng(currentLatLng);
+                    map.setView(currentLatLng);
+                } else {
+                    clearInterval(interval);
+                }
+            }, 1000);
+        }
+
+        // Generate reports
+        function generateReport() {
+            const reportDiv = document.getElementById('report-summary');
+            const totalDeliveries = completedRidesMockData.length;
+            const totalActiveRides = activeRidesMockData.length;
+            const totalRevenue = completedRidesMockData.reduce((acc, ride) => acc + ride.revenue, 0);
+            const averageDeliveryTime = (completedRidesMockData.reduce((acc, ride) => acc + ride.time, 0) / totalDeliveries).toFixed(2);
+
+            reportDiv.innerHTML = `
+            <div>Total Deliveries: ${totalDeliveries}</div>
+            <div>Total Active Rides: ${totalActiveRides}</div>
+            <div>Total Revenue: $${totalRevenue}</div>
+            <div>Average Delivery Time: ${averageDeliveryTime} mins</div>
+        `;
+            drawReportChart();
+        }
+
+        // Chart.js for report visualization
+        function drawReportChart() {
+            const ctx = document.getElementById('report-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Completed Rides', 'Active Rides'],
+                    datasets: [{
+                        label: 'Number of Rides',
+                        data: [completedRidesMockData.length, activeRidesMockData.length],
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(255, 206, 86, 0.6)',
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        generateReport();
+    </script>
+</body>
+
+</html>

@@ -3,322 +3,270 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real Estate Asset Management Widget</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
-            padding: 0;
-            background-color: #f0f4f8;
+            padding: 20px;
+            background-color: #f4f4f4;
         }
         .container {
-            width: 95%;
             max-width: 1200px;
-            margin: 20px auto;
+            margin: auto;
             padding: 20px;
             background: white;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-        }
-        .section {
-            margin-bottom: 30px;
-        }
-        .card {
-            background: #fff;
             border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        .property-search, .todo-list {
-            margin-bottom: 30px;
-            padding: 15px;
-            background: #f9f9f9;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .property-search h2, .todo-list h2 {
-            margin-top: 0;
-            font-size: 22px;
-            font-weight: 600;
-        }
-        .property-search .filter label, .todo-list label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-        }
-        .property-search .filter input[type="range"], .todo-list input[type="text"], .todo-list input[type="date"], .todo-list input[type="time"], .todo-list textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            box-sizing: border-box;
-        }
-        .todo-list input[type="text"], .todo-list input[type="email"], .todo-list textarea {
-            padding: 10px;
-        }
-        .property-search .filter button, .todo-list button {
-            padding: 10px 15px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
-        }
-        .property-search .filter button:hover, .todo-list button:hover {
-            background-color: #0056b3;
-        }
-        .todo-list ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .todo-list li {
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            transition: background-color 0.3s, transform 0.3s;
-        }
-        .todo-list li:hover {
-            background-color: #f1f1f1;
-            transform: scale(1.02);
-        }
-        .todo-list .task-detail {
-            margin-bottom: 10px;
-        }
-        .todo-list .remove {
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 8px 12px;
-            cursor: pointer;
-            position: absolute;
-            bottom: 15px;
-            right: 15px;
-            transition: background-color 0.3s;
-        }
-        .todo-list .remove:hover {
-            background-color: #c82333;
-        }
-        .todo-list .completed {
-            background-color: #e9fbe9;
-            text-decoration: line-through;
-            border-color: #28a745;
-        }
-        .todo-list .completed .remove {
-            background-color: #28a745;
-        }
-        .form-group {
+        .rider-list, .report-section, .active-rides {
             margin-bottom: 20px;
         }
-        .form-group input, .form-group textarea, .form-group select {
-            display: block;
-            width: 100%;
+        .rider {
+            display: flex;
+            align-items: center;
             padding: 10px;
             border: 1px solid #ddd;
-            border-radius: 5px;
-            box-sizing: border-box;
+            margin: 5px 0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
         }
-        .form-group input[type="date"], .form-group input[type="time"] {
-            padding: 8px;
+        .rider:hover {
+            background-color: #f0f0f0;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #6c63ff;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+        }
+        .rides {
+            display: none;
+            flex-wrap: wrap;
+        }
+        .ride-card {
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px;
+            width: calc(33% - 20px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .ride-card:hover {
+            transform: scale(1.05);
+        }
+        .map {
+            height: 300px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #eaeaea;
+            margin-bottom: 20px;
+        }
+        .report {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .chart {
+            width: 100%;
+            height: 200px;
+            background-color: #eaeaea;
         }
     </style>
+    <title>Enhanced Rider Management</title>
 </head>
 <body>
-    <div class="container">
-        <!-- Property Search -->
-        <div class="section property-search card">
-            <h2>Property Search</h2>
-            <div class="filter">
-                <label for="minPrice">Minimum Price</label>
-                <input type="range" id="minPrice" min="0" max="1000000" step="10000" value="0">
-                <span id="minPriceValue">$0</span>
-            </div>
-            <div class="filter">
-                <label for="maxPrice">Maximum Price</label>
-                <input type="range" id="maxPrice" min="0" max="1000000" step="10000" value="1000000">
-                <span id="maxPriceValue">$1,000,000</span>
-            </div>
-            <div class="filter">
-                <label for="minSize">Minimum Size (sq ft)</label>
-                <input type="range" id="minSize" min="0" max="10000" step="100" value="0">
-                <span id="minSizeValue">0 sq ft</span>
-            </div>
-            <div class="filter">
-                <label for="maxSize">Maximum Size (sq ft)</label>
-                <input type="range" id="maxSize" min="0" max="10000" step="100" value="10000">
-                <span id="maxSizeValue">10,000 sq ft</span>
-            </div>
-            <div class="filter">
-                <label for="searchLocation">Location</label>
-                <input type="text" id="searchLocation" placeholder="Enter location">
-            </div>
-            <button onclick="filterProperties()">Apply Filters</button>
-        </div>
 
-        <!-- Property Overview -->
-        <div class="section property-overview card">
-            <h2>Current Properties</h2>
-            <div id="propertyList">
-                <div class="property-card" data-price="550000" data-size="3000" data-location="Downtown">
-                    <img src="https://via.placeholder.com/600x400" alt="Property 1">
-                    <div class="details">
-                        <h4>Modern Family Home</h4>
-                        <p>Location: Downtown</p>
-                        <p>Price: $550,000</p>
-                        <p>Size: 3,000 sq ft</p>
-                        <a href="#" class="e-tour">Schedule an E-Tour</a>
-                    </div>
-                </div>
-                <div class="property-card" data-price="1200000" data-size="1800" data-location="Uptown">
-                    <img src="https://via.placeholder.com/600x400" alt="Property 2">
-                    <div class="details">
-                        <h4>Luxury Condo</h4>
-                        <p>Location: Uptown</p>
-                        <p>Price: $1,200,000</p>
-                        <p>Size: 1,800 sq ft</p>
-                        <a href="#" class="e-tour">Schedule an E-Tour</a>
-                    </div>
-                </div>
-                <div class="property-card" data-price="350000" data-size="2000" data-location="Suburbs">
-                    <img src="https://via.placeholder.com/600x400" alt="Property 3">
-                    <div class="details">
-                        <h4>Charming Cottage</h4>
-                        <p>Location: Suburbs</p>
-                        <p>Price: $350,000</p>
-                        <p>Size: 2,000 sq ft</p>
-                        <a href="#" class="e-tour">Schedule an E-Tour</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- To-Do List -->
-        <div class="section todo-list card">
-            <h2>To-Do List</h2>
-            <div class="form-group">
-                <label for="taskType">Task Type</label>
-                <select id="taskType">
-                    <option value="Inspection">Inspection</option>
-                    <option value="Lease Renewal">Lease Renewal</option>
-                    <option value="Maintenance">Maintenance</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="taskDate">Date</label>
-                <input type="date" id="taskDate">
-            </div>
-            <div class="form-group">
-                <label for="taskTime">Time</label>
-                <input type="time" id="taskTime">
-            </div>
-            <div class="form-group">
-                <label for="taskContact">Contact</label>
-                <input type="text" id="taskContact" placeholder="Contact Name">
-            </div>
-            <div class="form-group">
-                <label for="taskEmail">Email</label>
-                <input type="email" id="taskEmail" placeholder="Contact Email">
-            </div>
-            <div class="form-group">
-                <label for="taskNotes">Notes</label>
-                <textarea id="taskNotes" rows="4" placeholder="Enter any additional notes"></textarea>
-            </div>
-            <button onclick="addTask()">Add Task</button>
-            <ul id="todoList">
-                <!-- Task items will be dynamically added here -->
-            </ul>
-        </div>
+<div class="container">
+    <h1>Delivery Rider Management</h1>
+    <div class="rider-list">
+        <h2>Riders</h2>
+        <div id="riders"></div>
     </div>
-    <script>
-        // Function to filter properties based on search criteria
-        function filterProperties() {
-            var minPrice = parseInt(document.getElementById('minPrice').value);
-            var maxPrice = parseInt(document.getElementById('maxPrice').value);
-            var minSize = parseInt(document.getElementById('minSize').value);
-            var maxSize = parseInt(document.getElementById('maxSize').value);
-            var location = document.getElementById('searchLocation').value.toLowerCase();
+    <div class="completed-rides">
+        <h2>Completed Rides</h2>
+        <div id="completed-rides" class="rides"></div>
+        <div id="completed-ride-map" class="map"></div>
+    </div>
+    <div class="active-rides">
+        <h2>Active Rides</h2>
+        <div id="active-rides" class="active-rides"></div>
+        <div id="active-ride-map" class="map"></div>
+    </div>
+    <div class="report-section">
+        <h2>Reports</h2>
+        <div id="report-summary" class="report"></div>
+        <canvas id="report-chart" class="chart"></canvas>
+    </div>
+</div>
 
-            var properties = document.querySelectorAll('.property-card');
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+    const riders = [
+        { id: 1, name: "John Doe", avatar: "JD" },
+        { id: 2, name: "Jane Smith", avatar: "JS" },
+    ];
 
-            properties.forEach(function (property) {
-                var price = parseInt(property.getAttribute('data-price'));
-                var size = parseInt(property.getAttribute('data-size'));
-                var propertyLocation = property.getAttribute('data-location').toLowerCase();
+    const completedRidesMockData = [
+        { riderId: 1, pickup: [40.73061, -73.935242], pickupName: "Location A", destination: [40.741061, -73.989699], destinationName: "Location B", time: "25 mins", customer: "Alice" },
+        { riderId: 2, pickup: [40.749825, -73.987963], pickupName: "Location C", destination: [40.748817, -73.985428], destinationName: "Location D", time: "30 mins", customer: "Bob" },
+        { riderId: 1, pickup: [40.73061, -73.935242], pickupName: "Location A", destination: [40.7577, -73.9857], destinationName: "Location E", time: "15 mins", customer: "Dave" },
+        { riderId: 2, pickup: [40.748817, -73.985428], pickupName: "Location D", destination: [40.741061, -73.989699], destinationName: "Location B", time: "10 mins", customer: "Eve" }
+    ];
 
-                if (price >= minPrice && price <= maxPrice &&
-                    size >= minSize && size <= maxSize &&
-                    propertyLocation.includes(location)) {
-                    property.style.display = 'block';
-                } else {
-                    property.style.display = 'none';
-                }
-            });
+    const activeRidesMockData = [
+        { riderId: 1, pickup: [40.73061, -73.935242], pickupName: "Location A", destination: [40.751576, -73.993200], destinationName: "Location F", customer: "Charlie" }
+    ];
+
+    // Populate riders
+    const riderList = document.getElementById('riders');
+    riders.forEach(rider => {
+        const riderDiv = document.createElement('div');
+        riderDiv.className = 'rider';
+        riderDiv.innerHTML = `<div class="avatar">${rider.avatar}</div>${rider.name}`;
+        riderDiv.onclick = () => showCompletedRides(rider.id);
+        riderList.appendChild(riderDiv);
+    });
+
+    // Show completed rides
+    function showCompletedRides(riderId) {
+        const ridesDiv = document.getElementById('completed-rides');
+        const mapDiv = document.getElementById('completed-ride-map');
+        ridesDiv.innerHTML = '';
+        mapDiv.innerHTML = '';
+        const completedRides = completedRidesMockData.filter(ride => ride.riderId === riderId);
+        completedRides.forEach(ride => {
+            const rideCard = document.createElement('div');
+            rideCard.className = 'ride-card';
+            rideCard.innerHTML = `
+                <strong>Pickup:</strong> ${ride.pickupName}<br>
+                <strong>Destination:</strong> ${ride.destinationName}<br>
+                <strong>Time:</strong> ${ride.time}<br>
+                <strong>Customer:</strong> ${ride.customer}
+            `;
+            rideCard.onclick = () => showRideDetails(ride);
+            ridesDiv.appendChild(rideCard);
+        });
+        ridesDiv.style.display = 'flex';
+
+        // Initialize map for completed ride
+        if (completedRides.length > 0) {
+            initMap(mapDiv, completedRides);
         }
+    }
 
-        // Function to update slider values
-        function updateSliderValue() {
-            document.getElementById('minPriceValue').textContent = '$' + document.getElementById('minPrice').value.toLocaleString();
-            document.getElementById('maxPriceValue').textContent = '$' + document.getElementById('maxPrice').value.toLocaleString();
-            document.getElementById('minSizeValue').textContent = document.getElementById('minSize').value.toLocaleString() + ' sq ft';
-            document.getElementById('maxSizeValue').textContent = document.getElementById('maxSize').value.toLocaleString() + ' sq ft';
-        }
+    // Show ride details
+    function showRideDetails(ride) {
+        alert(`Pickup: ${ride.pickupName}\nDestination: ${ride.destinationName}\nTime Taken: ${ride.time}\nCustomer: ${ride.customer}`);
+    }
 
-        document.getElementById('minPrice').addEventListener('input', updateSliderValue);
-        document.getElementById('maxPrice').addEventListener('input', updateSliderValue);
-        document.getElementById('minSize').addEventListener('input', updateSliderValue);
-        document.getElementById('maxSize').addEventListener('input', updateSliderValue);
+    // Initialize map
+    function initMap(mapDiv, rides) {
+        const map = L.map(mapDiv).setView(rides[0].pickup, 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(map);
+        L.marker(rides[0].pickup).addTo(map).bindPopup('Pickup Location: ' + rides[0].pickupName).openPopup();
+        L.marker(rides[0].destination).addTo(map).bindPopup('Destination: ' + rides[0].destinationName).openPopup();
+        L.polyline([rides[0].pickup, rides[0].destination], { color: 'blue' }).addTo(map);
+    }
 
-        updateSliderValue(); // Initialize slider values
+    // Populate active rides
+    const activeRidesDiv = document.getElementById('active-rides');
+    activeRidesMockData.forEach(ride => {
+        const activeRideDiv = document.createElement('div');
+        activeRideDiv.className = 'active-ride-detail';
+        activeRideDiv.innerHTML = `Active: ${ride.pickupName} to ${ride.destinationName} - ${ride.customer}`;
+        activeRideDiv.onclick = () => showActiveRideDetails(ride);
+        activeRidesDiv.appendChild(activeRideDiv);
+    });
 
-        // Function to add a task to the list
-        function addTask() {
-            var taskType = document.getElementById('taskType').value;
-            var date = document.getElementById('taskDate').value;
-            var time = document.getElementById('taskTime').value;
-            var contact = document.getElementById('taskContact').value.trim();
-            var email = document.getElementById('taskEmail').value.trim();
-            var notes = document.getElementById('taskNotes').value.trim();
+    // Show active ride details
+    function showActiveRideDetails(ride) {
+        alert(`Pickup: ${ride.pickupName}\nDestination: ${ride.destinationName}\nCustomer: ${ride.customer}`);
+        initActiveRideMap(ride);
+    }
 
-            if (contact !== '' && email !== '') {
-                var li = document.createElement('li');
-                li.className = 'task-item';
-                li.innerHTML = `
-                    <div class="task-detail"><strong>Type:</strong> ${taskType}</div>
-                    <div class="task-detail"><strong>Date:</strong> ${date}</div>
-                    <div class="task-detail"><strong>Time:</strong> ${time}</div>
-                    <div class="task-detail"><strong>Contact:</strong> ${contact}</div>
-                    <div class="task-detail"><strong>Email:</strong> ${email}</div>
-                    <div class="task-detail"><strong>Notes:</strong> ${notes}</div>
-                    <button class="remove" onclick="removeTask(this)">Remove</button>
-                `;
-                li.onclick = function () { this.classList.toggle('completed'); };
-                document.getElementById('todoList').appendChild(li);
-                // Clear fields after adding the task
-                document.getElementById('taskType').value = '';
-                document.getElementById('taskDate').value = '';
-                document.getElementById('taskTime').value = '';
-                document.getElementById('taskContact').value = '';
-                document.getElementById('taskEmail').value = '';
-                document.getElementById('taskNotes').value = '';
+    // Initialize map for active ride
+    function initActiveRideMap(ride) {
+        const mapDiv = document.getElementById('active-ride-map');
+        mapDiv.innerHTML = '';
+        const map = L.map(mapDiv).setView(ride.pickup, 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(map);
+        const pickupMarker = L.marker(ride.pickup).addTo(map).bindPopup('Pickup Location: ' + ride.pickupName).openPopup();
+        const destinationMarker = L.marker(ride.destination).addTo(map).bindPopup('Destination: ' + ride.destinationName).openPopup();
+        L.polyline([ride.pickup, ride.destination], { color: 'red' }).addTo(map);
+
+        // Simulate the rider moving
+        let currentLatLng = [...ride.pickup];
+        const interval = setInterval(() => {
+            if (currentLatLng[0] < ride.destination[0]) {
+                currentLatLng[0] += 0.001; // Simulating movement in latitude
+                pickupMarker.setLatLng(currentLatLng);
+            } else {
+                clearInterval(interval);
             }
-        }
+        }, 1000);
+    }
 
-        // Function to remove a task from the list
-        function removeTask(button) {
-            var li = button.parentElement;
-            li.remove();
-        }
-    </script>
+    // Generate reports
+    function generateReport() {
+        const reportDiv = document.getElementById('report-summary');
+        reportDiv.innerHTML = `
+            <div>Total Deliveries: ${completedRidesMockData.length}</div>
+            <div>Total Active Rides: ${activeRidesMockData.length}</div>
+        `;
+        drawReportChart();
+    }
+    
+    // Chart.js for report visualization
+    function drawReportChart() {
+        const ctx = document.getElementById('report-chart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Completed Rides', 'Active Rides'],
+                datasets: [{
+                    label: 'Number of Rides',
+                    data: [completedRidesMockData.length, activeRidesMockData.length],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 206, 86, 0.6)',
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    generateReport();
+</script>
 </body>
 </html>
+
+
+-- working Map

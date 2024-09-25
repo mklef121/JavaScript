@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rider Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<style>
+body { font-family: 'Poppins', sans-serif; margin: 0; padding: 0; background: #f4f4f4; }
+.container { display: grid; grid-template-columns: 1fr 3fr; gap: 20px; padding: 20px; }
+.riders-list, .rider-details, .active-rides, .reports { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+.rider-avatar { width: 50px; height: 50px; border-radius: 50%; background: #512DA8; color: white; display: flex; justify-content: center; align-items: center; margin-right: 10px; }
+.ride-map { height: 200px; }
+.active-ride-map { height: 300px; }
+.chart-container { width: 100%; height: 300px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="riders-list">
+    <h2>Riders</h2>
+    <!-- Rider list will be populated here -->
+  </div>
+
+  <div class="main-content">
+    <div class="rider-details">
+      <!-- Rider details and completed rides will be here -->
+    </div>
+    
+    <div class="active-rides">
+      <h2>Active Rides</h2>
+      <!-- Active rides list with dynamic maps -->
+    </div>
+
+    <div class="reports">
+      <h2>Reports</h2>
+      <div class="chart-container">
+        <!-- Chart.js canvas for infographics -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.1/dist/chart.min.js"></script>
+<script>
+// Mock data
+const mockRiders = [
+  {id: 1, name: "John Doe", avatar: null},
+  {id: 2, name: "Jane Smith", avatar: null}
+];
+
+const mockRides = [
+  {id: 1, riderId: 1, pickup: "Point A", destination: "Point B", time: "30 min", customer: "Alice"},
+  // More rides...
+];
+
+// Populate riders list
+const ridersList = document.querySelector('.riders-list');
+mockRiders.forEach(rider => {
+  const avatar = rider.avatar ? `<img src="${rider.avatar}" alt="${rider.name}" class="rider-avatar">` : 
+    `<div class="rider-avatar" style="background-color: #${Math.floor(Math.random()*16777215).toString(16)}">${rider.name.split(' ').map(name => name[0]).join('')}</div>`;
+  ridersList.innerHTML += `<div onclick="showRiderDetails(${rider.id})">${avatar}${rider.name}</div>`;
+});
+
+function showRiderDetails(riderId) {
+  const rider = mockRiders.find(r => r.id === riderId);
+  const detailsDiv = document.querySelector('.rider-details');
+  detailsDiv.innerHTML = `<h2>${rider.name}</h2>`;
+  // Here add logic for showing rides, map for individual rides etc.
+}
+
+function initMap(containerId, lat, long, pathCoords) {
+  const map = L.map(containerId).setView([lat, long], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+  if(pathCoords) {
+    L.polyline(pathCoords, {color: 'blue'}).addTo(map);
+  }
+}
+
+// Example for initializing maps, reports etc. would go here
+</script>
+
+</body>
+</html>

@@ -349,8 +349,12 @@ I need a visually pleasing and responsive design and a very good fonts like Popp
 create a target practice shooting game. The user should be able to use a well designed gun to aim at shooting range, each target that was hit successfully should add a point to the user. each level should last for a period of time, after which the user can confirm of they wan to continue to the next level
 
 
-I have a software project to manage. I will be needing an App to create tasks and assign these tasks to a  team member, also be able to manage this tasks progress by having them in a kanban board and moving them across three columns: Todo, In Progress, Done. I need a report view to see general progress of all tasks in the project. Add Abilityy to create Team mates information too.
-I need a visually pleasing and responsive design and a very good fonts like Poppins.
+I have a software project to manage. I will be needing an App to create tasks and assign these tasks to a team member, also I want to be able to manage these tasks progress by having them on a Kanban board and moving them across three columns: Todo, In Progress, Done. The task on the board should have the task name, an avatar that defaults to the user's name initials designed in a background color, and the date the task was created. I need a report view to see the general progress of all tasks in the project, it should also include a chart to describe the progress. Add Ability to create Team mates information too.
+I need a visually pleasing and responsive design and very good fonts like Poppins.
+
+
+I manage a group of delivery riders, it's been a pain managing. I would want a widget that helps manage riders. It should display all riders on the platform with their picture avatar (that defaults to the riders name initials designed in a background color), when any is clicked, it should show all his completed rides, when a completed ride is clicked, it should show pickup location, destination, time taken to deliver and the customers name ( The pickup, and destination can be shown on a map with the path highlighted). A section of the app should show all active rides, when an active ride is clicked, it should show the rider details, the customer info, and a dynamic map showing the rider icon moving along the map to his destination. The app should have a report section showing summaries of all deliveries and financials, Infographics can be added to this as well. Mock data can be used in all places required. Ensure to implement a visually pleasing and responsive design with very good fonts like Poppins, Also do not use Google maps. Ensure implementation is comprehensive and encompassing.
+
 
 * Unless otherwise specified, generate code in a single block of html/css/js.
 * Plan out the code before starting to write it.
