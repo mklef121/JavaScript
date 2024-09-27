@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Daily Decision Helper</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+<style>
+    #decisions-container { display: flex; justify-content: space-around; }
+    .decision-box { width: 30%; padding: 10px; border: 1px solid #ccc; }
+    .decision-item { background: #f9f9f9; padding: 10px; margin: 5px 0; cursor: move; }
+    .decision-item.dragging { opacity: 0.5; }
+    #quota-meter { width: 200px; height: 200px; margin: 20px auto; }
+    .suggest { animation: pulse 2s infinite; }
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+</style>
+</head>
+<body>
+
+<div id="app">
+    <button onclick="addDecision()">Add Decision</button>
+    <div id="decisions-container">
+        <div class="decision-box" id="urgent">Urgent</div>
+        <div class="decision-box" id="not-urgent">Not Urgent</div>
+        <div class="decision-box" id="delegatable">Delegatable</div>
+    </div>
+    <canvas id="quota-meter"></canvas>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
+<script>
+    const decisions = [];
+    const maxDecisions = 20;
+    let chart;
+
+    function addDecision() {
+        if (decisions.length < maxDecisions) {
+            const decision = prompt("Enter your decision:");
+            if (decision) {
+                decisions.push(decision);
+                renderDecisions();
+                updateChart();
+            }
+        } else {
+            alert("You've reached the maximum number of decisions.");
+        }
+    }
+
+    function renderDecisions() {
+        ['urgent', 'not-urgent', 'delegatable'].forEach(category => {
+            const list = document.getElementById(category);
+            list.innerHTML = ''; // Clear current list
+            decisions.forEach(decision => {
+                if (!list.querySelector(`[data-decision="${decision}"]`)) {
+                    const div = document.createElement('div');
+                    div.className = 'decision-item';
+                    div.draggable = true;
+                    div.textContent = decision;
+                    div.setAttribute('data-decision', decision);
+                    list.appendChild(div);
+                }
+            });
+        });
+        suggestDecision();
+    }
+
+    function updateChart() {
+        if (!chart) {
+            const ctx = document.getElementById('quota-meter').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [decisions.length, maxDecisions - decisions.length],
+                        backgroundColor: ['#FF6384', '#36A2EB'],
+                    }]
+                },
+                options: {
+                    cutoutPercentage: 70,
+                    responsive: true
+                }
+            });
+        } else {
+            chart.data.datasets[0].data = [decisions.length, maxDecisions - decisions.length];
+            chart.update();
+        }
+    }
+
+    function suggestDecision() {
+        const items = document.querySelectorAll('.decision-item');
+        if(items.length) {
+            const randomItem = items[Math.floor(Math.random() * items.length)];
+            randomItem.classList.add('suggest');
+            setTimeout(() => randomItem.classList.remove('suggest'), 2000);
+        }
+    }
+
+    new Sortable(document.getElementById('urgent'), {
+        group: 'shared', animation: 150
+    });
+    new Sortable(document.getElementById('not-urgent'), {
+        group: 'shared', animation: 150
+    });
+    new Sortable(document.getElementById('delegatable'), {
+        group: 'shared', animation: 150
+    });
+</script>
+
+</body>
+</html>
+

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Decision Helper</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body {
+    font-family: 'Roboto', sans-serif;
+    background: #f4f4f9;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#decisionContainer {
+    width: 100%;
+    max-width: 800px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 20px;
+}
+
+#decisionInput {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#addDecisionBtn, .category {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #5cb85c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.category {
+    background-color: #0275d8;
+    display: inline-block;
+    width: 30%;
+    margin-right: 1%;
+    text-align: center;
+}
+
+.decision {
+    background: #e9ecef;
+    padding: 10px;
+    margin: 5px 0;
+    border-left: 5px solid #0275d8;
+    cursor: move;
+}
+
+#decisionQuota {
+    width: 100%;
+    height: 20px;
+    background: #e9ecef;
+    border-radius: 10px;
+    margin-top: 20px;
+    overflow: hidden;
+}
+
+#quotaFill {
+    height: 100%;
+    background: linear-gradient(to right, #5cb85c, #f0ad4e, #d9534f);
+    width: 0;
+    transition: width 0.5s ease-in-out;
+}
+
+#suggestBtn {
+    margin-top: 20px;
+    background: #f0ad4e;
+}
+
+.drag-over {
+    border: dashed 3px #0275d8;
+}
+</style>
+</head>
+<body>
+
+<div id="decisionContainer">
+    <input type="text" id="decisionInput" placeholder="Enter a decision...">
+    <button id="addDecisionBtn">Add Decision</button>
+    <div id="categories">
+        <div class="category" data-category="urgent">Urgent</div>
+        <div class="category" data-category="notUrgent">Not Urgent</div>
+        <div class="category" data-category="delegatable">Delegatable</div>
+    </div>
+    <div id="decisionsList"></div>
+    <div id="decisionQuota"><div id="quotaFill"></div></div>
+    <button id="suggestBtn">Suggest Decision</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script>
+let decisions = [];
+const maxDecisions = 20;
+const decisionsList = document.getElementById('decisionsList');
+const decisionInput = document.getElementById('decisionInput');
+const addDecisionBtn = document.getElementById('addDecisionBtn');
+const quotaFill = document.getElementById('quotaFill');
+const suggestBtn = document.getElementById('suggestBtn');
+
+function addDecision(text) {
+    if (decisions.length >= maxDecisions) {
+        alert("You've reached the maximum number of decisions!");
+        return;
+    }
+    decisions.push({text, categories: []});
+    updateDecisions();
+    updateQuota();
+}
+
+function updateDecisions() {
+    decisionsList.innerHTML = '';
+    decisions.forEach((decision, index) => {
+        let div = document.createElement('div');
+        div.className = 'decision';
+        div.textContent = decision.text;
+        div.draggable = true;
+        div.dataset.index = index;
+        decisionsList.appendChild(div);
+    });
+}
+
+function updateQuota() {
+    const percentage = (decisions.length / maxDecisions) * 100;
+    quotaFill.style.width = `${percentage}%`;
+}
+
+document.querySelectorAll('.category').forEach(category => {
+    category.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        category.classList.add('drag-over');
+    });
+    category.addEventListener('dragleave', () => {
+        category.classList.remove('drag-over');
+    });
+    category.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const index = e.dataTransfer.getData('text');
+        const decision = decisions[index];
+        if (!decision.categories.includes(category.dataset.category)) {
+            decision.categories.push(category.dataset.category);
+        }
+        category.classList.remove('drag-over');
+    });
+});
+
+decisionsList.addEventListener('dragstart', (e) => {
+    e.dataTransfer.setData('text', e.target.dataset.index);
+});
+
+addDecisionBtn.addEventListener('click', () => {
+    if(decisionInput.value) {
+        addDecision(decisionInput.value);
+        decisionInput.value = '';
+    }
+});
+
+suggestBtn.addEventListener('click', () => {
+    const urgentDecisions = decisions.filter(d => d.categories.includes('urgent'));
+    if(urgentDecisions.length) {
+        const randomIndex = Math.floor(Math.random() * urgentDecisions.length);
+        anime({
+            targets: '.decision',
+            scale: [{value: 1}, {value: 1.2}, {value: 1, delay: 250}],
+            backgroundColor: [{value: '#e9ecef'}, {value: '#f0ad4e', delay: 100}, {value: '#e9ecef', delay: 250}],
+            easing: 'easeInOutQuad',
+            delay: anime.stagger(100, {from: urgentDecisions[randomIndex].text}),
+            complete: () => {
+                alert(`Consider focusing on: ${urgentDecisions[randomIndex].text}`);
+            }
+        });
+    } else {
+        alert("No urgent decisions to suggest!");
+    }
+});
+</script>
+</body>
+</html>

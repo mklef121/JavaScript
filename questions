@@ -356,6 +356,9 @@ I need a visually pleasing and responsive design and very good fonts like Poppin
 I manage a group of delivery riders, it's been a pain managing. I would want a widget that helps manage riders. It should display all riders on the platform with their picture avatar (that defaults to the riders name initials designed in a background color), when any is clicked, it should show all his completed rides, when a completed ride is clicked, it should show pickup location, destination, time taken to deliver and the customers name ( The pickup, and destination can be shown on a map with the path highlighted). A section of the app should show all active rides, when an active ride is clicked, it should show the rider details, the customer info, and a dynamic map showing the rider icon moving along the map to his destination. The app should have a report section showing summaries of all deliveries and financials, Infographics can be added to this as well. Mock data can be used in all places required. Ensure to implement a visually pleasing and responsive design with very good fonts like Poppins, Also do not use Google maps. Ensure implementation is comprehensive and encompassing.
 
 
+
+I usually have issues reaching a resolution when I have several options, Create an Interactive daily decision helper that can create decisions, add the ability to drag-and-drop decisions to categories such as urgent, not urgent, and delegatable, and add an animated effect selector that suggests which decision to take, and a visual chart decision quota meter that shows the amount of decision ratio to a cap of 20. Ensure the user cannot create more than 20 decisions. A decision can be dragged and dropped into multiple categories individually, ensuring a visually pleasing and responsive design is implemented.
+
 * Unless otherwise specified, generate code in a single block of html/css/js.
 * Plan out the code before starting to write it.
 
